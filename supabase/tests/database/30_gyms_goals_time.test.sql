@@ -15,6 +15,7 @@ select tests.throws(format('insert into public.gyms (osm_id, name, lat, lng) val
 select tests.throws(format('insert into public.user_gyms (user_id, gym_id) values (%L, %L)', :'alice', :'g1'),
                     '42501', 'gyms are chosen through choose_gym');
 select tests.throws(format('select public.choose_gym(%L)', gen_random_uuid()), 'unknown_gym', 'only known OSM gyms');
+select tests.throws('select * from public.gym_search_cache', '42501', 'search cache is service-role only');
 
 select count(*) from public.choose_gym(:'g1');
 select tests.eq((select gym_id from public.user_gyms where is_primary), :'g1'::uuid, 'first gym becomes primary');

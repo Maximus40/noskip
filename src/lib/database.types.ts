@@ -77,6 +77,24 @@ export type Database = {
           },
         ];
       };
+      gym_search_cache: {
+        Row: {
+          key: string;
+          gym_ids: string[];
+          created_at: string;
+        };
+        Insert: {
+          key: string;
+          gym_ids?: string[];
+          created_at?: string;
+        };
+        Update: {
+          key?: string;
+          gym_ids?: string[];
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       gyms: {
         Row: {
           id: string;
@@ -766,7 +784,9 @@ export type Database = {
     Views: { [_ in never]: never };
     Functions: {
       accept_team_rules: {
-        Args: never;
+        Args: {
+          p_team: string;
+        };
         Returns: undefined;
       };
       cancel_session: {
@@ -775,34 +795,47 @@ export type Database = {
       };
       choose_gym: {
         Args: {
-          p_gym_id?: string;
+          p_gym_id: string;
+          p_make_primary?: boolean;
         };
         Returns: Database['public']['Tables']['user_gyms']['Row'][];
         SetofOptions: { from: '*'; to: 'user_gyms'; isOneToOne: false; isSetofReturn: true };
       };
       create_team: {
-        Args: never;
+        Args: {
+          p_name: string;
+        };
         Returns: Database['public']['Tables']['teams']['Row'];
         SetofOptions: { from: '*'; to: 'teams'; isOneToOne: true; isSetofReturn: false };
       };
       delete_team: {
-        Args: never;
+        Args: {
+          p_team: string;
+        };
         Returns: undefined;
       };
       increment_skip_share: {
-        Args: never;
+        Args: {
+          p_card: string;
+        };
         Returns: undefined;
       };
       leave_team: {
-        Args: never;
+        Args: {
+          p_team: string;
+        };
         Returns: undefined;
       };
       remove_gym: {
-        Args: never;
+        Args: {
+          p_gym_id: string;
+        };
         Returns: undefined;
       };
       set_weekly_goal: {
-        Args: never;
+        Args: {
+          p_goal: number;
+        };
         Returns: Database['public']['Tables']['profiles']['Row'];
         SetofOptions: { from: '*'; to: 'profiles'; isOneToOne: true; isSetofReturn: false };
       };
@@ -810,6 +843,7 @@ export type Database = {
         Args: {
           p_gym_id: string;
           p_started_at: string;
+          p_source: Database['public']['Enums']['session_source'];
         };
         Returns: Database['public']['Tables']['sessions']['Row'];
         SetofOptions: { from: '*'; to: 'sessions'; isOneToOne: true; isSetofReturn: false };

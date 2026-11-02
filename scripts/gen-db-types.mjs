@@ -51,7 +51,7 @@ funcs as (
              'type', format_type(coalesce(p.proallargtypes[i], p.proargtypes[i - 1]), null),
              'typname', t.typname, 'elem', et.typname)
            order by i)
-          from generate_subscripts(coalesce(p.proallargtypes, p.proargtypes::oid[]), 1) i
+          from generate_series(1, coalesce(array_length(p.proallargtypes, 1), p.pronargs)) i
           join pg_type t on t.oid = coalesce(p.proallargtypes[i], p.proargtypes[i - 1])
           left join pg_type et on et.oid = t.typelem and t.typcategory = 'A') as args,
          p.pronargdefaults

@@ -1,15 +1,40 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 
+import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { Button } from '@/components/ui/Button';
-import { ScreenShell } from '@/components/ui/ScreenShell';
+import { Stepper } from '@/components/ui/Stepper';
+import { Text } from '@/components/ui/Text';
+import { hookVerdict, onboardingStepNumber } from '@/domain/onboarding';
+import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
+import { colors } from '@/theme/tokens';
 
 export default function HookStep() {
+  const [planned, setPlanned] = useState(12);
+  const [done, setDone] = useState(5);
+  const save = useUpdateLocalOnboarding();
+
   return (
-    <ScreenShell
-      label="Étape 1 / 10"
-      title="Le mois dernier, tu avais prévu combien de séances ?"
-      phase={3}
-      footer={<Button label="Continuer" onPress={() => router.push('/sign-in')} />}
-    />
+    <OnboardingScreen
+      step={onboardingStepNumber('/hook')}
+      canGoBack={false}
+      title="Le mois dernier, t'avais prévu combien de séances ?"
+      subtitle="Et t'en as fait combien ? Sois honnête, personne ne regarde. Enfin, pas encore."
+      footer={
+        <Button
+          label="C'est parti"
+          disabled={save.isPending}
+          onPress={() =>
+            save.mutate({ hook: { planned, done } }, { onSuccess: () => router.replace('/') })
+          }
+        />
+      }
+    >
+      <Stepper label="Prévues" value={planned} onChange={setPlanned} max={31} suffix="séances" />
+      <Stepper label="Faites" value={done} onChange={setDone} max={31} suffix="séances" />
+      <Text variant="headline" color={colors.accent} accessibilityLiveRegion="polite">
+        {hookVerdict({ planned, done })}
+      </Text>
+    </OnboardingScreen>
   );
 }
