@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/ui": "~58.0.26",
+    "@supabase/supabase-js": "^2.118.0",
     "expo": "~58.0.22",
     "expo-blur": "~58.0.5",
     "expo-constants": "~58.0.14",
@@ -53,7 +54,9 @@
     "format:check": "prettier --check .",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage && npm run test:db",
+    "test:db": "./scripts/db-test.sh",
+    "db:types": "./scripts/db-test.sh --prepare-only && node scripts/gen-db-types.mjs postgresql://postgres@localhost:54329/noskip_test && prettier --write src/lib/database.types.ts"
   },
   "private": true
 }
