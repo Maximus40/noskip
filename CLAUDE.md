@@ -16,7 +16,7 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 ### Règles de travail (obligatoires)
 1. Sauvegarde ce prompt dans `CLAUDE.md` à la racine, et tiens à jour une section `## Avancement
 
-**Phase en cours : 3 — code terminé, validation de bout en bout en attente du projet Supabase** (phases 1 et 2 terminées). Phase suivante : 4 — Teams.
+**Phase en cours : 3 — code terminé, projet Supabase en ligne ; reste à tester sur téléphone (magic link, recherche de salles)** (phases 1 et 2 terminées). Phase suivante : 4 — Teams.
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -54,6 +54,16 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 - **À valider avec un vrai projet Supabase** : envoi du magic link, `search-gyms` déployée (Overpass injoignable depuis cette session), bucket avatars.
 - **Apple / Google** : code prêt, à brancher avec les identifiants (Supabase → Auth → Providers ; `.env` pour Google).
 - Carte « autour de moi » : la liste est en place ; la carte visuelle (react-native-maps) arrive en phase 6 (Android demandera une clé Google Maps).
+
+### Projet Supabase (production / test)
+- Projet `noskip`, ref `kbxjsxmxelomyyzlzzqh`, région `eu-west-3` (Paris), plan gratuit. Créé via le MCP le 3/11/2026 ; le projet `voltaio` a été mis en pause pour libérer la place (limite de 2 projets gratuits actifs).
+- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid.
+- Edge Function déployée : `search-gyms` (v1, verify_jwt). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
+- `.env` local rempli (URL + anon key, non commité).
+- Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
+- Conseiller sécurité Supabase : restent 11 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()`) et 1 info « gym_search_cache sans policy » (voulu : service role uniquement).
+- La session cloud ne peut pas joindre `*.supabase.co` (proxy) : les tests HTTP réels se font depuis le téléphone ou ta machine.
+- **À faire de ton côté** dans le dashboard Auth → URL Configuration : ajouter `noskip://auth-callback` aux Redirect URLs (sinon le magic link renvoie vers le site par défaut). Le code à 6 chiffres demande d'ajouter `{{ .Token }}` au modèle d'e-mail « Magic Link ».
 
 ### Notes d'environnement (session cloud)
 - Le proxy réseau bloque api.expo.dev, GitHub (hors git), Google Fonts, docs.expo.dev, Overpass et les couches d'images Docker : utiliser `EXPO_OFFLINE=1 npx expo install <pkg>`. Seul le registre npm est joignable. `supabase start` impossible ici → PostgreSQL 16 local (voir ci-dessus).
