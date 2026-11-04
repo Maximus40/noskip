@@ -361,6 +361,38 @@ export type Database = {
           },
         ];
       };
+      shaky_alerts: {
+        Row: {
+          user_id: string;
+          local_date: string;
+          days_left: number;
+          missing: number;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          local_date: string;
+          days_left: number;
+          missing: number;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          local_date?: string;
+          days_left?: number;
+          missing?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shaky_alerts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       skip_cards: {
         Row: {
           id: string;
@@ -685,6 +717,7 @@ export type Database = {
           done: number;
           achieved: boolean;
           used_joker: boolean;
+          exempt: boolean;
         };
         Insert: {
           week_id: string;
@@ -693,6 +726,7 @@ export type Database = {
           done: number;
           achieved: boolean;
           used_joker?: boolean;
+          exempt?: boolean;
         };
         Update: {
           week_id?: string;
@@ -701,6 +735,7 @@ export type Database = {
           done?: number;
           achieved?: boolean;
           used_joker?: boolean;
+          exempt?: boolean;
         };
         Relationships: [
           {
@@ -732,6 +767,8 @@ export type Database = {
           machine_user_id: string | null;
           skipper_user_id: string | null;
           recap_sent_at: string | null;
+          is_record: boolean;
+          skip_notified_at: string | null;
         };
         Insert: {
           id?: string;
@@ -745,6 +782,8 @@ export type Database = {
           machine_user_id?: string | null;
           skipper_user_id?: string | null;
           recap_sent_at?: string | null;
+          is_record?: boolean;
+          skip_notified_at?: string | null;
         };
         Update: {
           id?: string;
@@ -758,6 +797,8 @@ export type Database = {
           machine_user_id?: string | null;
           skipper_user_id?: string | null;
           recap_sent_at?: string | null;
+          is_record?: boolean;
+          skip_notified_at?: string | null;
         };
         Relationships: [
           {
@@ -827,6 +868,16 @@ export type Database = {
         };
         Returns: undefined;
       };
+      latest_closed_week: {
+        Args: {
+          p_team: string;
+        };
+        Returns: {
+          week_id: string;
+          week_start: string;
+          closed_at: string;
+        }[];
+      };
       leave_team: {
         Args: {
           p_team: string;
@@ -882,6 +933,12 @@ export type Database = {
         Returns: Database['public']['Tables']['profiles']['Row'];
         SetofOptions: { from: '*'; to: 'profiles'; isOneToOne: true; isSetofReturn: false };
       };
+      skip_card_week: {
+        Args: {
+          p_card: string;
+        };
+        Returns: string;
+      };
       start_session: {
         Args: {
           p_gym_id: string;
@@ -906,6 +963,52 @@ export type Database = {
           done: number;
           today_status: string;
           joker_this_week: boolean;
+          is_me: boolean;
+        }[];
+      };
+      team_history: {
+        Args: {
+          p_team: string;
+          p_limit?: number;
+        };
+        Returns: {
+          week_id: string;
+          week_start: string;
+          total_kg: number;
+          skips_count: number;
+          is_team_pr: boolean;
+          is_record: boolean;
+          machine_pseudo: string;
+          skipper_pseudo: string;
+        }[];
+      };
+      week_recap: {
+        Args: {
+          p_week_id: string;
+        };
+        Returns: {
+          week_id: string;
+          team_id: string;
+          team_name: string;
+          invite_code: string;
+          week_start: string;
+          total_kg: number;
+          skips_count: number;
+          is_team_pr: boolean;
+          is_record: boolean;
+          machine_user_id: string;
+          skipper_user_id: string;
+          user_id: string;
+          pseudo: string;
+          avatar_url: string;
+          plate_color: string;
+          goal: number;
+          done: number;
+          achieved: boolean;
+          used_joker: boolean;
+          exempt: boolean;
+          card_id: string;
+          line_id: string;
           is_me: boolean;
         }[];
       };

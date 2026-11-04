@@ -1,0 +1,48 @@
+/**
+ * Drawing SKIP lines without recent repetition. Pure, no imports: this file is copied
+ * verbatim into supabase/functions/_shared/generated/ by `npm run sync:shared` so the
+ * close-week Edge Function draws exactly like the tested logic.
+ */
+
+/** How many of the team's latest lines are avoided (capped so a draw is always possible). */
+export const RECENT_LINES_AVOIDED = 20;
+
+/**
+ * Picks `count` distinct line ids for one team's closing.
+ * - never one of the `recent` lines (most recent first), when enough lines remain;
+ * - when the bank is too small, the oldest of the recent lines come back first.
+ * `random` returns a float in [0, 1).
+ */
+export function pickSkipLines(
+  ids: readonly string[],
+  recent: readonly string[],
+  count: number,
+  random: () => number,
+): string[] {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0 || count <= 0) return [];
+  const avoid = new Set(recent.slice(0, RECENT_LINES_AVOIDED));
+  const fresh = unique.filter((id) => !avoid.has(id));
+  // Recent lines ordered oldest first: reused only once fresh ones run out.
+  const stale = [...new Set(recent.slice(0, RECENT_LINES_AVOIDED))]
+    .filter((id) => unique.includes(id))
+    .reverse();
+
+  const picked: string[] = [];
+  const pool = [...fresh];
+  while (picked.length < count && pool.length > 0) {
+    const index = Math.min(pool.length - 1, Math.floor(random() * pool.length));
+    picked.push(pool.splice(index, 1)[0]);
+  }
+  for (const id of stale) {
+    if (picked.length >= count) break;
+    picked.push(id);
+  }
+  // More skippers than lines in the bank: cycle (only possible with a tiny bank).
+  let i = 0;
+  while (picked.length < count) {
+    picked.push(unique[i % unique.length]);
+    i += 1;
+  }
+  return picked;
+}

@@ -60,6 +60,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-font',
       'expo-apple-authentication',
       'expo-audio',
+      'expo-sharing',
       ['react-native-maps', androidMapsKey ? { androidGoogleMapsApiKey: androidMapsKey } : {}],
       [
         'expo-splash-screen',

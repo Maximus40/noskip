@@ -29,6 +29,13 @@ export function inviteUrl(code: string, host?: string | null): string {
   return host ? `https://${host}/join/${code}` : `noskip://join/${code}`;
 }
 
+/** Bottom line of the SKIP poster: a readable link when a domain exists, the code otherwise. */
+export function posterInviteLabel(code: string, host?: string | null): string {
+  return host
+    ? `Rejoins la team → ${host}/join/${code}`
+    : `Rejoins la team sur NoSkip · code ${formatInviteCode(code)}`;
+}
+
 export function inviteMessage(teamName: string, code: string, host?: string | null): string {
   return (
     `Rejoins « ${teamName} » sur NoSkip. Chaque séance charge la barre de la team, ` +

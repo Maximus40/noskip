@@ -3,6 +3,7 @@ import {
   formatInviteCode,
   inviteMessage,
   inviteUrl,
+  posterInviteLabel,
   normalizeInviteCode,
   pseudoList,
   teamFill,
@@ -30,6 +31,10 @@ describe('invite codes', () => {
     expect(formatInviteCode('ABCD2345')).toBe('ABCD-2345');
     expect(inviteUrl('ABCD2345')).toBe('noskip://join/ABCD2345');
     expect(inviteUrl('ABCD2345', 'noskip.app')).toBe('https://noskip.app/join/ABCD2345');
+    expect(posterInviteLabel('ABCD2345')).toBe('Rejoins la team sur NoSkip · code ABCD-2345');
+    expect(posterInviteLabel('ABCD2345', 'noskip.app')).toBe(
+      'Rejoins la team → noskip.app/join/ABCD2345',
+    );
     const msg = inviteMessage('Les Déchaînés', 'ABCD2345', 'noskip.app');
     expect(msg).toContain('« Les Déchaînés »');
     expect(msg).toContain('https://noskip.app/join/ABCD2345');

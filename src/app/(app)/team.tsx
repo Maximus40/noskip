@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Canap } from '@/components/Canap';
 import { CountUp } from '@/components/CountUp';
+import { ArrowUpRight } from '@/components/icons/ArrowUpRight';
 import { HistoryIcon, InviteIcon, TimerIcon } from '@/components/icons/GameIcons';
 import { MapBackdrop } from '@/components/MapBackdrop';
 import { PlayerRow } from '@/components/PlayerRow';
@@ -28,6 +29,8 @@ import {
   useTeamBoard,
 } from '@/features/teams/api';
 import { useBarState } from '@/features/teams/useBarState';
+import { useLatestClosedWeek } from '@/features/weeks/api';
+import { weekRangeLabel } from '@/domain/weekClose';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -38,6 +41,7 @@ export default function TeamScreen() {
   const team = teams.data?.[Math.min(teamIndex, (teams.data?.length ?? 1) - 1)];
   const board = useTeamBoard(team?.id);
   const duo = useDuoStreak(team?.id);
+  const lastWeek = useLatestClosedWeek(team?.id);
   const spotsToday = useMySpotsToday();
   const sendSpot = useSendSpot();
   const profile = useProfile();
@@ -54,6 +58,7 @@ export default function TeamScreen() {
       board.refetch();
       spotsToday.refetch();
       visit.refetch();
+      lastWeek.refetch();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [team?.id]),
   );
@@ -77,6 +82,11 @@ export default function TeamScreen() {
   const center = primary ?? (gyms[0] ? { lat: gyms[0].lat, lng: gyms[0].lng } : null);
   const shakyPlayers = state?.players.filter((p) => p.risk === 'shaky') ?? [];
   const isDuo = (state?.players.length ?? 0) === 2;
+  // The Sunday recap stays on top of "Ma team" until Tuesday night.
+  const recentRecap =
+    lastWeek.data && now - Date.parse(lastWeek.data.closedAt) < 50 * 3600_000
+      ? lastWeek.data
+      : null;
   const enter = (i: number) => (reduced ? undefined : FadeInDown.delay(80 * i).duration(380));
 
   async function onSpot(userId: string, pseudo: string) {
@@ -146,6 +156,28 @@ export default function TeamScreen() {
               <InviteIcon color={colors.offWhite} />
             </RoundGlassButton>
           </View>
+
+          {recentRecap ? (
+            <PressableScale
+              onPress={() =>
+                router.push({ pathname: '/recap/[weekId]', params: { weekId: recentRecap.weekId } })
+              }
+              accessibilityRole="button"
+              accessibilityLabel={`Bilan du dimanche, ${weekRangeLabel(recentRecap.weekStart)}`}
+            >
+              <GlassPanel radius={radii.glass} style={styles.recap}>
+                <View style={styles.flex}>
+                  <Text variant="label" color={colors.accent}>
+                    Bilan du dimanche
+                  </Text>
+                  <Text variant="bodyStrong" numberOfLines={1}>
+                    {weekRangeLabel(recentRecap.weekStart)}
+                  </Text>
+                </View>
+                <ArrowUpRight color={colors.accent} size={20} />
+              </GlassPanel>
+            </PressableScale>
+          ) : null}
 
           {!state ? (
             <View style={styles.loading} accessibilityLabel="Chargement de la barre">
@@ -298,7 +330,9 @@ export default function TeamScreen() {
 
         <View style={styles.actions} pointerEvents="box-none">
           <RoundGlassButton
-            onPress={() => router.push('/history')}
+            onPress={() =>
+              router.push({ pathname: '/history', params: team ? { team: team.id } : {} })
+            }
             accessibilityLabel="Historique des semaines"
           >
             <HistoryIcon color={colors.offWhite} />
@@ -331,6 +365,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     maxWidth: 260,
   },
+  recap: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.lg },
   counter: { marginTop: spacing.lg, gap: spacing.xs },
   kgRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
   kg: { fontSize: 72, lineHeight: 74, letterSpacing: -2 },

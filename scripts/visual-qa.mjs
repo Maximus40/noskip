@@ -11,11 +11,16 @@ import { join } from 'node:path';
 const out = process.argv[2] ?? 'design/qa/gallery.png';
 const route = process.argv[3] ?? '/dev-gallery';
 const dir = mkdtempSync(join(tmpdir(), 'noskip-web-'));
-execSync(`npx expo export --platform web --dev --output-dir ${dir}`, {
+execSync(`npx expo export --platform web --dev --clear --output-dir ${dir}`, {
   stdio: 'inherit',
   env: { ...process.env, EXPO_OFFLINE: '1', CI: '1' },
 });
-const server = spawn('npx', ['--yes', 'serve', '-s', dir, '-l', '4573'], { stdio: 'ignore' });
+// Own process group, so the whole `npx serve` tree is stopped afterwards (a leftover server
+// would keep serving a stale export on the next run).
+const server = spawn('npx', ['--yes', 'serve', '-s', dir, '-l', '4573'], {
+  stdio: 'ignore',
+  detached: true,
+});
 await new Promise((r) => setTimeout(r, 3000));
 const require = createRequire(join(execSync('npm root -g').toString().trim(), 'noop.js'));
 const { chromium } = require('playwright');
@@ -31,5 +36,5 @@ try {
   console.log(`Screenshot: ${out}`);
 } finally {
   await browser.close();
-  server.kill();
+  process.kill(-server.pid, 'SIGTERM');
 }
