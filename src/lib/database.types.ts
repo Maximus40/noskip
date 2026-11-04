@@ -312,6 +312,7 @@ export type Database = {
           local_date: string;
           week_start: string | null;
           created_at: string;
+          server_opened_at: string;
         };
         Insert: {
           id?: string;
@@ -326,6 +327,7 @@ export type Database = {
           local_date: string;
           week_start?: string | null;
           created_at?: string;
+          server_opened_at?: string;
         };
         Update: {
           id?: string;
@@ -340,6 +342,7 @@ export type Database = {
           local_date?: string;
           week_start?: string | null;
           created_at?: string;
+          server_opened_at?: string;
         };
         Relationships: [
           {
@@ -829,6 +832,15 @@ export type Database = {
           p_team: string;
         };
         Returns: undefined;
+      };
+      my_open_session: {
+        Args: never;
+        Returns: {
+          id: string;
+          gym_id: string;
+          source: Database['public']['Enums']['session_source'];
+          started_at: string;
+        }[];
       };
       regenerate_invite_code: {
         Args: {

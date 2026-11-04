@@ -64,6 +64,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         'expo-location',
         {
+          // Geofencing needs "Always" on iOS (no continuous background mode) and the
+          // background location permission on Android.
+          isIosBackgroundLocationEnabled: false,
+          isAndroidBackgroundLocationEnabled: true,
+          isAndroidForegroundServiceEnabled: false,
           locationWhenInUsePermission:
             "NoSkip vérifie juste que t'es à ta salle. Ta team voit « venu » ou « pas venu », jamais où t'es.",
           locationAlwaysAndWhenInUsePermission:

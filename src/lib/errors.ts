@@ -26,6 +26,19 @@ const MESSAGES: Record<string, string> = {
   team_full: 'Cette team est complète (4 joueurs max, 8 avec l’offre Team).',
   owner_cannot_remove_self: 'Pour partir, utilise « Quitter la team ».',
   join_failed: "Impossible de rejoindre la team pour l'instant. Réessaie.",
+  location_denied:
+    "Sans la localisation, impossible de vérifier que t'es à la salle. Active-la dans les réglages.",
+  not_at_gym: "T'es pas à ta salle, ou ton GPS hésite. Rapproche-toi de l'entrée et réessaie.",
+  mocked_location: "Position simulée détectée. Pas de triche : le Canap' surveille.",
+  imprecise_location: 'Ton GPS est trop flou là. Réessaie près d’une fenêtre ou de l’entrée.',
+  too_early: 'Encore un peu : la séance compte à partir de 40 minutes.',
+  no_visit: "Aucune séance en cours. Touche « Je suis à la salle » d'abord.",
+  session_too_short: 'Moins de 40 minutes sur place : séance non comptée. Le Canap’ ricane.',
+  no_open_session: 'Aucune séance ouverte côté serveur. Relance « Je suis à la salle ».',
+  gym_mismatch: "Cette séance n'a pas été ouverte dans cette salle.",
+  invalid_ended_at: "L'heure de fin ne colle pas. Réessaie.",
+  demo_not_allowed: 'Mode démo réservé aux comptes développeurs.',
+  validation_failed: "Validation impossible pour l'instant. On réessaiera tout seul.",
 };
 
 export const GENERIC_ERROR = 'Oups, ça a coincé. Réessaie.';

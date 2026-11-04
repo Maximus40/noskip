@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { Fetcher } from '../_shared/fetcher.ts';
+
 /** A gym as found in OpenStreetMap. */
 export type OsmGym = {
   osm_id: string;
@@ -83,7 +85,7 @@ export function parseOverpass(payload: unknown): OsmGym[] {
   return gyms;
 }
 
-export type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
+export type { Fetcher };
 
 export async function runOverpass(
   fetcher: Fetcher,
