@@ -28,6 +28,7 @@ export default function SignInStep() {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [showCode, setShowCode] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,17 +57,19 @@ export default function SignInStep() {
       <OnboardingScreen
         step={onboardingStepNumber('/sign-in')}
         title="Check ta boîte mail."
-        subtitle={`Lien envoyé à ${sentTo}. Ouvre-le sur ce téléphone, ou tape le code à 6 chiffres reçu.`}
+        subtitle={`Lien envoyé à ${sentTo}. Ouvre le mail sur ce téléphone et touche le lien : tu reviens ici, connecté.`}
         footer={
           <>
-            <Button
-              label="Valider le code"
-              disabled={busy || code.trim().length < 6}
-              onPress={() => run(() => verifyEmailCode(sentTo, code), enter)}
-            />
+            {showCode ? (
+              <Button
+                label="Valider le code"
+                disabled={busy || code.trim().length < 6}
+                onPress={() => run(() => verifyEmailCode(sentTo, code), enter)}
+              />
+            ) : null}
             <Button
               label="Renvoyer le lien"
-              variant="ghost"
+              variant={showCode ? 'ghost' : 'secondary'}
               withArrow={false}
               disabled={busy}
               onPress={() => run(() => sendMagicLink(sentTo))}
@@ -78,20 +81,30 @@ export default function SignInStep() {
               onPress={() => {
                 setSentTo(null);
                 setCode('');
+                setShowCode(false);
               }}
             />
           </>
         }
       >
-        <TextField
-          label="Code reçu"
-          value={code}
-          onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 8))}
-          keyboardType="number-pad"
-          textContentType="oneTimeCode"
-          autoComplete="one-time-code"
-          placeholder="123456"
-        />
+        {showCode ? (
+          <TextField
+            label="Code reçu"
+            value={code}
+            onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 8))}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            autoComplete="one-time-code"
+            placeholder="123456"
+          />
+        ) : (
+          <Button
+            label="Mon mail contient un code à 6 chiffres"
+            variant="ghost"
+            withArrow={false}
+            onPress={() => setShowCode(true)}
+          />
+        )}
         <ErrorNote message={error} />
       </OnboardingScreen>
     );

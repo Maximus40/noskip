@@ -60,6 +60,8 @@ export default function RootLayout() {
                 <Stack.Screen name="history" />
                 <Stack.Screen name="paywall" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="join/[code]" />
+                <Stack.Screen name="team-new" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="team-manage/[id]" />
                 <Stack.Screen name="my-data" />
                 <Stack.Screen name="privacy" />
                 <Stack.Screen name="terms" />

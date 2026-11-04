@@ -8,11 +8,18 @@ export type LocalOnboarding = {
   hook: HookAnswers | null;
   locationAsked: boolean;
   notificationsAsked: boolean;
+  /** Invite code from a link opened before the player had an account. */
+  pendingInviteCode: string | null;
 };
 
 const KEY = 'noskip.onboarding.v1';
 const QUERY_KEY = ['local-onboarding'] as const;
-const EMPTY: LocalOnboarding = { hook: null, locationAsked: false, notificationsAsked: false };
+const EMPTY: LocalOnboarding = {
+  hook: null,
+  locationAsked: false,
+  notificationsAsked: false,
+  pendingInviteCode: null,
+};
 
 export async function readLocalOnboarding(): Promise<LocalOnboarding> {
   try {

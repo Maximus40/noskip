@@ -6,6 +6,7 @@ const raw = {
   supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
   googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
   googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  inviteHost: process.env.EXPO_PUBLIC_INVITE_HOST,
 };
 
 const optional = z
@@ -19,6 +20,8 @@ const schema = z.object({
   supabaseAnonKey: z.string().min(20),
   googleWebClientId: optional,
   googleIosClientId: optional,
+  // Domain serving universal links (https://<host>/join/<code>). Optional until a domain exists.
+  inviteHost: optional,
 });
 
 export type Env = z.infer<typeof schema>;

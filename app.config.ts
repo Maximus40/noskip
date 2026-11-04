@@ -10,6 +10,9 @@ function googleIosUrlScheme(): string | null {
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   const googleScheme = googleIosUrlScheme();
+  // Universal / App Links for https://<host>/join/<code>, once a domain serves the
+  // apple-app-site-association and assetlinks.json files.
+  const inviteHost = process.env.EXPO_PUBLIC_INVITE_HOST?.trim() || null;
   return {
     ...config,
     name: 'NoSkip',
@@ -25,6 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       supportsTablet: false,
       icon: './assets/expo.icon',
       usesAppleSignIn: true,
+      ...(inviteHost ? { associatedDomains: [`applinks:${inviteHost}`] } : {}),
     },
     android: {
       package: 'com.noskip.app',
@@ -35,6 +39,18 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         monochromeImage: './assets/images/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
+      ...(inviteHost
+        ? {
+            intentFilters: [
+              {
+                action: 'VIEW',
+                autoVerify: true,
+                data: [{ scheme: 'https', host: inviteHost, pathPrefix: '/join/' }],
+                category: ['BROWSABLE', 'DEFAULT'],
+              },
+            ],
+          }
+        : {}),
     },
     web: { output: 'single', favicon: './assets/images/favicon.png' },
     plugins: [

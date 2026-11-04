@@ -783,6 +783,10 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     Functions: {
+      accept_all_team_rules: {
+        Args: never;
+        Returns: undefined;
+      };
       accept_team_rules: {
         Args: {
           p_team: string;
@@ -826,11 +830,32 @@ export type Database = {
         };
         Returns: undefined;
       };
+      regenerate_invite_code: {
+        Args: {
+          p_team: string;
+        };
+        Returns: string;
+      };
       remove_gym: {
         Args: {
           p_gym_id: string;
         };
         Returns: undefined;
+      };
+      remove_member: {
+        Args: {
+          p_team: string;
+          p_user: string;
+        };
+        Returns: undefined;
+      };
+      rename_team: {
+        Args: {
+          p_team: string;
+          p_name: string;
+        };
+        Returns: Database['public']['Tables']['teams']['Row'];
+        SetofOptions: { from: '*'; to: 'teams'; isOneToOne: true; isSetofReturn: false };
       };
       set_weekly_goal: {
         Args: {

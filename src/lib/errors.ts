@@ -22,6 +22,10 @@ const MESSAGES: Record<string, string> = {
   rate_limited: 'Doucement ! Attends un peu avant de réessayer.',
   network: 'Pas de réseau. Vérifie ta connexion et réessaie.',
   sign_in_cancelled: '',
+  invalid_invite_code: "Ce code d'invitation ne marche pas. Vérifie-le ou demande un nouveau lien.",
+  team_full: 'Cette team est complète (4 joueurs max, 8 avec l’offre Team).',
+  owner_cannot_remove_self: 'Pour partir, utilise « Quitter la team ».',
+  join_failed: "Impossible de rejoindre la team pour l'instant. Réessaie.",
 };
 
 export const GENERIC_ERROR = 'Oups, ça a coincé. Réessaie.';

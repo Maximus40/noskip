@@ -16,7 +16,7 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 ### Règles de travail (obligatoires)
 1. Sauvegarde ce prompt dans `CLAUDE.md` à la racine, et tiens à jour une section `## Avancement
 
-**Phase en cours : 3 — code terminé, projet Supabase en ligne ; reste à tester sur téléphone (magic link, recherche de salles)** (phases 1 et 2 terminées). Phase suivante : 4 — Teams.
+**Phase en cours : 5 — Pointage** (phases 1, 2 et 4 terminées ; phase 3 terminée côté code, reste à tester sur téléphone : magic link, recherche de salles).
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -55,15 +55,25 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 - **Apple / Google** : code prêt, à brancher avec les identifiants (Supabase → Auth → Providers ; `.env` pour Google).
 - Carte « autour de moi » : la liste est en place ; la carte visuelle (react-native-maps) arrive en phase 6 (Android demandera une clé Google Maps).
 
+### Phase 4 — Teams ✅ (à tester sur téléphone)
+- Migration `…000600_teams_join_and_manage.sql` : `app_private.team_capacity` (4, ou 8 avec une `team_subscriptions` active), `normalize_invite_code`, `team_preview`, `join_team_by_code` (verrou `FOR UPDATE` sur la team : pas de dépassement de capacité en cas de clics simultanés, idempotent, 3 teams max) ; wrappers `svc_team_preview` / `svc_join_team` exécutables **uniquement** par le service role ; RPC créateur `rename_team`, `regenerate_invite_code` (les anciens liens cessent de marcher), `remove_member` ; `accept_all_team_rules` (étape 8).
+- Edge Function `join-team` (aperçu ou rejoindre ; l'id du joueur vient du JWT, jamais du corps ; erreurs `invalid_invite_code` 404, `team_full` / `max_teams_reached` 409). 5 tests Deno. Déployée.
+- Tests SQL `40_teams_join.test.sql` (20) : wrappers interdits aux joueurs, code en minuscules/tirets accepté, idempotence, plafond 4 puis 8 avec l'offre Team puis retour à 4 à l'expiration, couleurs de disque distinctes, outils créateur, rotation du code.
+- `src/domain/teams.ts` (testé) : normalisation/extraction du code depuis un lien collé, format `ABCD-2345`, lien d'invitation (`https://<EXPO_PUBLIC_INVITE_HOST>/join/<code>` si un domaine est configuré, sinon `noskip://join/<code>`), message de partage, validations.
+- Écrans : étape 6 « Avec qui tu soulèves ? » (créer → carte d'invitation + partage natif ; rejoindre → aperçu de la team), étape 8 règles (case à cocher obligatoire), `join/[code]` (deep link : sans compte, le code est mémorisé et la team est rejointe automatiquement à l'étape 6 ; avec compte, aperçu + règles + rejoindre), onglet « Mes teams », `team-new` (créer ou rejoindre depuis l'app), `team-manage/[id]` (inviter, joueurs, signaler, exclure, renommer, changer le code, quitter, supprimer).
+- Écran magic link : le lien passe en premier, le code à 6 chiffres est une option (le modèle d'e-mail n'est pas modifiable sans SMTP personnalisé).
+- Liens universels : `app.config.ts` ajoute `associatedDomains` (iOS) et `intentFilters` autoVerify (Android) dès que `EXPO_PUBLIC_INVITE_HOST` est défini. **Il faudra un domaine** qui sert `/.well-known/apple-app-site-association` et `/.well-known/assetlinks.json`, et une page web `/join/<code>` de repli. En attendant, les invitations partent en `noskip://join/<code>` + code lisible (les liens `noskip://` ne sont pas cliquables dans toutes les messageries, d'où le code affiché).
+
 ### Projet Supabase (production / test)
 - Projet `noskip`, ref `kbxjsxmxelomyyzlzzqh`, région `eu-west-3` (Paris), plan gratuit. Créé via le MCP le 3/11/2026 ; le projet `voltaio` a été mis en pause pour libérer la place (limite de 2 projets gratuits actifs).
-- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid.
-- Edge Function déployée : `search-gyms` (v1, verify_jwt). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
+- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage.
+- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), toutes en verify_jwt. Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
 - `.env` local rempli (URL + anon key, non commité).
 - Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
 - Conseiller sécurité Supabase : restent 11 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()`) et 1 info « gym_search_cache sans policy » (voulu : service role uniquement).
 - La session cloud ne peut pas joindre `*.supabase.co` (proxy) : les tests HTTP réels se font depuis le téléphone ou ta machine.
-- **À faire de ton côté** dans le dashboard Auth → URL Configuration : ajouter `noskip://auth-callback` aux Redirect URLs (sinon le magic link renvoie vers le site par défaut). Le code à 6 chiffres demande d'ajouter `{{ .Token }}` au modèle d'e-mail « Magic Link ».
+- Redirect URL `noskip://auth-callback` ajoutée par toi ✅.
+- E-mails : le serveur intégré de Supabase (plan gratuit) n'envoie qu'aux membres de l'organisation, quelques mails par heure, modèles non modifiables. **Avant d'inviter des potes : configurer un SMTP personnalisé (ex. Resend)**, puis ajouter `{{ .Token }}` au modèle « Magic link or OTP ».
 
 ### Notes d'environnement (session cloud)
 - Le proxy réseau bloque api.expo.dev, GitHub (hors git), Google Fonts, docs.expo.dev, Overpass et les couches d'images Docker : utiliser `EXPO_OFFLINE=1 npx expo install <pkg>`. Seul le registre npm est joignable. `supabase start` impossible ici → PostgreSQL 16 local (voir ci-dessus).
