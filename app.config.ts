@@ -13,6 +13,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   // Universal / App Links for https://<host>/join/<code>, once a domain serves the
   // apple-app-site-association and assetlinks.json files.
   const inviteHost = process.env.EXPO_PUBLIC_INVITE_HOST?.trim() || null;
+  // Android needs a Google Maps key for the map backdrop; without it the app draws its own.
+  const androidMapsKey = process.env.GOOGLE_MAPS_ANDROID_API_KEY?.trim() || null;
   return {
     ...config,
     name: 'NoSkip',
@@ -57,6 +59,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-router',
       'expo-font',
       'expo-apple-authentication',
+      'expo-audio',
+      ['react-native-maps', androidMapsKey ? { androidGoogleMapsApiKey: androidMapsKey } : {}],
       [
         'expo-splash-screen',
         { backgroundColor: '#111214', image: './assets/images/splash-icon.png', imageWidth: 76 },
@@ -92,6 +96,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           ]
         : []),
     ],
+    extra: { ...config.extra, hasAndroidMaps: Boolean(androidMapsKey) },
     experiments: { typedRoutes: true, reactCompiler: true },
   };
 };

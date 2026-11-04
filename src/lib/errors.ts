@@ -39,6 +39,13 @@ const MESSAGES: Record<string, string> = {
   invalid_ended_at: "L'heure de fin ne colle pas. Réessaie.",
   demo_not_allowed: 'Mode démo réservé aux comptes développeurs.',
   validation_failed: "Validation impossible pour l'instant. On réessaiera tout seul.",
+  spot_daily_limit: 'Tu as déjà spotté 3 fois aujourd’hui. Garde des munitions pour demain.',
+  already_spotted_today:
+    'Tu l’as déjà spotté aujourd’hui. Laisse-lui le temps de lacer ses baskets.',
+  already_trained_today: 'Il a déjà fait sa séance aujourd’hui. Respect.',
+  player_has_joker: 'Joker blessure activé cette semaine : on le laisse récupérer.',
+  cannot_spot_self: 'Tu ne peux pas te spotter toi-même. Va juste à la salle.',
+  spot_failed: "Le spot n'est pas parti. Réessaie.",
 };
 
 export const GENERIC_ERROR = 'Oups, ça a coincé. Réessaie.';

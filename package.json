@@ -10,6 +10,7 @@
     "@tanstack/react-query": "^5.105.3",
     "expo": "~58.0.22",
     "expo-apple-authentication": "~58.0.2",
+    "expo-audio": "~58.0.11",
     "expo-background-task": "~58.0.12",
     "expo-blur": "~58.0.5",
     "expo-clipboard": "~58.0.4",
@@ -35,6 +36,7 @@
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
+    "react-native-maps": "1.29.11",
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "~4.30.1",
@@ -72,7 +74,8 @@
     "db:types": "./scripts/db-test.sh --prepare-only && node scripts/gen-db-types.mjs postgresql://postgres@localhost:54329/noskip_test && prettier --write src/lib/database.types.ts",
     "typecheck:functions": "deno check -c supabase/functions/deno.json supabase/functions",
     "lint:functions": "deno lint -c supabase/functions/deno.json supabase/functions",
-    "test:functions": "deno test -c supabase/functions/deno.json --allow-env supabase/functions"
+    "test:functions": "deno test -c supabase/functions/deno.json --allow-env supabase/functions",
+    "qa:visual": "node scripts/visual-qa.mjs"
   },
   "private": true
 }

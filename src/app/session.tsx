@@ -2,7 +2,9 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
+import { MapBackdrop } from '@/components/MapBackdrop';
 import { ProgressRing } from '@/components/ProgressRing';
+import { GlassPanel } from '@/components/ui/GlassPanel';
 import { Button } from '@/components/ui/Button';
 import { ErrorNote } from '@/components/ui/ErrorNote';
 import { PressableScale } from '@/components/ui/PressableScale';
@@ -32,7 +34,7 @@ function useNow(intervalMs = 1000) {
 /** "Séance en cours": chrono + ring towards 45:00, plan B check-in/validation. */
 export default function SessionScreen() {
   const visit = useVisit();
-  const { names } = useGymPoints();
+  const { gyms, names } = useGymPoints();
   const { checkIn, finish, abandon } = useCheckinActions();
   const now = useNow();
   const [busy, setBusy] = useState(false);
@@ -73,25 +75,36 @@ export default function SessionScreen() {
   }
 
   const v = visit.data;
+  const gymPoint = (v && gyms.find((g) => g.id === v.gymId)) ?? gyms[0] ?? null;
+  const backdrop = (
+    <MapBackdrop center={gymPoint ? { lat: gymPoint.lat, lng: gymPoint.lng } : null} />
+  );
+
   if (!v) {
     return (
-      <Screen
-        footer={<Button label="Je suis à la salle" disabled={busy} onPress={() => run(checkIn)} />}
-      >
-        {close}
-        <Text variant="label" color={colors.accent}>
-          Pas de séance en cours
-        </Text>
-        <Text variant="display" accessibilityRole="header">
-          Le Canap&apos; t&apos;attend.
-        </Text>
-        <Text color={colors.muted}>
-          Avec le pointage auto, il n&apos;y a rien à faire : va à la salle, reste 40 minutes.
-          Sinon, touche le bouton en arrivant, on vérifie ta position une fois maintenant et une
-          fois dans 40 minutes.
-        </Text>
-        <ErrorNote message={error} />
-      </Screen>
+      <View style={styles.fill}>
+        {backdrop}
+        <Screen
+          background="transparent"
+          footer={
+            <Button label="Je suis à la salle" disabled={busy} onPress={() => run(checkIn)} />
+          }
+        >
+          {close}
+          <Text variant="label" color={colors.accent}>
+            Pas de séance en cours
+          </Text>
+          <Text variant="display" accessibilityRole="header">
+            Le Canap&apos; t&apos;attend.
+          </Text>
+          <Text color={colors.muted}>
+            Avec le pointage auto, il n&apos;y a rien à faire : va à la salle, reste 40 minutes.
+            Sinon, touche le bouton en arrivant, on vérifie ta position une fois maintenant et une
+            fois dans 40 minutes.
+          </Text>
+          <ErrorNote message={error} />
+        </Screen>
+      </View>
     );
   }
 
@@ -102,66 +115,70 @@ export default function SessionScreen() {
   const auto = v.source === 'geofence';
 
   return (
-    <Screen
-      footer={
-        <>
-          {ready || !auto ? (
+    <View style={styles.fill}>
+      {backdrop}
+      <Screen
+        background="transparent"
+        footer={
+          <>
+            {ready || !auto ? (
+              <Button
+                label={ready ? 'Valider ma séance' : `Encore ${Math.ceil(remaining / 60_000)} min`}
+                disabled={!ready || busy}
+                onPress={() => run(finish)}
+                accessibilityHint="On vérifie que t'es toujours à la salle"
+              />
+            ) : null}
             <Button
-              label={ready ? 'Valider ma séance' : `Encore ${Math.ceil(remaining / 60_000)} min`}
-              disabled={!ready || busy}
-              onPress={() => run(finish)}
-              accessibilityHint="On vérifie que t'es toujours à la salle"
+              label="Annuler la séance"
+              variant="ghost"
+              withArrow={false}
+              disabled={busy}
+              onPress={() =>
+                Alert.alert('Annuler la séance ?', 'Elle ne comptera pas.', [
+                  { text: 'Continuer', style: 'cancel' },
+                  { text: 'Annuler', style: 'destructive', onPress: () => run(abandon) },
+                ])
+              }
             />
-          ) : null}
-          <Button
-            label="Annuler la séance"
-            variant="ghost"
-            withArrow={false}
-            disabled={busy}
-            onPress={() =>
-              Alert.alert('Annuler la séance ?', 'Elle ne comptera pas.', [
-                { text: 'Continuer', style: 'cancel' },
-                { text: 'Annuler', style: 'destructive', onPress: () => run(abandon) },
-              ])
-            }
-          />
-        </>
-      }
-    >
-      {close}
-      <Text variant="label" color={colors.accent}>
-        {`Séance en cours · ${gymName}`}
-      </Text>
-      <View style={styles.ringWrap}>
-        <ProgressRing size={260} stroke={12} progress={ringProgress(v, now)}>
-          <Text
-            variant="number"
-            accessibilityLabel={`Temps sur place ${Math.floor(elapsed / 60_000)} minutes`}
-            accessibilityLiveRegion="none"
-          >
-            {formatChrono(elapsed)}
+          </>
+        }
+      >
+        {close}
+        <Text variant="label" color={colors.accent}>
+          {`Séance en cours · ${gymName}`}
+        </Text>
+        <View style={styles.ringWrap}>
+          <ProgressRing size={260} stroke={12} progress={ringProgress(v, now)}>
+            <Text
+              variant="number"
+              accessibilityLabel={`Temps sur place ${Math.floor(elapsed / 60_000)} minutes`}
+              accessibilityLiveRegion="none"
+            >
+              {formatChrono(elapsed)}
+            </Text>
+            <Text variant="caption" color={colors.muted}>
+              {ready ? 'Disque mérité' : 'Objectif 45:00'}
+            </Text>
+          </ProgressRing>
+        </View>
+        <GlassPanel style={styles.card}>
+          <Text variant="headline">
+            {auto
+              ? ready
+                ? 'Pars quand tu veux : on charge ton disque en sortant.'
+                : 'Pointage auto : garde ton téléphone sur toi.'
+              : ready
+                ? 'Touche « Valider » depuis la salle.'
+                : 'Reviens ici dans 40 minutes, toujours à la salle.'}
           </Text>
           <Text variant="caption" color={colors.muted}>
-            {ready ? 'Disque mérité' : 'Objectif 45:00'}
+            Ta team te voit « à la salle ». Ni l&apos;heure, ni l&apos;adresse.
           </Text>
-        </ProgressRing>
-      </View>
-      <View style={styles.card}>
-        <Text variant="headline">
-          {auto
-            ? ready
-              ? 'Pars quand tu veux : on charge ton disque en sortant.'
-              : 'Pointage auto : garde ton téléphone sur toi.'
-            : ready
-              ? 'Touche « Valider » depuis la salle.'
-              : 'Reviens ici dans 40 minutes, toujours à la salle.'}
-        </Text>
-        <Text variant="caption" color={colors.muted}>
-          Ta team te voit « à la salle ». Ni l&apos;heure, ni l&apos;adresse.
-        </Text>
-      </View>
-      <ErrorNote message={error} />
-    </Screen>
+        </GlassPanel>
+        <ErrorNote message={error} />
+      </Screen>
+    </View>
   );
 }
 
@@ -176,10 +193,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  fill: { flex: 1, backgroundColor: colors.map },
   ringWrap: { alignItems: 'center', paddingVertical: spacing.xl },
   card: {
-    backgroundColor: colors.card,
-    borderRadius: radii.card,
     padding: spacing.lg,
     gap: spacing.xs,
   },

@@ -68,6 +68,7 @@ export default function RootLayout() {
                 <Stack.Screen name="privacy" />
                 <Stack.Screen name="terms" />
                 <Stack.Screen name="dev" />
+                <Stack.Screen name="dev-gallery" />
               </Stack>
             </ThemeProvider>
           </AuthProvider>

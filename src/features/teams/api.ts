@@ -240,3 +240,50 @@ export function useReportMember() {
     },
   });
 }
+
+export function useDuoStreak(teamId: string | undefined) {
+  return useQuery({
+    queryKey: ['duo-streak', teamId],
+    enabled: Boolean(teamId),
+    queryFn: async () => {
+      const { data, error } = await db()
+        .from('duo_streaks')
+        .select('current_weeks, best_weeks')
+        .eq('team_id', teamId!)
+        .maybeSingle();
+      if (error) throw error;
+      return data ?? { current_weeks: 0, best_weeks: 0 };
+    },
+  });
+}
+
+export const spotsTodayKey = ['spots-today'] as const;
+
+/** Ids of teammates I already spotted today (server-side Paris day). */
+export function useMySpotsToday() {
+  return useQuery({
+    queryKey: spotsTodayKey,
+    queryFn: async () => {
+      const { data, error } = await db().rpc('my_spots_today');
+      if (error) throw error;
+      return ((data ?? []) as { to_user: string }[]).map((r) => r.to_user);
+    },
+  });
+}
+
+export function useSendSpot() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ teamId, userId }: { teamId: string; userId: string }) => {
+      const { data, error } = await db().functions.invoke<{ remaining_today: number }>(
+        'send-spot',
+        {
+          body: { to_user: userId, team_id: teamId },
+        },
+      );
+      if (error) throw new Error((await functionErrorCode(error)) ?? 'spot_failed');
+      return data;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: spotsTodayKey }),
+  });
+}

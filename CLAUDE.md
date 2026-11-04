@@ -16,7 +16,7 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 ### Règles de travail (obligatoires)
 1. Sauvegarde ce prompt dans `CLAUDE.md` à la racine, et tiens à jour une section `## Avancement
 
-**Phase en cours : 6 — Barre de la team** (phases 1 à 5 terminées côté code ; à tester sur téléphone : magic link, recherche de salles, teams, pointage réel).
+**Phase en cours : 7 — Domaine semaine** (phases 1 à 6 terminées côté code ; à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -75,10 +75,19 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 - `app.config.ts` : `isAndroidBackgroundLocationEnabled: true` ; iOS sans mode de fond continu (le geofencing iOS ne demande que l'autorisation « Toujours »).
 - **Limites connues** : le geofencing ne marche que dans un development build (pas Expo Go) et doit être testé en vrai ; l'écran « Disque chargé » reçoit durée / disques / objectif mais son design arrive en phase 6 ; l'onglet « Ma team » est encore un squelette avec un accès à « Séance en cours ».
 
+### Phase 6 — Barre de la team ✅ (contrôle visuel fait en web, à refaire sur simulateur)
+- `src/domain/bar.ts` (testé) : 1 disque par séance validée (20 kg, dessiné en 2 × 10 kg de part et d'autre), potes près de la butée, toi en orange à l'extérieur, épaisseur adaptée jusqu'à 8 joueurs, kilos au format français, PR de la team (tout le monde a atteint son objectif), barre perso (20 kg + 2,5 kg / séance), libellés, règle « peut être spotté ».
+- `src/domain/week.ts` (testé) : semaine Europe/Paris côté app (lundi 00:00 → dimanche 20:00, été/hiver), jours restants, `weekRisk` : `achieved` / `safe` / `shaky` (« la barre tremble » : il faut y aller tous les jours restants) / `lost` ; le joker protège.
+- Composants : `Canap` (SVG repris des maquettes, 4 humeurs animées avec Reanimated : respiration + clignement, ricanement + miettes, bouderie + chips tombées, écrasé + nuage de craie ; poses fixes si « Réduire les animations » ; emplacement prévu pour un futur Rive/Lottie), `TeamBar` (géométrie de `V3-Disque.html`, disque qui glisse avec rebond, barre qui vacille), `MapBackdrop` (iOS : Apple Plans sombre ; Android : Google Maps stylé si `GOOGLE_MAPS_ANDROID_API_KEY` est fourni, sinon quartier dessiné ; point orange de la salle qui pulse ; jamais la position en direct), `CountUp`, `RoundGlassButton` (50 / 70 px), `PlayerRow`, `ProgressRing`.
+- Écrans : **Ma team** (carte + verre : choix de la team, kilos qui défilent, barre, « X risque le skip », PR avec Canap' écrasé, série duo en grand, joueurs avec statut « Fait / À la salle / Pas encore », bouton Spot, état vide « Barre vide. Le Canap' adore. », squelettes en verre, tirer pour rafraîchir, boutons ronds Historique / Séance), **Disque chargé** (fidèle à `V3-Disque.html` : +20 KG., ligne « Ton 3e disque… », VOIR LA BARRE, 3 chiffres, barre avec le nouveau disque, Canap' qui boude), **Séance en cours** passée en verre sur carte.
+- Son et haptique (`src/features/feedback`) : `expo-audio` (expo-av n'existe plus en SDK 58), clang + haptique lourd au disque chargé, craie au PR, ricanement au skip ; respecte `sound_enabled` / `haptics_enabled`. Sons **synthétisés provisoires** dans `assets/sounds/` (`plate-clang.wav`, `chalk-clap.wav`, `canap-snicker.wav`) : **à remplacer par de vrais sons**.
+- Spot : migration `…000800_spots.sql` (`app_private.send_spot` : 3 envois/jour, 1/jour vers la même personne, pas après sa séance, pas sur un joker, verrou consultatif contre les envois simultanés ; `my_spots_today`), Edge Function `send-spot` (push « {pseudo} te spot : bouge à la salle ! », préférence `spot`). 13 tests SQL, 4 tests Deno. Déployés.
+- Contrôle visuel : pas de simulateur dans la session cloud → `npm run qa:visual` exporte l'app en web (mode dev) et capture la page `/dev-gallery` (dev uniquement, données d'exemple) avec Playwright. Capture : `design/qa/phase6-gallery.png`. Correction faite après revue : la ligne d'un joueur à risque passait sur 2 lignes → « Risque le skip » remplace le statut. **À refaire sur simulateur iOS / émulateur Android** (le flou du verre n'existe pas en web).
+
 ### Projet Supabase (production / test)
 - Projet `noskip`, ref `kbxjsxmxelomyyzlzzqh`, région `eu-west-3` (Paris), plan gratuit. Créé via le MCP le 3/11/2026 ; le projet `voltaio` a été mis en pause pour libérer la place (limite de 2 projets gratuits actifs).
-- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation.
-- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), toutes en verify_jwt. Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
+- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots.
+- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1), toutes en verify_jwt. Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
 - `.env` local rempli (URL + anon key, non commité).
 - Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
 - Conseiller sécurité Supabase : restent 11 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()`) et 1 info « gym_search_cache sans policy » (voulu : service role uniquement).
@@ -93,7 +102,7 @@ Objectif : une app **100 % fonctionnelle de bout en bout**, testée, prête à �
 
 ### Design (`design/`)
 - Reçus : `README.md`, `html/Canap-repos|skip|disque|pr.html`, `html/V3-Disque.html`.
-- **Manquants** : `V3-Team`, `V3-Seance`, `V3-Skip`, `V3-Paywall` (HTML + PNG) et tous les PNG (`design/png/` vide ; les captures ont été vues dans le chat mais pas reçues en fichiers).
+- **Non disponibles** (confirmé par toi) : `V3-Team`, `V3-Seance`, `V3-Skip`, `V3-Paywall`. Ces écrans suivent la direction artistique écrite du §3.
 
 ### Reste à faire
 - Phases 3 à 12.

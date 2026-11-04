@@ -842,6 +842,12 @@ export type Database = {
           started_at: string;
         }[];
       };
+      my_spots_today: {
+        Args: never;
+        Returns: {
+          to_user: string;
+        }[];
+      };
       regenerate_invite_code: {
         Args: {
           p_team: string;
