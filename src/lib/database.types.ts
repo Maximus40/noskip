@@ -13,6 +13,7 @@ export type Database = {
           type: Database['public']['Enums']['belt_type'];
           user_id: string;
           awarded_at: string;
+          notified_at: string | null;
         };
         Insert: {
           team_id: string;
@@ -20,6 +21,7 @@ export type Database = {
           type: Database['public']['Enums']['belt_type'];
           user_id: string;
           awarded_at?: string;
+          notified_at?: string | null;
         };
         Update: {
           team_id?: string;
@@ -27,6 +29,7 @@ export type Database = {
           type?: Database['public']['Enums']['belt_type'];
           user_id?: string;
           awarded_at?: string;
+          notified_at?: string | null;
         };
         Relationships: [
           {
@@ -856,6 +859,13 @@ export type Database = {
         Returns: Database['public']['Tables']['teams']['Row'];
         SetofOptions: { from: '*'; to: 'teams'; isOneToOne: true; isSetofReturn: false };
       };
+      declare_joker: {
+        Args: never;
+        Returns: {
+          week_start: string;
+          month: string;
+        }[];
+      };
       delete_team: {
         Args: {
           p_team: string;
@@ -883,6 +893,25 @@ export type Database = {
           p_team: string;
         };
         Returns: undefined;
+      };
+      lifter_card: {
+        Args: {
+          p_user?: string;
+        };
+        Returns: {
+          user_id: string;
+          pseudo: string;
+          avatar_url: string;
+          title: Database['public']['Enums']['lifter_title'];
+          plate_color: string;
+          lifetime_sessions: number;
+          skips_total: number;
+          belts: Json;
+          history: Json;
+          joker_this_week: boolean;
+          joker_month_used: boolean;
+          is_me: boolean;
+        }[];
       };
       my_open_session: {
         Args: never;

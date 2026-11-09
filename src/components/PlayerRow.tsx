@@ -12,10 +12,12 @@ type Props = {
   player: BarPlayer & { risk: WeekRisk };
   avatarUrl: string | null;
   spot: { state: 'available' | 'sent' | 'hidden'; onPress: () => void; busy: boolean };
+  /** Opens the player's lifter card. */
+  onOpen?: () => void;
 };
 
 /** One teammate: plate colour, avatar, 2/3, today's coarse status. Never a place or a time. */
-export function PlayerRow({ player, avatarUrl, spot }: Props) {
+export function PlayerRow({ player, avatarUrl, spot, onOpen }: Props) {
   const tint = player.isMe ? colors.accent : player.color;
   const status = player.joker ? 'Joker blessure' : statusLabel(player.status);
   // At risk, the warning replaces the status so the line never wraps next to the Spot button.
@@ -26,12 +28,9 @@ export function PlayerRow({ player, avatarUrl, spot }: Props) {
         ? 'Objectif hors de portée'
         : status;
   const alert = player.risk === 'shaky' || player.risk === 'lost';
-  return (
-    <View
-      style={styles.row}
-      accessible={spot.state !== 'available'}
-      accessibilityLabel={`${player.pseudo}${player.isMe ? ' (toi)' : ''}, ${player.done} sur ${player.goal}, ${status}${alert ? `, ${line.toLowerCase()}` : ''}`}
-    >
+  const summary = `${player.pseudo}${player.isMe ? ' (toi)' : ''}, ${player.done} sur ${player.goal}, ${status}${alert ? `, ${line.toLowerCase()}` : ''}`;
+  const identity = (
+    <>
       <View style={[styles.plate, { backgroundColor: tint }]} />
       <View style={[styles.avatar, { borderColor: tint }]}>
         {avatarUrl ? (
@@ -50,6 +49,27 @@ export function PlayerRow({ player, avatarUrl, spot }: Props) {
           {line}
         </Text>
       </View>
+    </>
+  );
+  return (
+    <View
+      style={styles.row}
+      accessible={!onOpen && spot.state !== 'available'}
+      accessibilityLabel={onOpen ? undefined : summary}
+    >
+      {onOpen ? (
+        <PressableScale
+          onPress={onOpen}
+          accessibilityRole="button"
+          accessibilityLabel={summary}
+          accessibilityHint="Ouvre sa carte de lifter"
+          style={styles.identity}
+        >
+          {identity}
+        </PressableScale>
+      ) : (
+        identity
+      )}
       <Text variant="headline" style={styles.count}>
         {`${player.done}/${player.goal}`}
       </Text>
@@ -79,6 +99,7 @@ export function PlayerRow({ player, avatarUrl, spot }: Props) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, minHeight: 56 },
+  identity: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md, minHeight: 56 },
   plate: { width: 6, height: 34, borderRadius: 2 },
   avatar: {
     width: 40,

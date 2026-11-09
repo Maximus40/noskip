@@ -282,6 +282,11 @@ export default function TeamScreen() {
                           busy: sendSpot.isPending,
                           onPress: () => onSpot(p.id, p.pseudo),
                         }}
+                        onOpen={() =>
+                          p.isMe
+                            ? router.push('/lifter')
+                            : router.push({ pathname: '/lifter/[id]', params: { id: p.id } })
+                        }
                       />
                     );
                   })}

@@ -60,6 +60,7 @@ export default function RootLayout() {
                 <Stack.Screen name="skip/[id]" options={{ presentation: 'fullScreenModal' }} />
                 <Stack.Screen name="recap/[weekId]" />
                 <Stack.Screen name="history" />
+                <Stack.Screen name="lifter/[id]" />
                 <Stack.Screen name="paywall" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="join/[code]" />
                 <Stack.Screen name="team-new" options={{ presentation: 'modal' }} />
@@ -70,6 +71,7 @@ export default function RootLayout() {
                 <Stack.Screen name="dev" />
                 <Stack.Screen name="dev-gallery" />
                 <Stack.Screen name="dev-poster" />
+                <Stack.Screen name="dev-lifter" />
               </Stack>
             </ThemeProvider>
           </AuthProvider>

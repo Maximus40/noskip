@@ -299,7 +299,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ## Avancement
 
-**Phase en cours : 8 — Progression** (phase 7 terminée et déployée ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
+**Phase en cours : 9 — Notifications** (phases 7 et 8 terminées et déployées ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -382,13 +382,23 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **Leçon MCP Supabase** : au-delà d'une certaine taille, ou avec `truncate` / `drop`, `apply_migration` demande une confirmation qui ne s'affiche pas dans ton app (ni téléphone, ni PC) et expire. Il faut envoyer les migrations en petits morceaux sans instruction destructive.
 - Conseiller sécurité : `pg_net` signalé « dans le schéma public » sur le projet (installé avant la correction ; le dépôt l'installe désormais dans `extensions`). Le déplacer demande de supprimer puis recréer l'extension, ce qui déclenche la confirmation bloquante : laissé tel quel, sans risque (ses fonctions vivent dans le schéma `net`, non exposé).
 
+### Phase 8 — Progression ✅ (déployée sur Supabase)
+- Migrations `…001000_progression_1_player`, `…001001_progression_2_belts`, `…001002_progression_3_cron` (appliquées en 7 petits morceaux via le MCP + `progression_4_pin_search_path`).
+- **Joker blessure** : RPC `declare_joker()` — 1 par mois (mois du lundi de la semaine), pour la semaine de jeu en cours, idempotent ; refusé si le joker du mois est déjà pris (`joker_already_used`) ou si l'objectif est déjà atteint (`goal_already_reached`). Effets déjà en place : pas de carte SKIP, pas de spot, série préservée, statut « Joker blessure » visible par la team.
+- **Carte de lifter** : RPC `lifter_card(p_user?)` (moi ou un coéquipier, sinon `not_found`) : photo, titre, couleur, total de séances, nombre de skips (semaines distinctes), trophées, historique des semaines closes fusionné entre teams, état du joker.
+- **Saisons / Ceinture** : `app_private.award_team_belts(team, mois)` (semaines dont le lundi tombe dans le mois ; Ceinture = meilleur taux d'objectif atteint hors jokers et arrivées tardives, départage au nombre de séances puis à l'ancienneté ; Gros Canap' = le plus de cartes SKIP, départage au moins de séances ; idempotent ; refuse le mois en cours), `due_belt_month` (rien avant le 1er à 10 h Paris), notification « réclamée » une seule fois (`belts.notified_at`). Edge Function **`monthly-belt`** (cron `0 8,9 1 * *` UTC, secret partagé, push « 🥇 {pseudo} décroche la Ceinture d'octobre… » / « Trophée Gros Canap' … », préférence `recap`). 5 tests Deno. Testée en réel : appel par la base → 200 (`{"month":"2026-10-01","awarded":0}`, aucune semaine close en octobre).
+- Domaine `src/domain/progression.ts` (testé) : niveaux Barre à vide 20 → Gym bro 60 → Machine 100 → Monstre 160 → Légende 250 (progression, séances restantes), série actuelle et record (joker et semaine d'arrivée tardive préservent sans prolonger), libellés de mois (« Ceinture d'octobre »), modèle de la Ceinture identique au SQL, état du joker.
+- Tests SQL `80_progression.test.sql` (33) : joker (idempotent, 1/mois, objectif atteint, anon), Ceinture / Gros Canap' sur un mois de 4 semaines + une semaine hors mois, rejeu, mois en cours refusé, horaires Paris été/hiver, notifications une seule fois, carte (moi, coéquipier, inconnu refusé).
+- App : onglet **Carte de lifter** (identité, NIVEAU en géant, barre perso avec progression vers le niveau suivant, Série / Séances / Skips, Trophées, carte Joker avec confirmation), **carte d'un coéquipier** (`lifter/[id]`, en touchant un joueur sur Ma team). Contrôle visuel web : `design/qa/phase8-lifter-card.png` (corrigé : badges de trophées de largeurs différentes → titres désalignés).
+- Pas encore : modifier sa carte (pseudo, photo, titre) depuis l'onglet → phase 11 (réglages).
+
 ### Projet Supabase (production / test)
 - Projet `noskip`, ref `kbxjsxmxelomyyzlzzqh`, région `eu-west-3` (Paris), plan gratuit. Créé via le MCP le 3/11/2026 ; le projet `voltaio` a été mis en pause pour libérer la place (limite de 2 projets gratuits actifs).
-- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots, puis les 9 morceaux de week_close (phase 7).
-- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1) en verify_jwt ; `close-week` (v1), `midweek-check` (v1) sans JWT, protégées par le secret de `cron_config`. Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
+- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots, puis les 9 morceaux de week_close (phase 7) et les 8 de progression (phase 8).
+- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1) en verify_jwt ; `close-week` (v1), `midweek-check` (v1), `monthly-belt` (v1) sans JWT, protégées par le secret de `cron_config`. Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
 - `.env` local rempli (URL + anon key, non commité).
 - Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
-- Conseiller sécurité Supabase : restent 21 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()` et l'appartenance à la team), 2 infos « sans policy » (`gym_search_cache`, `shaky_alerts` : voulu, service role uniquement) et `pg_net` dans public (voir phase 7).
+- Conseiller sécurité Supabase : restent 23 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()` et l'appartenance à la team), 2 infos « sans policy » (`gym_search_cache`, `shaky_alerts` : voulu, service role uniquement) et `pg_net` dans public (voir phase 7).
 - La session cloud ne peut pas joindre `*.supabase.co` (proxy) : les tests HTTP réels se font depuis le téléphone ou ta machine.
 - Redirect URL `noskip://auth-callback` ajoutée par toi ✅.
 - E-mails : le serveur intégré de Supabase (plan gratuit) n'envoie qu'aux membres de l'organisation, quelques mails par heure, modèles non modifiables. **Avant d'inviter des potes : configurer un SMTP personnalisé (ex. Resend)**, puis ajouter `{{ .Token }}` au modèle « Magic link or OTP ».
@@ -403,5 +413,5 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **Non disponibles** (confirmé par toi) : `V3-Team`, `V3-Seance`, `V3-Skip`, `V3-Paywall`. Ces écrans suivent la direction artistique écrite du §3.
 
 ### Reste à faire
-- Phases 8 à 12.
+- Phases 9 à 12.
 - Icône et splash NoSkip : assets du template Expo encore en place.
