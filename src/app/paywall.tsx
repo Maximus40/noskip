@@ -4,6 +4,7 @@ import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PlanCard } from '@/components/PlanCard';
 import { TeamBar } from '@/components/TeamBar';
 import { Button } from '@/components/ui/Button';
 import { ErrorNote } from '@/components/ui/ErrorNote';
@@ -11,7 +12,7 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
-import { ctaLabel, periodSuffix, perWeekLabel, renewalNotice, trialLabel } from '@/domain/paywall';
+import { ctaLabel, renewalNotice } from '@/domain/paywall';
 import {
   paymentsAvailable,
   setDevProBypass,
@@ -19,7 +20,6 @@ import {
   usePurchase,
   useRestore,
 } from '@/features/subscriptions/api';
-import type { PlanOption } from '@/features/subscriptions/revenuecat';
 import { useMyTeams, useTeamBoard } from '@/features/teams/api';
 import { useBarState } from '@/features/teams/useBarState';
 import { toUserMessage } from '@/lib/errors';
@@ -265,60 +265,6 @@ export default function PaywallScreen() {
   );
 }
 
-function PlanCard({
-  option,
-  selected,
-  onPress,
-  detail,
-}: {
-  option: PlanOption;
-  selected: boolean;
-  onPress: () => void;
-  detail?: string;
-}) {
-  const names = { annual: 'Annuel', weekly: 'Hebdo', duo: 'Pack Duo', team: 'Team' } as const;
-  const trial = trialLabel(option.trialDays);
-  const price = `${option.priceString}${periodSuffix(option.period)}`;
-  return (
-    <PressableScale
-      onPress={onPress}
-      accessibilityRole="radio"
-      accessibilityState={{ checked: selected }}
-      accessibilityLabel={`${names[option.key]}, ${price}${trial ? `, ${trial}` : ''}`}
-      style={[styles.plan, selected && styles.planSelected]}
-    >
-      <View style={styles.planHead}>
-        <Text variant="headline">{names[option.key]}</Text>
-        {option.key === 'annual' ? (
-          <View style={styles.badge}>
-            <Text variant="label" color={colors.ink}>
-              Meilleure offre
-            </Text>
-          </View>
-        ) : null}
-      </View>
-      <Text variant="title" style={styles.price}>
-        {price}
-      </Text>
-      {option.key === 'annual' ? (
-        <Text variant="caption" color={colors.offWhite}>
-          {perWeekLabel(option.price, option.currency)}
-        </Text>
-      ) : null}
-      {detail ? (
-        <Text variant="caption" color={colors.muted}>
-          {detail}
-        </Text>
-      ) : null}
-      {trial ? (
-        <Text variant="caption" color={colors.accent}>
-          {trial}
-        </Text>
-      ) : null}
-    </PressableScale>
-  );
-}
-
 function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
     <PressableScale
@@ -345,6 +291,13 @@ function LinkButton({ label, onPress }: { label: string; onPress: () => void }) 
 }
 
 const styles = StyleSheet.create({
+  friendsToggle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: minTouch,
+    paddingHorizontal: spacing.xs,
+  },
   screen: { flex: 1, backgroundColor: colors.bg },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl },
   flex: { flex: 1 },
@@ -367,30 +320,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     padding: spacing.lg,
     gap: spacing.sm,
-  },
-  plan: {
-    borderRadius: radii.card,
-    backgroundColor: colors.card,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    padding: spacing.lg,
-    gap: 4,
-  },
-  planSelected: { borderColor: colors.accent, backgroundColor: colors.cardAlt },
-  planHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  badge: {
-    backgroundColor: colors.accent,
-    borderRadius: radii.round,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-  },
-  price: { fontSize: 24, lineHeight: 28 },
-  friendsToggle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    minHeight: minTouch,
-    paddingHorizontal: spacing.xs,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {

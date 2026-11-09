@@ -16,6 +16,8 @@ type Props = {
   children?: ReactNode;
   footer?: ReactNode;
   canGoBack?: boolean;
+  /** Reused from the settings (edit mode): no progress bar, this label instead of the step. */
+  editLabel?: string;
 };
 
 /** Shared frame of the 10 onboarding steps: segmented progress, giant title, sticky action. */
@@ -27,6 +29,7 @@ export function OnboardingScreen({
   children,
   footer,
   canGoBack = true,
+  editLabel,
 }: Props) {
   return (
     <SafeAreaView style={styles.fill} edges={['top', 'bottom']}>
@@ -47,21 +50,25 @@ export function OnboardingScreen({
           ) : (
             <View style={styles.back} />
           )}
-          <View
-            style={styles.progress}
-            accessible
-            accessibilityRole="progressbar"
-            accessibilityLabel={`Étape ${step} sur ${ONBOARDING_TOTAL}`}
-            accessibilityValue={{ min: 1, max: ONBOARDING_TOTAL, now: step }}
-          >
-            {Array.from({ length: ONBOARDING_TOTAL }, (_, i) => (
-              <View key={i} style={[styles.segment, i < step && styles.segmentOn]} />
-            ))}
-          </View>
+          {editLabel ? (
+            <View style={styles.progress} />
+          ) : (
+            <View
+              style={styles.progress}
+              accessible
+              accessibilityRole="progressbar"
+              accessibilityLabel={`Étape ${step} sur ${ONBOARDING_TOTAL}`}
+              accessibilityValue={{ min: 1, max: ONBOARDING_TOTAL, now: step }}
+            >
+              {Array.from({ length: ONBOARDING_TOTAL }, (_, i) => (
+                <View key={i} style={[styles.segment, i < step && styles.segmentOn]} />
+              ))}
+            </View>
+          )}
         </View>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <Text variant="label" color={colors.accent}>
-            {label ?? `Étape ${step} / ${ONBOARDING_TOTAL}`}
+            {editLabel ?? label ?? `Étape ${step} / ${ONBOARDING_TOTAL}`}
           </Text>
           <Text variant="display" accessibilityRole="header">
             {title}

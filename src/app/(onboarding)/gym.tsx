@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -20,6 +20,7 @@ import { colors, spacing } from '@/theme/tokens';
 type Point = { lat: number; lng: number };
 
 export default function GymStep() {
+  const editing = useLocalSearchParams<{ edit?: string }>().edit === '1';
   const [query, setQuery] = useState('');
   // Precise position stays in memory on the phone, only used to sort and show distances.
   const [here, setHere] = useState<Point | null>(null);
@@ -72,17 +73,51 @@ export default function GymStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/gym')}
-      title="C'est où, ta salle ?"
-      subtitle="Uniquement des vraies salles (OpenStreetMap). Le pointage se fera tout seul quand tu y seras."
+      editLabel={editing ? 'Réglages · tes salles' : undefined}
+      title={editing ? 'Ajoute une salle.' : "C'est où, ta salle ?"}
+      subtitle={
+        editing
+          ? 'Jusqu’à 3 salles. Changer de salle principale : une fois tous les 30 jours, et ta team est prévenue.'
+          : 'Uniquement des vraies salles (OpenStreetMap). Le pointage se fera tout seul quand tu y seras.'
+      }
       footer={
-        <Button
-          label={selected ? `C'est ma salle` : 'Choisis ta salle'}
-          disabled={!selected || choose.isPending}
-          onPress={() =>
-            selected &&
-            choose.mutate({ gymId: selected.id }, { onSuccess: () => router.replace('/') })
-          }
-        />
+        editing ? (
+          <>
+            <Button
+              label="Ajouter à mes salles"
+              disabled={!selected || choose.isPending}
+              onPress={() =>
+                selected &&
+                choose.mutate(
+                  { gymId: selected.id, primary: false },
+                  { onSuccess: () => router.back() },
+                )
+              }
+            />
+            <Button
+              label="En faire ma salle principale"
+              variant="ghost"
+              withArrow={false}
+              disabled={!selected || choose.isPending}
+              onPress={() =>
+                selected &&
+                choose.mutate(
+                  { gymId: selected.id, primary: true },
+                  { onSuccess: () => router.back() },
+                )
+              }
+            />
+          </>
+        ) : (
+          <Button
+            label={selected ? `C'est ma salle` : 'Choisis ta salle'}
+            disabled={!selected || choose.isPending}
+            onPress={() =>
+              selected &&
+              choose.mutate({ gymId: selected.id }, { onSuccess: () => router.replace('/') })
+            }
+          />
+        )
       }
     >
       <Button

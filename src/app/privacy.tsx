@@ -1,5 +1,14 @@
-import { ScreenShell } from '@/components/ui/ScreenShell';
+import { legalInfo, privacySections } from '../../content/legal';
+import { LegalScreen } from '@/components/LegalScreen';
 
 export default function PrivacyScreen() {
-  return <ScreenShell label="Confidentialité" title="Politique de confidentialité." phase={11} />;
+  const info = legalInfo();
+  return (
+    <LegalScreen
+      label="Confidentialité"
+      title="Politique de confidentialité."
+      sections={privacySections(info)}
+      url={info.privacyUrl}
+    />
+  );
 }

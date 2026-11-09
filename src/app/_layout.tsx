@@ -7,16 +7,19 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { OfflineBanner } from '@/components/OfflineBanner';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 // Registers the geofence / resume background tasks before any event is delivered.
 import '@/features/checkin/tasks';
 import { configureNotifications } from '@/features/notifications/push';
+import { wireOnlineManager } from '@/lib/network';
 import { queryClient } from '@/lib/queryClient';
 import { colors } from '@/theme/tokens';
 import { fontFiles } from '@/theme/typography';
 
 SplashScreen.preventAutoHideAsync();
 configureNotifications();
+wireOnlineManager();
 
 const navTheme = {
   ...DarkTheme,
@@ -68,13 +71,16 @@ export default function RootLayout() {
                 <Stack.Screen name="team-new" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="team-manage/[id]" />
                 <Stack.Screen name="my-data" />
+                <Stack.Screen name="account-delete" />
                 <Stack.Screen name="privacy" />
                 <Stack.Screen name="terms" />
                 <Stack.Screen name="dev" />
                 <Stack.Screen name="dev-gallery" />
                 <Stack.Screen name="dev-poster" />
                 <Stack.Screen name="dev-lifter" />
+                <Stack.Screen name="dev-paywall" />
               </Stack>
+              <OfflineBanner />
             </ThemeProvider>
           </AuthProvider>
         </QueryClientProvider>

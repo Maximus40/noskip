@@ -1,9 +1,10 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { ErrorNote } from '@/components/ui/ErrorNote';
+import { ListRow } from '@/components/ui/ListRow';
 import { Screen } from '@/components/ui/Screen';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
@@ -16,7 +17,13 @@ import {
 } from '@/domain/notifications';
 import { signOut } from '@/features/auth/signIn';
 import { notificationPermission, registerForPush } from '@/features/notifications/push';
-import { useProfile, useUpdateProfile } from '@/features/profile/api';
+import {
+  LIFTER_TITLES,
+  useMyGyms,
+  useProfile,
+  useRemoveGym,
+  useUpdateProfile,
+} from '@/features/profile/api';
 import {
   type Entitlement,
   paymentsAvailable,
@@ -80,6 +87,8 @@ export default function SettingsScreen() {
         )
       ) : (
         <>
+          <GameCard onError={setError} />
+
           <View style={styles.card}>
             <Text variant="caption" color={colors.muted}>
               Notifications
@@ -137,9 +146,104 @@ export default function SettingsScreen() {
 
       <ErrorNote message={error ?? (profile.error ? toUserMessage(profile.error) : null)} />
 
+      <View style={styles.card}>
+        <Text variant="caption" color={colors.muted}>
+          Tes données
+        </Text>
+        <ListRow
+          title="Ce qu’on stocke"
+          subtitle="Et ce qu’on ne stocke jamais : ta position."
+          onPress={() => router.push('/my-data')}
+        />
+        <ListRow title="Politique de confidentialité" onPress={() => router.push('/privacy')} />
+        <ListRow title="Conditions d’utilisation" onPress={() => router.push('/terms')} />
+      </View>
+
       <Button label="Se déconnecter" variant="ghost" withArrow={false} onPress={() => signOut()} />
+      <Button
+        label="Supprimer mon compte"
+        variant="ghost"
+        withArrow={false}
+        onPress={() => router.push('/account-delete')}
+      />
       <View style={styles.bottomSpace} />
     </Screen>
+  );
+}
+
+/** Ta carte, ton objectif, tes salles. */
+function GameCard({ onError }: { onError: (m: string | null) => void }) {
+  const profile = useProfile();
+  const gyms = useMyGyms();
+  const removeGym = useRemoveGym();
+  const p = profile.data;
+  if (!p) return null;
+  const title = LIFTER_TITLES.find((t) => t.value === p.title)?.label ?? '';
+  const pending =
+    p.pending_weekly_goal && p.goal_effective_from
+      ? ` · ${p.pending_weekly_goal} à partir du ${new Date(`${p.goal_effective_from}T12:00:00Z`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`
+      : '';
+  const list = (gyms.data ?? []).map((g) => ({
+    primary: g.is_primary,
+    gym: g.gym as unknown as { id: string; name: string } | null,
+  }));
+
+  async function remove(id: string) {
+    onError(null);
+    try {
+      await removeGym.mutateAsync(id);
+    } catch (err) {
+      onError(toUserMessage(err));
+    }
+  }
+
+  return (
+    <View style={styles.card}>
+      <Text variant="caption" color={colors.muted}>
+        Toi
+      </Text>
+      <ListRow
+        title={p.pseudo ?? 'Ta carte'}
+        subtitle={`${title} · Modifier pseudo, photo, titre`}
+        onPress={() => router.push({ pathname: '/lifter-card', params: { edit: '1' } })}
+      />
+      <ListRow
+        title={`${p.weekly_goal} séances par semaine`}
+        subtitle={`Objectif${pending || ' · un changement compte à partir de lundi'}`}
+        onPress={() => router.push({ pathname: '/goal', params: { edit: '1' } })}
+      />
+      <Text variant="caption" color={colors.muted} style={styles.subhead}>
+        Tes salles
+      </Text>
+      {list.map(({ primary, gym }) =>
+        gym ? (
+          <ListRow
+            key={gym.id}
+            title={gym.name}
+            subtitle={primary ? 'Salle principale' : 'Salle en plus'}
+            trailing={
+              primary ? undefined : (
+                <Button
+                  label="Retirer"
+                  variant="ghost"
+                  withArrow={false}
+                  disabled={removeGym.isPending}
+                  onPress={() => remove(gym.id)}
+                />
+              )
+            }
+          />
+        ) : null,
+      )}
+      {list.length < 3 ? (
+        <Button
+          label="Ajouter une salle"
+          variant="secondary"
+          withArrow={false}
+          onPress={() => router.push({ pathname: '/gym', params: { edit: '1' } })}
+        />
+      ) : null}
+    </View>
   );
 }
 
@@ -215,4 +319,5 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.08)',
   },
   bottomSpace: { height: 96 },
+  subhead: { marginTop: spacing.sm },
 });

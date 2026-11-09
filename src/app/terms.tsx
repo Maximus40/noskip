@@ -1,5 +1,14 @@
-import { ScreenShell } from '@/components/ui/ScreenShell';
+import { legalInfo, termsSections } from '../../content/legal';
+import { LegalScreen } from '@/components/LegalScreen';
 
 export default function TermsScreen() {
-  return <ScreenShell label="CGU" title="Conditions générales d'utilisation." phase={11} />;
+  const info = legalInfo();
+  return (
+    <LegalScreen
+      label="CGU"
+      title="Conditions générales d’utilisation."
+      sections={termsSections(info)}
+      url={info.termsUrl}
+    />
+  );
 }

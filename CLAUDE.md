@@ -299,7 +299,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ## Avancement
 
-**Phase en cours : 11 — Conformité et finitions** (phases 7 à 10 terminées et déployées ; paiement réel en attente de RevenueCat ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
+**Phase en cours : 12 — Livraison** (phases 7 à 11 terminées et déployées ; paiement réel en attente de RevenueCat ; mentions légales à compléter ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -414,10 +414,19 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
   2. RevenueCat : projet + apps iOS/Android, entitlement `pro` sur les 4 produits, offre courante avec les packages Annuel et Hebdo, offre `friends` avec Duo et Team ; clés SDK publiques → `.env` (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`).
   3. Webhook RevenueCat → `https://kbxjsxmxelomyyzlzzqh.supabase.co/functions/v1/revenuecat-webhook`, avec une valeur d'en-tête Authorization de ton choix, et la même valeur en secret Supabase `REVENUECAT_WEBHOOK_AUTH`.
 
+### Phase 11 — Conformité et finitions ✅ (déployée ; mentions légales à compléter)
+- **Suppression de compte** : migration `…001300_account_deletion.sql` (`handover_teams` : chaque team créée par le joueur passe au plus ancien membre restant ; renvoie les teams où il est seul) + Edge Function **`delete-account`** (JWT, confirmation `SUPPRIMER` vérifiée aussi côté serveur ; supprime les teams solo, les photos `avatars/<uid>/`, le journal RevenueCat, puis l'utilisateur Auth → tout le reste part en cascade ; un échec intermédiaire laisse le compte, on peut réessayer). 12 tests SQL (dont la cascade complète), 3 tests Deno. Côté app : écran **Supprimer ton compte** (liste de ce qui part, avertissement « ton abonnement n'est pas résilié automatiquement » + Gérer mon abonnement pour le payeur, saisie de SUPPRIMER), puis nettoyage du téléphone (zones de geofencing arrêtées, toutes les clés `noskip.*`, cache, RevenueCat, session). 2 tests RNTL.
+- **Tes données** (ce qui est stocké, ce qui ne l'est jamais — la position —, ce que la team voit), **Politique de confidentialité** et **CGU** en français (`content/legal.ts`, écran commun `LegalScreen`). L'éditeur, l'e-mail de contact et les URLs publiques viennent de `EXPO_PUBLIC_LEGAL_PUBLISHER`, `EXPO_PUBLIC_LEGAL_EMAIL`, `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL` : **non renseignés, le texte affiche « [à compléter avant publication] »**.
+- **Réglages complets** : Toi (modifier pseudo / photo / titre, objectif avec l'objectif à venir, salles : principale / en plus, retirer, ajouter), Notifications, Abonnement, Sons et vibrations, Tes données (stockage, confidentialité, CGU), Se déconnecter, Supprimer mon compte. Les écrans carte / objectif / salle de l'onboarding sont réutilisés en mode « réglages » (`?edit=1` : sans barre de progression, retour aux réglages).
+- **Hors ligne** : `expo-network` branché sur TanStack Query (les requêtes se mettent en pause et repartent au retour du réseau) + bandeau « Pas de réseau. Tes séances sont gardées et partiront au retour. ».
+- **Accessibilité** : tailles de texte du système respectées (texte courant jusqu'à ×1,6, grands chiffres ×1,2, affiche SKIP figée pour garder sa composition), libellés VoiceOver / TalkBack sur les éléments clés, rôles (radio, switch, alert).
+- Contrôle visuel web : `design/qa/phase11-dev-paywall.png` (écran de paiement avec prix d'exemple, page dev `/dev-paywall`), `design/qa/phase11-my-data.png`. **À refaire sur simulateur** comme les phases 6 et 7.
+- Pas fait : PostHog (clé non fournie, aucune mesure n'est envoyée pour l'instant).
+
 ### Projet Supabase (production / test)
 - Projet `noskip`, ref `kbxjsxmxelomyyzlzzqh`, région `eu-west-3` (Paris), plan gratuit. Créé via le MCP le 3/11/2026 ; le projet `voltaio` a été mis en pause pour libérer la place (limite de 2 projets gratuits actifs).
-- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots, puis les 9 morceaux de week_close (phase 7) et les 8 de progression (phase 8), puis `push_registration_1_register` et `push_registration_2_gym_change` (phase 9), puis `subscriptions_1_base`, `_2_apply_event`, `_3_entitlement_and_rights` (phase 10).
-- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1) en verify_jwt ; `close-week` (v1), `midweek-check` (v1), `monthly-belt` (v1), `notify-gym-change` (v1) sans JWT, protégées par le secret de `cron_config` ; `revenuecat-webhook` (v1) sans JWT, protégée par `REVENUECAT_WEBHOOK_AUTH` (à poser). Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
+- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots, puis les 9 morceaux de week_close (phase 7) et les 8 de progression (phase 8), puis `push_registration_1_register` et `push_registration_2_gym_change` (phase 9), puis `subscriptions_1_base`, `_2_apply_event`, `_3_entitlement_and_rights` (phase 10), `account_deletion` (phase 11).
+- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1), `delete-account` (v1) en verify_jwt ; `close-week` (v1), `midweek-check` (v1), `monthly-belt` (v1), `notify-gym-change` (v1) sans JWT, protégées par le secret de `cron_config` ; `revenuecat-webhook` (v1) sans JWT, protégée par `REVENUECAT_WEBHOOK_AUTH` (à poser). Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
 - `.env` local rempli (URL + anon key, non commité).
 - Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
 - Conseiller sécurité Supabase : restent 25 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()` et l'appartenance à la team), 3 infos « sans policy » (`gym_search_cache`, `shaky_alerts`, `rc_events` : voulu, service role uniquement) et `pg_net` dans public (voir phase 7).
@@ -435,5 +444,5 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **Non disponibles** (confirmé par toi) : `V3-Team`, `V3-Seance`, `V3-Skip`, `V3-Paywall`. Ces écrans suivent la direction artistique écrite du §3.
 
 ### Reste à faire
-- Phases 11 et 12.
+- Phase 12.
 - Icône et splash NoSkip : assets du template Expo encore en place.

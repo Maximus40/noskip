@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
 import { OnboardingScreen } from '@/components/OnboardingScreen';
@@ -19,6 +19,7 @@ const GOALS = [
 ] as const;
 
 export default function GoalStep() {
+  const editing = useLocalSearchParams<{ edit?: string }>().edit === '1';
   const profile = useProfile();
   const [goal, setGoal] = useState<number | null>(null);
   const selected = goal ?? profile.data?.weekly_goal ?? 3;
@@ -30,15 +31,20 @@ export default function GoalStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/goal')}
+      editLabel={editing ? 'Réglages' : undefined}
       title="Combien de séances par semaine ?"
       subtitle="Un objectif que tu tiens vaut mieux qu'un objectif qui fait joli. Tu pourras le changer, effet la semaine suivante."
       footer={
         <Button
-          label={`Je m'engage sur ${selected}`}
+          label={editing ? `Passer à ${selected} séances` : `Je m'engage sur ${selected}`}
           disabled={busy || !profile.data}
           onPress={async () => {
             try {
               await setWeeklyGoal.mutateAsync(selected);
+              if (editing) {
+                router.back();
+                return;
+              }
               await merge.mutateAsync({ goal_confirmed_at: new Date().toISOString() });
               router.replace('/');
             } catch {

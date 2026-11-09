@@ -118,6 +118,18 @@ export function useChooseGym() {
   });
 }
 
+export function useRemoveGym() {
+  const uid = useUserId();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (gymId: string) => {
+      const { error } = await db().rpc('remove_gym', { p_gym_id: gymId });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: myGymsKey(uid) }),
+  });
+}
+
 export function useMyTeamCount() {
   const uid = useUserId();
   return useQuery({

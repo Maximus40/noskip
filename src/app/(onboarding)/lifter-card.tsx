@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -24,6 +24,7 @@ import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 export default function LifterCardStep() {
+  const editing = useLocalSearchParams<{ edit?: string }>().edit === '1';
   const profile = useProfile();
   const update = useUpdateProfile();
   const upload = useUploadAvatar();
@@ -54,16 +55,17 @@ export default function LifterCardStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/lifter-card')}
+      editLabel={editing ? 'Réglages' : undefined}
       title="Ta carte de lifter."
       subtitle="C'est elle que ta team verra sur la barre."
       footer={
         <Button
-          label="Valider ma carte"
+          label={editing ? 'Enregistrer' : 'Valider ma carte'}
           disabled={Boolean(pseudoError) || update.isPending || upload.isPending}
           onPress={() =>
             update.mutate(
               { pseudo: currentPseudo.trim(), title: currentTitle },
-              { onSuccess: () => router.replace('/') },
+              { onSuccess: () => (editing ? router.back() : router.replace('/')) },
             )
           }
         />
