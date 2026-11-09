@@ -301,6 +301,27 @@ export type Database = {
           },
         ];
       };
+      rc_events: {
+        Row: {
+          id: string;
+          type: string;
+          app_user_id: string | null;
+          received_at: string;
+        };
+        Insert: {
+          id: string;
+          type: string;
+          app_user_id?: string | null;
+          received_at?: string;
+        };
+        Update: {
+          id?: string;
+          type?: string;
+          app_user_id?: string | null;
+          received_at?: string;
+        };
+        Relationships: [];
+      };
       sessions: {
         Row: {
           id: string;
@@ -509,6 +530,7 @@ export type Database = {
           rc_customer_id: string | null;
           granted_by_user_id: string | null;
           updated_at: string;
+          last_event_at: string | null;
         };
         Insert: {
           id?: string;
@@ -521,6 +543,7 @@ export type Database = {
           rc_customer_id?: string | null;
           granted_by_user_id?: string | null;
           updated_at?: string;
+          last_event_at?: string | null;
         };
         Update: {
           id?: string;
@@ -533,6 +556,7 @@ export type Database = {
           rc_customer_id?: string | null;
           granted_by_user_id?: string | null;
           updated_at?: string;
+          last_event_at?: string | null;
         };
         Relationships: [
           {
@@ -602,6 +626,7 @@ export type Database = {
           expires_at: string | null;
           rc_customer_id: string | null;
           updated_at: string;
+          last_event_at: string | null;
         };
         Insert: {
           team_id: string;
@@ -611,6 +636,7 @@ export type Database = {
           expires_at?: string | null;
           rc_customer_id?: string | null;
           updated_at?: string;
+          last_event_at?: string | null;
         };
         Update: {
           team_id?: string;
@@ -620,6 +646,7 @@ export type Database = {
           expires_at?: string | null;
           rc_customer_id?: string | null;
           updated_at?: string;
+          last_event_at?: string | null;
         };
         Relationships: [
           {
@@ -911,6 +938,17 @@ export type Database = {
           joker_this_week: boolean;
           joker_month_used: boolean;
           is_me: boolean;
+        }[];
+      };
+      my_entitlement: {
+        Args: never;
+        Returns: {
+          active: boolean;
+          source: Database['public']['Enums']['subscription_source'];
+          expires_at: string;
+          offered_by: string;
+          team_name: string;
+          is_payer: boolean;
         }[];
       };
       my_open_session: {

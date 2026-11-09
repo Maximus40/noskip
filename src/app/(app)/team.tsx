@@ -5,6 +5,7 @@ import Animated, { FadeInDown, useReducedMotion } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Canap } from '@/components/Canap';
+import { GiftBanner } from '@/components/GiftBanner';
 import { CountUp } from '@/components/CountUp';
 import { ArrowUpRight } from '@/components/icons/ArrowUpRight';
 import { HistoryIcon, InviteIcon, TimerIcon } from '@/components/icons/GameIcons';
@@ -156,6 +157,8 @@ export default function TeamScreen() {
               <InviteIcon color={colors.offWhite} />
             </RoundGlassButton>
           </View>
+
+          <GiftBanner />
 
           {recentRecap ? (
             <PressableScale

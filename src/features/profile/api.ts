@@ -18,7 +18,6 @@ export const LIFTER_TITLES: { value: LifterTitle; label: string }[] = [
 export const profileKey = (uid: string) => ['profile', uid] as const;
 export const myGymsKey = (uid: string) => ['my-gyms', uid] as const;
 export const myTeamsKey = (uid: string) => ['my-teams', uid] as const;
-export const proKey = (uid: string) => ['pro', uid] as const;
 
 export function useProfile() {
   const uid = useUserId();
@@ -134,32 +133,8 @@ export function useMyTeamCount() {
   });
 }
 
-/** Server truth for the `pro` entitlement (own subscription, Duo/Team grant, or team plan). */
-export function useHasPro() {
-  const uid = useUserId();
-  return useQuery({
-    queryKey: proKey(uid),
-    queryFn: async () => {
-      const nowIso = new Date().toISOString();
-      const active = ['trialing', 'active', 'grace_period'] as const;
-      const own = await db()
-        .from('subscriptions')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', uid)
-        .in('status', active)
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`);
-      if (own.error) throw own.error;
-      if ((own.count ?? 0) > 0) return true;
-      const team = await db()
-        .from('team_subscriptions')
-        .select('team_id', { count: 'exact', head: true })
-        .in('status', active)
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`);
-      if (team.error) throw team.error;
-      return (team.count ?? 0) > 0;
-    },
-  });
-}
+/** Pro access lives with the subscriptions feature; re-exported for the onboarding gate. */
+export { useHasPro } from '@/features/subscriptions/api';
 
 /** Uploads a square avatar to Storage (avatars/<uid>/...) and stores its public URL. */
 export function useUploadAvatar() {

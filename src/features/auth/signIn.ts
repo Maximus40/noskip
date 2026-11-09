@@ -4,6 +4,7 @@ import * as Linking from 'expo-linking';
 
 import { env } from '@/lib/env';
 import { unregisterPush } from '@/features/notifications/push';
+import { resetRevenueCat } from '@/features/subscriptions/revenuecat';
 import { db } from '@/lib/supabase';
 
 export class SignInCancelled extends Error {
@@ -100,5 +101,6 @@ export async function completeAuthCallback(params: {
 export async function signOut(): Promise<void> {
   // Stop this phone from receiving the player's notifications before the session goes away.
   await unregisterPush();
+  await resetRevenueCat();
   await db().auth.signOut();
 }
