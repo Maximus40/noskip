@@ -10,11 +10,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 // Registers the geofence / resume background tasks before any event is delivered.
 import '@/features/checkin/tasks';
+import { configureNotifications } from '@/features/notifications/push';
 import { queryClient } from '@/lib/queryClient';
 import { colors } from '@/theme/tokens';
 import { fontFiles } from '@/theme/typography';
 
 SplashScreen.preventAutoHideAsync();
+configureNotifications();
 
 const navTheme = {
   ...DarkTheme,

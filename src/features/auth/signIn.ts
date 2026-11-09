@@ -3,6 +3,7 @@ import * as Crypto from 'expo-crypto';
 import * as Linking from 'expo-linking';
 
 import { env } from '@/lib/env';
+import { unregisterPush } from '@/features/notifications/push';
 import { db } from '@/lib/supabase';
 
 export class SignInCancelled extends Error {
@@ -97,5 +98,7 @@ export async function completeAuthCallback(params: {
 }
 
 export async function signOut(): Promise<void> {
+  // Stop this phone from receiving the player's notifications before the session goes away.
+  await unregisterPush();
   await db().auth.signOut();
 }

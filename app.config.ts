@@ -15,6 +15,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const inviteHost = process.env.EXPO_PUBLIC_INVITE_HOST?.trim() || null;
   // Android needs a Google Maps key for the map backdrop; without it the app draws its own.
   const androidMapsKey = process.env.GOOGLE_MAPS_ANDROID_API_KEY?.trim() || null;
+  // EAS project id (from `eas init`): Expo needs it to issue push tokens.
+  const easProjectId = process.env.EAS_PROJECT_ID?.trim() || null;
   return {
     ...config,
     name: 'NoSkip',
@@ -61,6 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-apple-authentication',
       'expo-audio',
       'expo-sharing',
+      ['expo-notifications', { color: '#FF6A3D' }],
       ['react-native-maps', androidMapsKey ? { androidGoogleMapsApiKey: androidMapsKey } : {}],
       [
         'expo-splash-screen',
@@ -97,7 +100,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           ]
         : []),
     ],
-    extra: { ...config.extra, hasAndroidMaps: Boolean(androidMapsKey) },
+    extra: {
+      ...config.extra,
+      hasAndroidMaps: Boolean(androidMapsKey),
+      ...(easProjectId ? { eas: { projectId: easProjectId } } : {}),
+    },
     experiments: { typedRoutes: true, reactCompiler: true },
   };
 };

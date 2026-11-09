@@ -299,7 +299,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ## Avancement
 
-**Phase en cours : 9 — Notifications** (phases 7 et 8 terminées et déployées ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
+**Phase en cours : 10 — Offres payantes** (phases 7 à 9 terminées et déployées ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -392,13 +392,22 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - App : onglet **Carte de lifter** (identité, NIVEAU en géant, barre perso avec progression vers le niveau suivant, Série / Séances / Skips, Trophées, carte Joker avec confirmation), **carte d'un coéquipier** (`lifter/[id]`, en touchant un joueur sur Ma team). Contrôle visuel web : `design/qa/phase8-lifter-card.png` (corrigé : badges de trophées de largeurs différentes → titres désalignés).
 - Pas encore : modifier sa carte (pseudo, photo, titre) depuis l'onglet → phase 11 (réglages).
 
+### Phase 9 — Notifications ✅ (déployée ; réception réelle à valider avec EAS + APNs)
+- `expo-notifications` (plugin, couleur orange). `src/features/notifications/push.ts` : affichage au premier plan, canal Android « NoSkip », `registerForPush(ask)` (permission, jeton Expo, enregistrement serveur), `unregisterPush()` à la déconnexion (le téléphone ne reçoit plus les notifs du compte).
+- Migration `…001100_push_registration.sql` : RPC `register_push_token` (jetons Expo uniquement ; si un autre compte a utilisé le téléphone avant, le jeton lui est retiré), déclencheur sur le changement de salle principale → Edge Function **`notify-gym-change`** (secret partagé, « {pseudo} a changé de salle principale… », **jamais le nom de la salle**, appel périmé ignoré, préférence `gym_change`). 14 tests SQL, 3 tests Deno. Testée en réel (appel périmé → 200 `stale`).
+- `src/domain/notifications.ts` (testé) : préférences par type (actives par défaut, comme le SQL) et écran ouvert au toucher d'une notification : SKIP → carte, bilan / PR → bilan, Ceinture → carte de lifter du gagnant, disque / spot / barre qui tremble / salle → Ma team.
+- `useNotificationRouting` (toucher une notif, app ouverte ou fermée ; rafraîchit la barre quand une notif de jeu arrive) et `usePushRegistration` (jeton rafraîchi au démarrage et à chaque retour au premier plan, sans jamais redemander la permission), montés dans les onglets.
+- Écrans : **étape 9** (exemples de vraies notifs, « Activer les notifs » / « Plus tard », 2 tests RNTL), **Réglages** : notifications par type (7 interrupteurs maison `ToggleRow`), état de la permission avec « Activer » / « Ouvrir les réglages », sons, vibrations, « Se déconnecter ». Le reste des réglages (objectif, salles, compte, données, CGU) arrive en phase 11.
+- **Bloqué de ton côté** : Expo ne délivre un jeton push qu'avec un **EAS project id** (`EAS_PROJECT_ID` dans `.env`, créé par `eas init`) ; iOS demande aussi la **clé APNs** (Apple Developer) et Android un fichier **FCM** (Firebase). Sans eux, l'app fonctionne mais `registerForPush` renvoie « indisponible » et aucun téléphone n'est enregistré. Demandé en phase 12.
+- Pas fait : le « PR live » en cours de semaine dans `validate-session` (le PR est annoncé à la clôture du dimanche).
+
 ### Projet Supabase (production / test)
 - Projet `noskip`, ref `kbxjsxmxelomyyzlzzqh`, région `eu-west-3` (Paris), plan gratuit. Créé via le MCP le 3/11/2026 ; le projet `voltaio` a été mis en pause pour libérer la place (limite de 2 projets gratuits actifs).
-- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots, puis les 9 morceaux de week_close (phase 7) et les 8 de progression (phase 8).
-- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1) en verify_jwt ; `close-week` (v1), `midweek-check` (v1), `monthly-belt` (v1) sans JWT, protégées par le secret de `cron_config`. Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
+- Migrations appliquées : core_schema, client_rpcs, gym_search_cache_and_avatars, pin_search_paths, pin_require_uid, teams_join_and_manage, session_validation, spots, puis les 9 morceaux de week_close (phase 7) et les 8 de progression (phase 8), puis `push_registration_1_register` et `push_registration_2_gym_change` (phase 9).
+- Edge Functions déployées : `search-gyms` (v1), `join-team` (v1), `validate-session` (v1), `send-spot` (v1) en verify_jwt ; `close-week` (v1), `midweek-check` (v1), `monthly-belt` (v1), `notify-gym-change` (v1) sans JWT, protégées par le secret de `cron_config`. Secrets optionnels : `DEMO_USER_IDS` (dev seulement), `EXPO_ACCESS_TOKEN` (si la sécurité push renforcée d'Expo est activée). Les secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` sont fournis automatiquement par Supabase.
 - `.env` local rempli (URL + anon key, non commité).
 - Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
-- Conseiller sécurité Supabase : restent 23 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()` et l'appartenance à la team), 2 infos « sans policy » (`gym_search_cache`, `shaky_alerts` : voulu, service role uniquement) et `pg_net` dans public (voir phase 7).
+- Conseiller sécurité Supabase : restent 24 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()` et l'appartenance à la team), 2 infos « sans policy » (`gym_search_cache`, `shaky_alerts` : voulu, service role uniquement) et `pg_net` dans public (voir phase 7).
 - La session cloud ne peut pas joindre `*.supabase.co` (proxy) : les tests HTTP réels se font depuis le téléphone ou ta machine.
 - Redirect URL `noskip://auth-callback` ajoutée par toi ✅.
 - E-mails : le serveur intégré de Supabase (plan gratuit) n'envoie qu'aux membres de l'organisation, quelques mails par heure, modèles non modifiables. **Avant d'inviter des potes : configurer un SMTP personnalisé (ex. Resend)**, puis ajouter `{{ .Token }}` au modèle « Magic link or OTP ».
@@ -413,5 +422,5 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **Non disponibles** (confirmé par toi) : `V3-Team`, `V3-Seance`, `V3-Skip`, `V3-Paywall`. Ces écrans suivent la direction artistique écrite du §3.
 
 ### Reste à faire
-- Phases 9 à 12.
+- Phases 10 à 12.
 - Icône et splash NoSkip : assets du template Expo encore en place.

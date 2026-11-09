@@ -934,6 +934,13 @@ export type Database = {
         };
         Returns: string;
       };
+      register_push_token: {
+        Args: {
+          p_token: string;
+          p_platform: Database['public']['Enums']['push_platform'];
+        };
+        Returns: undefined;
+      };
       remove_gym: {
         Args: {
           p_gym_id: string;
