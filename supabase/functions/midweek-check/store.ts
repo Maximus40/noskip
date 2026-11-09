@@ -31,3 +31,12 @@ export function supabaseShakyStore(db: SupabaseClient): ShakyStore {
     },
   };
 }
+
+/** Validates the pg_cron secret against app_private.cron_config. */
+export function cronSecretChecker(db: SupabaseClient) {
+  return async (secret: string) => {
+    const { data, error } = await db.rpc('svc_cron_secret_ok', { p_secret: secret });
+    if (error) throw new Error(error.message);
+    return data === true;
+  };
+}

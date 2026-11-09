@@ -54,7 +54,7 @@ begin
   if exists (select 1 from pg_available_extensions where name = 'pg_cron')
      and exists (select 1 from pg_available_extensions where name = 'pg_net') then
     create extension if not exists pg_cron;
-    create extension if not exists pg_net;
+    create extension if not exists pg_net with schema extensions;
     perform app_private.install_cron_jobs();
   end if;
 end $$;
@@ -65,3 +65,10 @@ revoke all on function
   app_private.install_cron_jobs()
 from public;
 grant execute on function app_private.cron_secret_ok(text) to service_role;
+
+create function public.svc_cron_secret_ok(p_secret text) returns boolean
+language sql stable security definer set search_path = ''
+as $$ select app_private.cron_secret_ok(p_secret) $$;
+
+revoke all on function public.svc_cron_secret_ok(text) from public, anon, authenticated;
+grant execute on function public.svc_cron_secret_ok(text) to service_role;

@@ -47,10 +47,6 @@ returns table (user_id uuid, pseudo text, days_left int, missing int)
 language sql volatile security definer set search_path = ''
 as $$ select * from app_private.claim_shaky_alerts(now(), p_force) $$;
 
-create function public.svc_cron_secret_ok(p_secret text) returns boolean
-language sql stable security definer set search_path = ''
-as $$ select app_private.cron_secret_ok(p_secret) $$;
-
 revoke all on function
   public.svc_due_week(),
   public.svc_teams_to_close(date),
@@ -61,8 +57,7 @@ revoke all on function
   public.svc_claim_week_notification(uuid, text),
   public.svc_weeks_pending_notification(text),
   public.svc_team_push_targets(uuid, text),
-  public.svc_claim_shaky_alerts(boolean),
-  public.svc_cron_secret_ok(text)
+  public.svc_claim_shaky_alerts(boolean)
 from public, anon, authenticated;
 grant execute on function
   public.svc_due_week(),
@@ -74,8 +69,7 @@ grant execute on function
   public.svc_claim_week_notification(uuid, text),
   public.svc_weeks_pending_notification(text),
   public.svc_team_push_targets(uuid, text),
-  public.svc_claim_shaky_alerts(boolean),
-  public.svc_cron_secret_ok(text)
+  public.svc_claim_shaky_alerts(boolean)
 to service_role;
 
 -- ---------------------------------------------------------------------------

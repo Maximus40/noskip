@@ -4,9 +4,8 @@
 import { adminClient, requireEnv } from '../_shared/auth.ts';
 import { cronAuthorizer } from '../_shared/cron.ts';
 import { sendPush } from '../_shared/push.ts';
-import { cronSecretChecker } from '../close-week/store.ts';
 import { createHandler } from './handler.ts';
-import { supabaseShakyStore } from './store.ts';
+import { cronSecretChecker, supabaseShakyStore } from './store.ts';
 
 const db = adminClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SERVICE_ROLE_KEY'));
 const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN') ?? undefined;

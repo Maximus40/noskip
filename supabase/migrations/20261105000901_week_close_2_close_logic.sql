@@ -5,7 +5,7 @@
 -- ---------------------------------------------------------------------------
 -- Calendar days of the week still usable when the player joined (Monday = 7 … Sunday = 1).
 create function app_private.days_left_at(p_ts timestamptz, p_week date) returns int
-language sql immutable parallel safe
+language sql immutable parallel safe set search_path = ''
 as $$
   select case
     when p_ts < (p_week::timestamp at time zone 'Europe/Paris') then 7
