@@ -30,7 +30,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       bundleIdentifier: 'com.noskip.app',
       supportsTablet: false,
-      icon: './assets/expo.icon',
       usesAppleSignIn: true,
       ...(inviteHost ? { associatedDomains: [`applinks:${inviteHost}`] } : {}),
     },

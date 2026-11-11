@@ -299,7 +299,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ## Avancement
 
-**Phase en cours : 12 — Livraison** (phases 7 à 11 terminées et déployées ; paiement réel en attente de RevenueCat ; mentions légales à compléter ; phases 1 à 6 à tester sur téléphone : magic link, recherche de salles, teams, pointage réel, barre, spot).
+**Phase en cours : terminé côté code (phases 1 à 12).** Ce qui reste demande tes comptes, tes clés ou un vrai téléphone : voir « Reste à faire de ton côté » en bas.
 
 ### Phase 1 — Socle ✅
 - Expo SDK 58 (RN 0.88, React 19.3, TS 6 strict), Expo Router (routes dans `src/app/`), React Compiler activé.
@@ -443,6 +443,22 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - Reçus : `README.md`, `html/Canap-repos|skip|disque|pr.html`, `html/V3-Disque.html`.
 - **Non disponibles** (confirmé par toi) : `V3-Team`, `V3-Seance`, `V3-Skip`, `V3-Paywall`. Ces écrans suivent la direction artistique écrite du §3.
 
-### Reste à faire
-- Phase 12.
-- Icône et splash NoSkip : assets du template Expo encore en place.
+### Phase 12 — Livraison ✅
+- `README.md` (français) : installation, variables d'env et secrets des fonctions (où les trouver), lancement local (PostgreSQL jetable ou `supabase start`), qualité (`npm run check`), déploiement Supabase (`db push`, `functions deploy`, `cron_config` + `install_cron_jobs`, Auth, SMTP), builds EAS, push (APNs / FCM), RevenueCat pas à pas, vie privée (ce qui part vers le serveur, vérifié), suppression de compte.
+- `eas.json` : profils `development` (client de dev, distribution interne), `development-simulator`, `preview` (interne, APK Android), `production` (numéro de build auto) ; environnements EAS du même nom ; `submit` Android sur la piste interne en brouillon.
+- `supabase/config.toml` : les 10 fonctions avec leur `verify_jwt` (5 avec JWT, 4 cron, webhook RevenueCat) → `npx supabase functions deploy` déploie tout correctement.
+- `docs/STORE_CHECKLIST.md` : comptes, backend, push, abonnements, mentions légales, tests sur appareil, App Store Connect (étiquette de confidentialité, notes de review), Google Play (sécurité des données, déclaration de localisation en arrière-plan), après le lancement.
+- Icône NoSkip (disque orange sur fond `#111214`), calques Android adaptatifs, icône monochrome, splash et favicon générés par `scripts/make-icons.mjs` ; l'icône du template Expo (`assets/expo.icon`) est supprimée.
+
+### Reste à faire de ton côté
+1. **Expo / EAS** : `eas login`, `eas init` → `EAS_PROJECT_ID` ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
+2. **Apple** : compte Developer, Team ID, confirmer `com.noskip.app`, clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
+3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
+4. **RevenueCat** + produits dans les stores + webhook + `REVENUECAT_WEBHOOK_AUTH` (README §7).
+5. **Mentions légales** : éditeur, e-mail de contact, URLs publiques de la confidentialité et des CGU.
+6. **SMTP** (Resend…) avant d'inviter des potes.
+7. **Domaine** pour les liens d'invitation universels (facultatif, conseillé).
+8. **PostHog** : clé à fournir, intégration pas encore faite (aucune mesure envoyée).
+9. **Sons** définitifs (`assets/sounds/`), validation de l'icône.
+10. **Tests sur téléphone** des phases 1 à 11 (magic link, recherche de salles, teams, pointage réel, barre, spot, push, achats) et contrôle visuel sur simulateur iOS / émulateur Android.
+11. Non fait volontairement : « PR live » en cours de semaine (le PR est annoncé à la clôture du dimanche) ; mode hardcore en V1.1 (autorisation Family Controls d'Apple).

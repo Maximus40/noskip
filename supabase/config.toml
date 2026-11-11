@@ -425,3 +425,52 @@ enabled = true
 enabled = true
 verify_jwt = true
 import_map = "./functions/deno.json"
+
+# Called by the app with the player's JWT.
+[functions.join-team]
+enabled = true
+verify_jwt = true
+import_map = "./functions/deno.json"
+
+[functions.validate-session]
+enabled = true
+verify_jwt = true
+import_map = "./functions/deno.json"
+
+[functions.send-spot]
+enabled = true
+verify_jwt = true
+import_map = "./functions/deno.json"
+
+[functions.delete-account]
+enabled = true
+verify_jwt = true
+import_map = "./functions/deno.json"
+
+# Called by pg_cron / database triggers: no JWT, guarded by the x-cron-secret header
+# (app_private.cron_config).
+[functions.close-week]
+enabled = true
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+[functions.midweek-check]
+enabled = true
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+[functions.monthly-belt]
+enabled = true
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+[functions.notify-gym-change]
+enabled = true
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+# Called by RevenueCat: no JWT, guarded by the REVENUECAT_WEBHOOK_AUTH secret.
+[functions.revenuecat-webhook]
+enabled = true
+verify_jwt = false
+import_map = "./functions/deno.json"
