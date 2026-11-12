@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { platesFor } from '@/domain/bar';
-import { ctaLabel, renewalNotice } from '@/domain/paywall';
+import { crewLine, ctaLabel, renewalNotice } from '@/domain/paywall';
 import { colors, radii, spacing } from '@/theme/tokens';
 import { APP_NAME } from '../../content/brand';
 
@@ -31,7 +31,10 @@ const plans = [
   },
 ] as const;
 
-/** Development-only: the paywall layout with sample store prices, for visual QA. */
+/**
+ * Development-only: the paywall layout (same blocks as src/app/paywall.tsx) with sample store
+ * prices, for visual QA and the App Store review screenshot of the subscriptions.
+ */
 export default function DevPaywall() {
   const [selected, setSelected] = useState<'annual' | 'weekly'>('annual');
   if (!__DEV__) return <Redirect href="/" />;
@@ -69,6 +72,13 @@ export default function DevPaywall() {
           <Text variant="caption" color={colors.muted} style={styles.legal}>
             {renewalNotice({ ...option, platform: 'ios' })}
           </Text>
+          <View style={styles.links}>
+            {['Restaurer mes achats', 'CGU', 'Confidentialité'].map((l) => (
+              <Text key={l} variant="caption" style={styles.link}>
+                {l}
+              </Text>
+            ))}
+          </View>
         </>
       }
     >
@@ -87,6 +97,12 @@ export default function DevPaywall() {
           La barre se charge. Ton disque manque.
         </Text>
       </View>
+      <View style={styles.crew}>
+        <Text variant="label" color={colors.accent}>
+          Un pote paie, toute la team joue
+        </Text>
+        <Text variant="body">{crewLine(['Karim'])}</Text>
+      </View>
       {plans.map((p) => (
         <PlanCard
           key={p.key}
@@ -103,6 +119,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 40, lineHeight: 42, letterSpacing: -1.2 },
   legal: { fontSize: 11, lineHeight: 15 },
   stretch: { alignSelf: 'stretch' },
+  crew: {
+    borderRadius: radii.card,
+    backgroundColor: colors.card,
+    padding: spacing.lg,
+    gap: spacing.xs,
+  },
+  links: { flexDirection: 'row', justifyContent: 'center', gap: spacing.lg },
+  link: { textDecorationLine: 'underline' },
   barCard: {
     borderRadius: radii.cardLarge,
     backgroundColor: '#1A1B1F',

@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Visual QA without a simulator: exports the app for web in dev mode, serves it and screenshots
 // the dev-only gallery route with the pre-installed Playwright Chromium.
-// Usage: node scripts/visual-qa.mjs [outFile] [route]
+// Usage: node scripts/visual-qa.mjs [outFile] [route] [WxH@scale]
+// With WxH@scale (e.g. 430x932@3 = 1290×2796, an App Store iPhone size) the shot is one screen,
+// not the full page.
 import { execSync, spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { mkdtempSync } from 'node:fs';
@@ -10,6 +12,7 @@ import { join } from 'node:path';
 
 const out = process.argv[2] ?? 'design/qa/gallery.png';
 const route = process.argv[3] ?? '/dev-gallery';
+const device = /^(\d+)x(\d+)@(\d+)$/.exec(process.argv[4] ?? '');
 const dir = mkdtempSync(join(tmpdir(), 'noskip-web-'));
 execSync(`npx expo export --platform web --dev --clear --output-dir ${dir}`, {
   stdio: 'inherit',
@@ -27,12 +30,12 @@ const { chromium } = require('playwright');
 const browser = await chromium.launch();
 try {
   const page = await browser.newPage({
-    viewport: { width: 390, height: 1400 },
-    deviceScaleFactor: 2,
+    viewport: device ? { width: +device[1], height: +device[2] } : { width: 390, height: 1400 },
+    deviceScaleFactor: device ? +device[3] : 2,
   });
   await page.goto(`http://localhost:4573${route}`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(2500);
-  await page.screenshot({ path: out, fullPage: true });
+  await page.screenshot({ path: out, fullPage: !device });
   console.log(`Screenshot: ${out}`);
 } finally {
   await browser.close();
