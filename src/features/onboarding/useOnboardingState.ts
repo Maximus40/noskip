@@ -15,6 +15,9 @@ export function useSignedInOnboardingState(): { state: OnboardingState | null; e
   const pro = useHasPro();
   const queries = [local, profile, gyms, teams, pro];
   const error = queries.find((q) => q.error)?.error ?? null;
+  // Right after a step saves something, cached data can still be the old version while it
+  // refetches: deciding on it would send the player back to the step they just finished.
+  if (queries.some((q) => q.isFetching)) return { state: null, error };
   if (
     !local.data ||
     !profile.data ||

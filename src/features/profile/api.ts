@@ -126,7 +126,8 @@ export function useChooseGym() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: myGymsKey(uid) }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: myGymsKey(uid), refetchType: 'all' }),
   });
 }
 
@@ -138,7 +139,8 @@ export function useRemoveGym() {
       const { error } = await db().rpc('remove_gym', { p_gym_id: gymId });
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: myGymsKey(uid) }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: myGymsKey(uid), refetchType: 'all' }),
   });
 }
 
