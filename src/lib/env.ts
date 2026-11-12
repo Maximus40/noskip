@@ -17,7 +17,12 @@ const optional = z
 
 const schema = z.object({
   supabaseUrl: z.url(),
-  supabaseAnonKey: z.string().min(20),
+  // A legacy anon JWT or a publishable key. Rejects masked copies such as "eyJhbGci•••" that
+  // `eas env:pull` can write: iOS silently drops a header holding non-ASCII characters.
+  supabaseAnonKey: z
+    .string()
+    .trim()
+    .regex(/^(eyJ[\w-]+\.[\w-]+\.[\w-]+|sb_publishable_[\w-]+)$/),
   googleWebClientId: optional,
   googleIosClientId: optional,
   // Domain serving universal links (https://<host>/join/<code>). Optional until a domain exists.
