@@ -87,6 +87,16 @@ export function parseOverpass(payload: unknown): OsmGym[] {
 
 export type { Fetcher };
 
+// Overpass instances now answer 406 to clients that do not identify themselves (OSM community
+// policy, 2026): name the app and give a contact URL, plus a Referer.
+export const OVERPASS_HEADERS = {
+  'Content-Type': 'application/x-www-form-urlencoded',
+  Accept: 'application/json',
+  'User-Agent':
+    'DipsOrChips/1.0 (gym search for a fitness app; +https://github.com/Maximus40/noskip)',
+  Referer: 'https://github.com/Maximus40/noskip',
+} as const;
+
 export async function runOverpass(
   fetcher: Fetcher,
   endpoint: string,
@@ -94,12 +104,28 @@ export async function runOverpass(
 ): Promise<OsmGym[]> {
   const res = await fetcher(endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent': 'DipsOrChips/1.0 (gym search; contact via app store listing)',
-    },
+    headers: OVERPASS_HEADERS,
     body: `data=${encodeURIComponent(query)}`,
+    // Saturated instances can hang: give each one 12 s, then try the next.
+    signal: AbortSignal.timeout(12000),
   });
   if (!res.ok) throw new Error(`overpass_http_${res.status}`);
   return parseOverpass(await res.json());
+}
+
+/** Tries each public instance in turn; throws the last error if none answers. */
+export async function runOverpassAny(
+  fetcher: Fetcher,
+  endpoints: readonly string[],
+  query: string,
+): Promise<OsmGym[]> {
+  let last: unknown = new Error('overpass_no_endpoint');
+  for (const endpoint of endpoints) {
+    try {
+      return await runOverpass(fetcher, endpoint, query);
+    } catch (err) {
+      last = err;
+    }
+  }
+  throw last;
 }

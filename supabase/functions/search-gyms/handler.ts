@@ -3,7 +3,8 @@ import { z } from 'zod';
 import type { Authenticator } from '../_shared/auth.ts';
 import { coarse, distanceMeters } from '../_shared/geo.ts';
 import { corsHeaders, errorResponse, HttpError, json, log, readJson } from '../_shared/http.ts';
-import { type Fetcher, nameQuery, nearQuery, type OsmGym, runOverpass } from './overpass.ts';
+import { nameUrl, nearUrl, runNominatim } from './nominatim.ts';
+import { type Fetcher, nameQuery, nearQuery, type OsmGym, runOverpassAny } from './overpass.ts';
 
 export type GymRow = OsmGym & { id: string };
 
@@ -18,7 +19,10 @@ export type Deps = {
   authenticate: Authenticator;
   store: GymStore;
   fetcher: Fetcher;
-  overpassUrl: string;
+  /** Overpass endpoints, tried in order (main instance, then mirrors). */
+  overpassUrls: readonly string[];
+  /** Query Nominatim first (fast); Overpass is then the fallback. Off in unit tests. */
+  useNominatim?: boolean;
   now?: () => number;
 };
 
@@ -85,18 +89,34 @@ export function createHandler(deps: Deps) {
       const cached = await deps.store.getCached(key, CACHE_TTL_MS);
       if (cached) return json({ gyms: sortGyms(cached, ref), cached: true });
 
-      const query =
-        input.mode === 'near'
-          ? nearQuery(ref!.lat, ref!.lng, input.radius_m)
-          : nameQuery(input.query, ref);
-      let found: OsmGym[];
-      try {
-        found = await runOverpass(deps.fetcher, deps.overpassUrl, query);
-      } catch (err) {
-        log('warn', 'search-gyms', 'overpass_failed', {
-          reason: err instanceof Error ? err.message : 'unknown',
-        });
-        throw new HttpError(503, 'gym_search_unavailable');
+      let found: OsmGym[] | null = null;
+      if (deps.useNominatim) {
+        try {
+          const url =
+            input.mode === 'near'
+              ? nearUrl(ref!.lat, ref!.lng, input.radius_m)
+              : nameUrl(input.query, ref);
+          const hits = await runNominatim(deps.fetcher, url);
+          if (hits.length) found = hits;
+        } catch (err) {
+          log('warn', 'search-gyms', 'nominatim_failed', {
+            reason: err instanceof Error ? err.message : 'unknown',
+          });
+        }
+      }
+      if (!found) {
+        const query =
+          input.mode === 'near'
+            ? nearQuery(ref!.lat, ref!.lng, input.radius_m)
+            : nameQuery(input.query, ref);
+        try {
+          found = await runOverpassAny(deps.fetcher, deps.overpassUrls, query);
+        } catch (err) {
+          log('warn', 'search-gyms', 'overpass_failed', {
+            reason: err instanceof Error ? err.message : 'unknown',
+          });
+          throw new HttpError(503, 'gym_search_unavailable');
+        }
       }
 
       const rows = await deps.store.upsertGyms(found);

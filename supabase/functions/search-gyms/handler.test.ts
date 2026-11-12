@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 import { HttpError } from '../_shared/http.ts';
 import { cacheKey, createHandler, type GymRow, type GymStore } from './handler.ts';
-import type { OsmGym } from './overpass.ts';
+import { type OsmGym, OVERPASS_HEADERS } from './overpass.ts';
 
 function memoryStore() {
   const gyms = new Map<string, GymRow>();
@@ -48,7 +48,7 @@ function setup(opts: { authed?: boolean; overpassStatus?: number } = {}) {
         ? Promise.reject(new HttpError(401, 'not_authenticated'))
         : Promise.resolve({ id: 'user-1' }),
     store,
-    overpassUrl: 'https://overpass.test/api/interpreter',
+    overpassUrls: ['https://overpass.test/api/interpreter'],
     fetcher: (_url, init) => {
       bodies.push(String(init?.body ?? ''));
       return Promise.resolve(
@@ -131,6 +131,104 @@ Deno.test('Overpass failure maps to a 503 the app can explain', async () => {
   const res = await handler(post({ mode: 'near', lat: 50.63, lng: 3.06 }));
   assert.equal(res.status, 503);
   assert.deepEqual(await res.json(), { error: 'gym_search_unavailable' });
+});
+
+Deno.test('falls back to the next Overpass mirror and identifies itself', async () => {
+  const calls: { url: string; headers: Record<string, string> }[] = [];
+  const handler = createHandler({
+    authenticate: () => Promise.resolve({ id: 'user-1' }),
+    store: memoryStore().store,
+    overpassUrls: ['https://main.test/api', 'https://mirror.test/api'],
+    fetcher: (url, init) => {
+      calls.push({ url: String(url), headers: init?.headers as Record<string, string> });
+      const blocked = String(url).startsWith('https://main.test');
+      return Promise.resolve(
+        new Response(blocked ? 'Not Acceptable' : JSON.stringify(overpassPayload), {
+          status: blocked ? 406 : 200,
+        }),
+      );
+    },
+  });
+  const res = await handler(post({ mode: 'near', lat: 50.63, lng: 3.06 }));
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).gyms.length, 2);
+  assert.deepEqual(
+    calls.map((c) => c.url),
+    ['https://main.test/api', 'https://mirror.test/api'],
+  );
+  assert.equal(calls[0].headers['User-Agent'], OVERPASS_HEADERS['User-Agent']);
+  assert.ok(calls[0].headers['User-Agent'].includes('https://'));
+});
+
+Deno.test('uses Nominatim first and keeps only fitness centres', async () => {
+  const urls: string[] = [];
+  const handler = createHandler({
+    authenticate: () => Promise.resolve({ id: 'user-1' }),
+    store: memoryStore().store,
+    overpassUrls: ['https://overpass.test/api'],
+    useNominatim: true,
+    fetcher: (url) => {
+      urls.push(String(url));
+      return Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              osm_type: 'node',
+              osm_id: 42,
+              lat: '50.62',
+              lon: '3.07',
+              category: 'leisure',
+              type: 'fitness_centre',
+              name: 'Basic-Fit',
+              address: { house_number: '4', road: 'Rue Fourier', postcode: '59000', city: 'Lille' },
+            },
+            {
+              osm_type: 'way',
+              osm_id: 7,
+              lat: '50.6',
+              lon: '3.0',
+              category: 'shop',
+              type: 'sports',
+              name: 'Boutique',
+            },
+          ]),
+        ),
+      );
+    },
+  });
+  const res = await handler(post({ mode: 'name', query: 'Basic-Fit', lat: 50.63, lng: 3.06 }));
+  assert.equal(res.status, 200);
+  const { gyms } = await res.json();
+  assert.equal(gyms.length, 1);
+  assert.equal(gyms[0].osm_id, 'node/42');
+  assert.equal(gyms[0].address, '4 Rue Fourier, 59000 Lille');
+  assert.equal(urls.length, 1);
+  assert.ok(urls[0].startsWith('https://nominatim.openstreetmap.org/search?'));
+  assert.ok(new URL(urls[0]).searchParams.get('viewbox'));
+});
+
+Deno.test('falls back to Overpass when Nominatim fails', async () => {
+  const urls: string[] = [];
+  const handler = createHandler({
+    authenticate: () => Promise.resolve({ id: 'user-1' }),
+    store: memoryStore().store,
+    overpassUrls: ['https://overpass.test/api'],
+    useNominatim: true,
+    fetcher: (url) => {
+      urls.push(String(url));
+      const nominatim = String(url).includes('nominatim');
+      return Promise.resolve(
+        new Response(nominatim ? 'busy' : JSON.stringify(overpassPayload), {
+          status: nominatim ? 503 : 200,
+        }),
+      );
+    },
+  });
+  const res = await handler(post({ mode: 'near', lat: 50.63, lng: 3.06 }));
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).gyms.length, 2);
+  assert.equal(urls.length, 2);
+  assert.ok(new URL(urls[0]).searchParams.get('q') === '[leisure=fitness_centre]');
 });
 
 Deno.test('cache keys are coarse and normalised', () => {

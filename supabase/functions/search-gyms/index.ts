@@ -11,6 +11,12 @@ Deno.serve(
     authenticate: supabaseAuthenticator(url, requireEnv('SUPABASE_ANON_KEY')),
     store: supabaseGymStore(adminClient(url, requireEnv('SUPABASE_SERVICE_ROLE_KEY'))),
     fetcher: fetch,
-    overpassUrl: Deno.env.get('OVERPASS_URL') ?? 'https://overpass-api.de/api/interpreter',
+    useNominatim: true,
+    overpassUrls: [
+      ...(Deno.env.get('OVERPASS_URL') ? [Deno.env.get('OVERPASS_URL')!] : []),
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter',
+    ],
   }),
 );
