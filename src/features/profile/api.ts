@@ -168,11 +168,17 @@ export function useUploadAvatar() {
   const update = useUpdateProfile();
   return useMutation({
     mutationFn: async ({ uri, mimeType }: { uri: string; mimeType: string }) => {
-      const ext = mimeType === 'image/png' ? 'png' : mimeType === 'image/webp' ? 'webp' : 'jpg';
+      const EXT: Record<string, string> = {
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/heic': 'heic',
+        'image/heif': 'heif',
+      };
+      const ext = EXT[mimeType] ?? 'jpg';
       const path = `${uid}/avatar-${Date.now()}.${ext}`;
       const bytes = await new File(uri).arrayBuffer();
       const storage = db().storage.from('avatars');
-      const { error } = await storage.upload(path, bytes, { contentType: mimeType, upsert: true });
+      const { error } = await storage.upload(path, bytes, { contentType: mimeType, upsert: false });
       if (error) throw error;
       const { data } = storage.getPublicUrl(path);
       return update.mutateAsync({ avatar_url: data.publicUrl });

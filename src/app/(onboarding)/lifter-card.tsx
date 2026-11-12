@@ -43,7 +43,8 @@ export default function LifterCardStep() {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7,
+      // Small avatar: keep the upload light (bucket limit 8 MB).
+      quality: 0.5,
     });
     const asset = result.canceled ? null : result.assets[0];
     if (asset) upload.mutate({ uri: asset.uri, mimeType: asset.mimeType ?? 'image/jpeg' });
