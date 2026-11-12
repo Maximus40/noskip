@@ -25,13 +25,15 @@ import {
   useUpdateProfile,
 } from '@/features/profile/api';
 import {
-  type Entitlement,
   paymentsAvailable,
+  setDevProBypass,
+  type Entitlement,
   useEntitlement,
   useRestore,
 } from '@/features/subscriptions/api';
 import { manageSubscription } from '@/features/subscriptions/revenuecat';
 import { toUserMessage } from '@/lib/errors';
+import { queryClient } from '@/lib/queryClient';
 import { colors, radii, spacing } from '@/theme/tokens';
 import { APP_NAME } from '../../../content/brand';
 
@@ -295,6 +297,26 @@ function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) 
           variant="secondary"
           withArrow={false}
           onPress={() => manageSubscription().catch((err) => onError(toUserMessage(err)))}
+        />
+      ) : null}
+      {paymentsAvailable() && entitlement.data && !entitlement.data.isPayer ? (
+        <Button
+          label="Voir les offres"
+          variant="secondary"
+          withArrow={false}
+          onPress={() => router.push('/paywall')}
+        />
+      ) : null}
+      {__DEV__ ? (
+        <Button
+          label="Réactiver l’écran de paiement (dev)"
+          variant="ghost"
+          withArrow={false}
+          onPress={async () => {
+            await setDevProBypass(false);
+            await queryClient.invalidateQueries();
+            router.replace('/');
+          }}
         />
       ) : null}
       {paymentsAvailable() ? (

@@ -16,6 +16,7 @@ import { crewLine, ctaLabel, renewalNotice } from '@/domain/paywall';
 import {
   paymentsAvailable,
   setDevProBypass,
+  useHasPro,
   usePlans,
   usePurchase,
   useRestore,
@@ -42,6 +43,9 @@ export default function PaywallScreen() {
   const [now] = useState(() => Date.now());
   const bar = useBarState(board.data, now);
   const plans = usePlans();
+  // Opened from Settings by a player who already has access: they may leave. Otherwise it is
+  // the hard paywall, with no way around it.
+  const canClose = useHasPro().data === true && router.canGoBack();
   const buy = usePurchase();
   const restore = useRestore();
   const [selected, setSelected] = useState<'annual' | 'weekly' | 'team'>('annual');
@@ -91,9 +95,12 @@ export default function PaywallScreen() {
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={enter(0)} style={styles.head}>
-          <Text variant="label" color={colors.accent}>
-            {APP_NAME} Pro
-          </Text>
+          <View style={styles.headRow}>
+            <Text variant="label" color={colors.accent} style={styles.flex}>
+              {APP_NAME} Pro
+            </Text>
+            {canClose ? <LinkButton label="Fermer" onPress={() => router.back()} /> : null}
+          </View>
           <Text variant="display" style={styles.title} accessibilityRole="header">
             CHOISIS LES DIPS.
           </Text>
@@ -297,6 +304,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   gap: { gap: spacing.sm },
   head: { gap: spacing.sm, marginTop: spacing.sm },
+  headRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   title: { fontSize: 40, lineHeight: 42, letterSpacing: -1.2 },
   expanded: { fontFamily: 'Archivo-ExpandedBold' },
   barCard: {

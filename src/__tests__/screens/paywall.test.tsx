@@ -22,10 +22,15 @@ const option = (
   trialDays,
 });
 
-jest.mock('expo-router', () => ({ router: { replace: jest.fn(), push: jest.fn() } }));
+const mockHasPro = { data: false };
+
+jest.mock('expo-router', () => ({
+  router: { replace: jest.fn(), push: jest.fn(), back: jest.fn(), canGoBack: () => true },
+}));
 jest.mock('@/features/subscriptions/api', () => ({
   paymentsAvailable: () => true,
   setDevProBypass: jest.fn(),
+  useHasPro: () => mockHasPro,
   usePlans: () => ({
     isLoading: false,
     error: null,
@@ -55,6 +60,7 @@ jest.mock('@/features/teams/useBarState', () => ({
 
 describe('paywall', () => {
   beforeEach(() => {
+    mockHasPro.data = false;
     mockBuy.mockReset();
     mockRestore.mockReset();
     (router.replace as jest.Mock).mockReset();
@@ -116,5 +122,14 @@ describe('paywall', () => {
     await waitFor(() =>
       expect(screen.getByText('Aucun abonnement actif trouvé sur ce compte store.')).toBeTruthy(),
     );
+  });
+
+  it('hard paywall has no way out; a player who already has access can close it', async () => {
+    await render(<PaywallScreen />);
+    expect(screen.queryByRole('link', { name: 'Fermer' })).toBeNull();
+    mockHasPro.data = true;
+    await render(<PaywallScreen />);
+    await fireEvent.press(screen.getByRole('link', { name: 'Fermer' }));
+    expect(router.back).toHaveBeenCalled();
   });
 });
