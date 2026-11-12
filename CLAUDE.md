@@ -451,7 +451,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - Icône NoSkip (disque orange sur fond `#111214`), calques Android adaptatifs, icône monochrome, splash et favicon générés par `scripts/make-icons.mjs` ; l'icône du template Expo (`assets/expo.icon`) est supprimée.
 
 ### Reste à faire de ton côté
-1. **Expo / EAS** : `eas login`, `eas init` → `EAS_PROJECT_ID` ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
+1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : compte Developer, Team ID, confirmer `com.noskip.app`, clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
 3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
 4. **RevenueCat** + produits dans les stores + webhook + `REVENUECAT_WEBHOOK_AUTH` (README §7).
