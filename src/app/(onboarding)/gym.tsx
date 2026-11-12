@@ -39,6 +39,7 @@ export default function GymStep() {
 
   function searchByName(text: string) {
     setQuery(text);
+    setSelected(null);
     if (debounce.current) clearTimeout(debounce.current);
     if (text.trim().length < 3) return;
     debounce.current = setTimeout(() => {
@@ -48,6 +49,7 @@ export default function GymStep() {
 
   async function searchAroundMe() {
     setLocationNote(null);
+    setSelected(null);
     const permission = await Location.requestForegroundPermissionsAsync();
     if (permission.status !== 'granted') {
       setLocationNote(
