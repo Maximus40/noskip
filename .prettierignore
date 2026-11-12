@@ -6,3 +6,4 @@ supabase/.temp
 CLAUDE.md
 AGENTS.md
 design
+docs/**/*.html

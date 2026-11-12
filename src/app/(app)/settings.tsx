@@ -161,6 +161,7 @@ export default function SettingsScreen() {
         />
         <ListRow title="Politique de confidentialité" onPress={() => router.push('/privacy')} />
         <ListRow title="Conditions d’utilisation" onPress={() => router.push('/terms')} />
+        <ListRow title="Mentions légales" onPress={() => router.push('/legal-notice')} />
       </View>
 
       <Button label="Se déconnecter" variant="ghost" withArrow={false} onPress={() => signOut()} />

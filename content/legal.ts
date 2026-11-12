@@ -1,14 +1,20 @@
 /**
- * In-app legal texts (French). The publisher's identity, contact and public URLs come from
- * the build configuration (EXPO_PUBLIC_LEGAL_*): they must be filled before store submission.
+ * Legal texts (French), shown in the app and rendered to the public site (docs/) by
+ * scripts/build-legal-site.ts. The publisher's identity lives in content/publisher.ts; the
+ * EXPO_PUBLIC_LEGAL_* build variables can override it.
  */
 import { APP_NAME } from './brand';
+import { PUBLISHER, SITE_PAGES } from './publisher';
 
 export type LegalInfo = {
   publisher: string | null;
+  address: string | null;
+  siret: string | null;
+  phone: string | null;
   email: string | null;
   privacyUrl: string | null;
   termsUrl: string | null;
+  noticeUrl: string | null;
 };
 
 export type LegalSection = { title: string; body: string[] };
@@ -17,18 +23,30 @@ const MISSING = '[à compléter avant publication]';
 const v = (value: string | null) => value ?? MISSING;
 
 export function legalInfo(): LegalInfo {
-  const read = (s: string | undefined) => (s && s.trim().length ? s.trim() : null);
+  const read = (value: string | undefined) => (value && value.trim().length ? value.trim() : null);
   return {
-    publisher: read(process.env.EXPO_PUBLIC_LEGAL_PUBLISHER),
-    email: read(process.env.EXPO_PUBLIC_LEGAL_EMAIL),
-    privacyUrl: read(process.env.EXPO_PUBLIC_PRIVACY_URL),
-    termsUrl: read(process.env.EXPO_PUBLIC_TERMS_URL),
+    publisher: read(process.env.EXPO_PUBLIC_LEGAL_PUBLISHER) ?? PUBLISHER.name,
+    address: PUBLISHER.address,
+    siret: PUBLISHER.siret,
+    phone: PUBLISHER.phone,
+    email: read(process.env.EXPO_PUBLIC_LEGAL_EMAIL) ?? PUBLISHER.email,
+    privacyUrl: read(process.env.EXPO_PUBLIC_PRIVACY_URL) ?? SITE_PAGES.privacy,
+    termsUrl: read(process.env.EXPO_PUBLIC_TERMS_URL) ?? SITE_PAGES.terms,
+    noticeUrl: SITE_PAGES.notice,
   };
 }
 
 /** True when every field a store listing needs is set. */
 export const legalComplete = (info: LegalInfo) =>
-  Boolean(info.publisher && info.email && info.privacyUrl && info.termsUrl);
+  Boolean(
+    info.publisher &&
+    info.address &&
+    info.siret &&
+    info.phone &&
+    info.email &&
+    info.privacyUrl &&
+    info.termsUrl,
+  );
 
 export function privacySections(info: LegalInfo): LegalSection[] {
   return [
@@ -134,6 +152,38 @@ export function termsSections(info: LegalInfo): LegalSection[] {
       title: 'Contact et droit applicable',
       body: [
         `Contact : ${v(info.email)}. Droit français. En cas de litige, une solution amiable sera recherchée avant toute action.`,
+      ],
+    },
+  ];
+}
+
+/** Mentions légales (LCEN, article 6 III): publisher, publication director, hosts. */
+export function noticeSections(info: LegalInfo): LegalSection[] {
+  return [
+    {
+      title: 'Éditeur',
+      body: [
+        `${APP_NAME} (application mobile et site ${SITE_PAGES.support}) est édité par ${v(info.publisher)}, entrepreneur individuel.`,
+        `Adresse : ${v(info.address)}.`,
+        `SIRET : ${v(info.siret)}.`,
+        `Téléphone : ${v(info.phone)}. E-mail : ${v(info.email)}.`,
+      ],
+    },
+    {
+      title: 'Directeur de la publication',
+      body: [`${v(info.publisher)}.`],
+    },
+    {
+      title: 'Hébergement',
+      body: [
+        'Site : GitHub Pages, GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis (github.com).',
+        'Données de l’application : Supabase (supabase.com), serveurs situés à Paris (France).',
+      ],
+    },
+    {
+      title: 'Propriété intellectuelle',
+      body: [
+        `Le nom ${APP_NAME}, le Canap’, les textes, illustrations et sons de l’application sont protégés. Toute reproduction sans autorisation est interdite. La police Archivo est distribuée sous licence SIL Open Font License ; les données des salles proviennent d’OpenStreetMap (© contributeurs OpenStreetMap, licence ODbL).`,
       ],
     },
   ];

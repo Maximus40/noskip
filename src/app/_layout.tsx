@@ -76,6 +76,7 @@ function RootStack() {
       <Stack.Screen name="join/[code]" />
       <Stack.Screen name="privacy" />
       <Stack.Screen name="terms" />
+      <Stack.Screen name="legal-notice" />
       <Stack.Screen name="dev-gallery" />
       <Stack.Screen name="dev-poster" />
       <Stack.Screen name="dev-lifter" />

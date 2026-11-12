@@ -9,5 +9,10 @@
     "types": ["jest", "node"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
-  "exclude": ["node_modules", "supabase/functions", "scripts/simulate-week.ts"]
+  "exclude": [
+    "node_modules",
+    "supabase/functions",
+    "scripts/simulate-week.ts",
+    "scripts/build-legal-site.ts"
+  ]
 }
