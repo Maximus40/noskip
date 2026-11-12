@@ -25,10 +25,11 @@ import {
   useUpdateProfile,
 } from '@/features/profile/api';
 import {
+  type Entitlement,
   paymentsAvailable,
   setDevProBypass,
-  type Entitlement,
   useEntitlement,
+  useHasPro,
   useRestore,
 } from '@/features/subscriptions/api';
 import { manageSubscription } from '@/features/subscriptions/revenuecat';
@@ -272,6 +273,17 @@ function planLine(e: Entitlement): string {
 
 function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) {
   const entitlement = useEntitlement();
+  const hasPro = useHasPro();
+  // Each visit re-reads the server: a purchase can land a few seconds after the store's OK.
+  useFocusEffect(
+    useCallback(() => {
+      entitlement.refetch();
+      hasPro.refetch();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
+  // Bought on this phone, server not told yet (RevenueCat's webhook takes a few seconds).
+  const syncing = entitlement.data?.active === false && hasPro.data === true;
   const restore = useRestore();
   const canManage = paymentsAvailable() && Boolean(entitlement.data?.isPayer);
 
@@ -290,7 +302,13 @@ function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) 
       <Text variant="caption" color={colors.muted}>
         Abonnement
       </Text>
-      <Text variant="bodyStrong">{entitlement.data ? planLine(entitlement.data) : '…'}</Text>
+      <Text variant="bodyStrong">
+        {syncing
+          ? 'Abonnement actif. La confirmation arrive dans un instant.'
+          : entitlement.data
+            ? planLine(entitlement.data)
+            : '…'}
+      </Text>
       {canManage ? (
         <Button
           label="Gérer mon abonnement"
@@ -299,7 +317,7 @@ function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) 
           onPress={() => manageSubscription().catch((err) => onError(toUserMessage(err)))}
         />
       ) : null}
-      {paymentsAvailable() && entitlement.data && !entitlement.data.isPayer ? (
+      {paymentsAvailable() && entitlement.data && !entitlement.data.isPayer && !syncing ? (
         <Button
           label="Voir les offres"
           variant="secondary"

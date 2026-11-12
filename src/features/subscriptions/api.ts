@@ -91,12 +91,19 @@ export function usePlans() {
   });
 }
 
+/** The store confirms a purchase before RevenueCat's webhook reaches the server: re-read later. */
+export const WEBHOOK_FOLLOW_UPS_MS = [3_000, 8_000, 20_000] as const;
+
 function useRefreshAccess() {
   const uid = useUserId();
   const qc = useQueryClient();
   return () => {
-    qc.invalidateQueries({ queryKey: proKey(uid) });
-    qc.invalidateQueries({ queryKey: entitlementKey(uid) });
+    const refresh = () => {
+      qc.invalidateQueries({ queryKey: proKey(uid) });
+      qc.invalidateQueries({ queryKey: entitlementKey(uid) });
+    };
+    refresh();
+    for (const ms of WEBHOOK_FOLLOW_UPS_MS) setTimeout(refresh, ms);
   };
 }
 
