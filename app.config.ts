@@ -33,6 +33,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       bundleIdentifier: 'com.noskip.app',
       supportsTablet: false,
       usesAppleSignIn: true,
+      // HTTPS only: exempt from export compliance (no questionnaire on each TestFlight upload).
+      config: { usesNonExemptEncryption: false },
       ...(inviteHost ? { associatedDomains: [`applinks:${inviteHost}`] } : {}),
     },
     android: {
