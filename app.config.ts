@@ -30,7 +30,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     userInterfaceStyle: 'dark',
     backgroundColor: '#111214',
     ios: {
-      bundleIdentifier: 'com.noskip.app',
+      bundleIdentifier: 'com.noskipapp.app',
       supportsTablet: false,
       usesAppleSignIn: true,
       // HTTPS only: exempt from export compliance (no questionnaire on each TestFlight upload).
@@ -38,7 +38,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...(inviteHost ? { associatedDomains: [`applinks:${inviteHost}`] } : {}),
     },
     android: {
-      package: 'com.noskip.app',
+      package: 'com.noskipapp.app',
       adaptiveIcon: {
         backgroundColor: '#111214',
         foregroundImage: './assets/images/android-icon-foreground.png',

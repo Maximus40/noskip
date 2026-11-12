@@ -36,7 +36,7 @@ publiques : jamais de clé secrète dedans).
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY`      | oui                 | Supabase → Project Settings → API (clé `anon` / publishable)                  |
 | `EAS_PROJECT_ID`                     | pour les push       | Créé par `eas init` (affiché aussi sur expo.dev → projet)                     |
 | `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`   | pour Google         | Google Cloud Console → APIs & Services → Credentials (client « Web »)         |
-| `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`   | pour Google sur iOS | Même endroit, client « iOS » (bundle `com.noskip.app`)                        |
+| `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`   | pour Google sur iOS | Même endroit, client « iOS » (bundle `com.noskipapp.app`)                     |
 | `EXPO_PUBLIC_REVENUECAT_IOS_KEY`     | pour payer          | RevenueCat → Project settings → API keys (clé SDK publique iOS, `appl_…`)     |
 | `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` | pour payer          | Même endroit, clé SDK publique Android (`goog_…`)                             |
 | `EXPO_PUBLIC_INVITE_HOST`            | non                 | Ton domaine pour les liens d'invitation (`noskip.fr`, sans `https://`)        |
@@ -161,7 +161,7 @@ Supabase → Authentication :
 
 - **URL Configuration** → Redirect URLs : `noskip://auth-callback`.
 - **Providers** → Apple : Services ID, Team ID, Key ID et clé `.p8` (Apple Developer → Certificates, IDs &
-  Profiles → Keys, avec « Sign in with Apple »). Ajoute `com.noskip.app` dans « Client IDs ».
+  Profiles → Keys, avec « Sign in with Apple »). Ajoute `com.noskipapp.app` dans « Client IDs ».
 - **Providers** → Google : client Web (id + secret) et, dans « Client IDs », les clients iOS et Android.
 - **SMTP** : le serveur d'e-mail intégré n'écrit qu'aux membres de ton organisation Supabase, quelques mails par
   heure. Avant d'inviter des potes, configure un SMTP (par exemple Resend) dans Authentication → Emails → SMTP,
@@ -208,13 +208,13 @@ eas build --profile production --platform all
 ```
 
 Au premier build iOS, EAS demande ton compte Apple Developer et crée le certificat, le profil de provisioning et
-l'identifiant `com.noskip.app` (avec les capacités Sign in with Apple, Push Notifications et Associated Domains).
+l'identifiant `com.noskipapp.app` (avec les capacités Sign in with Apple, Push Notifications et Associated Domains).
 
 ### Push
 
 - **iOS** : clé APNs. `eas credentials` → iOS → Push Notifications → laisse EAS en créer une, ou fournis ta clé
   `.p8` (Apple Developer → Keys → « Apple Push Notifications service »).
-- **Android** : projet Firebase → app Android `com.noskip.app` → `google-services.json` ; puis clé de compte de
+- **Android** : projet Firebase → app Android `com.noskipapp.app` → `google-services.json` ; puis clé de compte de
   service FCM v1 à téléverser via `eas credentials` → Android → Google Service Account (FCM V1).
 
 ## 7. RevenueCat

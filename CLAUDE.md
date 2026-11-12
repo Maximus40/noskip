@@ -452,7 +452,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
-2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845` ; reste : confirmer `com.noskip.app`, clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
+2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app` (`com.noskip.app` était déjà pris chez Apple) ; reste : clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
 3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
 4. **RevenueCat** + produits dans les stores + webhook + `REVENUECAT_WEBHOOK_AUTH` (README §7).
 5. **Mentions légales** : éditeur, e-mail de contact, URLs publiques de la confidentialité et des CGU.

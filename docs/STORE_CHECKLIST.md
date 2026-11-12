@@ -5,9 +5,9 @@
 ## A. Comptes et identifiants
 
 - ☐ **Expo / EAS** : `eas login`, `eas init` → `EAS_PROJECT_ID` dans `.env` et les environnements EAS.
-- ☐ **Apple Developer** (99 $/an) : Team ID ; confirmer l'identifiant `com.noskip.app` (sinon, le changer dans
+- ✅ **Apple Developer** : Team ID `6PFWK3G845`, identifiant `com.noskipapp.app` (défini dans
   `app.config.ts` iOS **et** Android).
-- ☐ **Google Play Console** (25 $ une fois) : créer l'app `com.noskip.app`.
+- ☐ **Google Play Console** (25 $ une fois) : créer l'app `com.noskipapp.app`.
 - ☐ **Domaine** (facultatif mais conseillé) : pour les liens d'invitation cliquables partout
   (`EXPO_PUBLIC_INVITE_HOST`) et pour héberger la confidentialité / les CGU.
 
@@ -58,7 +58,7 @@
 
 ## G. App Store Connect (TestFlight)
 
-1. ☐ Créer l'app (nom, langue principale Français, bundle `com.noskip.app`, SKU).
+1. ☐ Créer l'app (nom, langue principale Français, bundle `com.noskipapp.app`, SKU).
 2. ☐ `eas build --profile production --platform ios` puis `eas submit --platform ios` (EAS demande l'app
    App Store Connect à utiliser).
 3. ☐ **Confidentialité de l'app** (« étiquette nutritionnelle ») :
