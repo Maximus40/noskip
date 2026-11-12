@@ -10,6 +10,7 @@ import {
   shiftWeek,
   streakWeeks,
   weekRangeLabel,
+  weekShortLabel,
 } from './weekClose';
 
 const player = (id: string, goal: number, done: number, extra: Partial<ClosingPlayer> = {}) => ({
@@ -133,6 +134,7 @@ describe('dates and labels', () => {
 
   it('week range in French', () => {
     expect(weekRangeLabel('2026-10-26')).toBe('Semaine du 26 oct. au 1er nov.');
+    expect(weekShortLabel('2026-10-26')).toBe('26 oct. → 1er nov.');
     expect(weekRangeLabel('2026-12-28')).toBe('Semaine du 28 déc. au 3 janv.');
     expect(shiftWeek('2026-03-23', 7)).toBe('2026-03-30');
   });

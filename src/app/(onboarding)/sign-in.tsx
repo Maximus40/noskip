@@ -20,6 +20,7 @@ import {
 } from '@/features/auth/signIn';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { APP_NAME } from '../../../content/brand';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -117,7 +118,7 @@ export default function SignInStep() {
       subtitle="10 secondes. Après, c'est la barre qui parle."
       footer={
         <Text variant="caption" color={colors.muted} style={styles.legal}>
-          En continuant, tu acceptes les CGU et la politique de confidentialité de NoSkip.
+          En continuant, tu acceptes les CGU et la politique de confidentialité de {APP_NAME}.
         </Text>
       }
     >

@@ -13,8 +13,8 @@ describe('SkipPoster', () => {
         teamName="Les Déchaînés"
         teamKg={1240}
         skips={1}
-        weekLabel="Semaine du 26 oct. au 1er nov."
-        inviteLabel="Rejoins la team sur NoSkip · code ABCD-2345"
+        weekLabel="26 oct. → 1er nov."
+        inviteLabel="Rejoins la team sur Dips or Chips · code ABCD-2345"
         animated={false}
       />,
     );
@@ -25,7 +25,7 @@ describe('SkipPoster', () => {
     expect(screen.getByText('1 240 kg')).toBeTruthy();
     expect(screen.getByText('SK')).toBeTruthy();
     expect(screen.getByText('IP.')).toBeTruthy();
-    expect(screen.getByText('SEMAINE DU 26 OCT. AU 1ER NOV.')).toBeTruthy();
+    expect(screen.getByText('26 OCT. → 1ER NOV.')).toBeTruthy();
     expect(screen.getByLabelText(/^Carte SKIP\. Maxime a choisi le Canap'/)).toBeTruthy();
   });
 });

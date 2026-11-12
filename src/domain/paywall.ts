@@ -65,7 +65,7 @@ export function perWeekLabel(yearlyPrice: number, currency: string): string {
 }
 
 export function ctaLabel(days: number | null): string {
-  return days ? "COMMENCER L'ESSAI GRATUIT" : 'PASSER EN MODE NOSKIP';
+  return days ? "COMMENCER L'ESSAI GRATUIT" : 'CHOISIR LES DIPS';
 }
 
 /** Auto-renewal disclosure required by the stores, under the buy button. */

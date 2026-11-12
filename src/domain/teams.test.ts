@@ -20,24 +20,28 @@ describe('invite codes', () => {
   });
 
   it('extracts codes from links', () => {
-    expect(extractInviteCode('noskip://join/ABCD2345')).toBe('ABCD2345');
-    expect(extractInviteCode('https://noskip.app/join/abcd-2345?utm=x')).toBe('ABCD2345');
-    expect(extractInviteCode('Rejoins-nous ! https://noskip.app/join/ABCD2345')).toBe('ABCD2345');
+    expect(extractInviteCode('dipsorchips://join/ABCD2345')).toBe('ABCD2345');
+    expect(extractInviteCode('https://dipsorchips.app/join/abcd-2345?utm=x')).toBe('ABCD2345');
+    expect(extractInviteCode('Rejoins-nous ! https://dipsorchips.app/join/ABCD2345')).toBe(
+      'ABCD2345',
+    );
     expect(extractInviteCode('abcd2345')).toBe('ABCD2345');
     expect(extractInviteCode('pas un code')).toBeNull();
   });
 
   it('formats and builds links', () => {
     expect(formatInviteCode('ABCD2345')).toBe('ABCD-2345');
-    expect(inviteUrl('ABCD2345')).toBe('noskip://join/ABCD2345');
-    expect(inviteUrl('ABCD2345', 'noskip.app')).toBe('https://noskip.app/join/ABCD2345');
-    expect(posterInviteLabel('ABCD2345')).toBe('Rejoins la team sur NoSkip · code ABCD-2345');
-    expect(posterInviteLabel('ABCD2345', 'noskip.app')).toBe(
-      'Rejoins la team → noskip.app/join/ABCD2345',
+    expect(inviteUrl('ABCD2345')).toBe('dipsorchips://join/ABCD2345');
+    expect(inviteUrl('ABCD2345', 'dipsorchips.app')).toBe('https://dipsorchips.app/join/ABCD2345');
+    expect(posterInviteLabel('ABCD2345')).toBe(
+      'Rejoins la team sur Dips or Chips · code ABCD-2345',
     );
-    const msg = inviteMessage('Les Déchaînés', 'ABCD2345', 'noskip.app');
+    expect(posterInviteLabel('ABCD2345', 'dipsorchips.app')).toBe(
+      'Rejoins la team → dipsorchips.app/join/ABCD2345',
+    );
+    const msg = inviteMessage('Les Déchaînés', 'ABCD2345', 'dipsorchips.app');
     expect(msg).toContain('« Les Déchaînés »');
-    expect(msg).toContain('https://noskip.app/join/ABCD2345');
+    expect(msg).toContain('https://dipsorchips.app/join/ABCD2345');
     expect(msg).toContain('Code : ABCD-2345');
   });
 });

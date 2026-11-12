@@ -159,6 +159,11 @@ export function weekRangeLabel(weekStart: string): string {
   return `Semaine du ${frenchDay(weekStart)} au ${frenchDay(shiftWeek(weekStart, 6))}`;
 }
 
+/** Compact range for tight spots (SKIP poster header): "26 oct. → 1er nov.". */
+export function weekShortLabel(weekStart: string): string {
+  return `${frenchDay(weekStart)} → ${frenchDay(shiftWeek(weekStart, 6))}`;
+}
+
 /** Team vs le Canap': kg for the team, one point per SKIP for the couch. */
 export function scoreLine(kg: number, skips: number): { team: string; canap: string } {
   return { team: `${kg} kg`, canap: String(skips) };

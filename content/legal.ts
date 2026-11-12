@@ -2,6 +2,8 @@
  * In-app legal texts (French). The publisher's identity, contact and public URLs come from
  * the build configuration (EXPO_PUBLIC_LEGAL_*): they must be filled before store submission.
  */
+import { APP_NAME } from './brand';
+
 export type LegalInfo = {
   publisher: string | null;
   email: string | null;
@@ -33,7 +35,7 @@ export function privacySections(info: LegalInfo): LegalSection[] {
     {
       title: 'Qui est responsable',
       body: [
-        `NoSkip est édité par ${v(info.publisher)}. Pour toute question sur tes données : ${v(info.email)}.`,
+        `${APP_NAME} est édité par ${v(info.publisher)}. Pour toute question sur tes données : ${v(info.email)}.`,
       ],
     },
     {
@@ -92,7 +94,7 @@ export function termsSections(info: LegalInfo): LegalSection[] {
     {
       title: 'Le service',
       body: [
-        `NoSkip, édité par ${v(info.publisher)}, est un jeu de motivation entre amis : tes séances de sport validées chargent la barre de ta team, et chaque semaine ratée vaut une carte SKIP.`,
+        `${APP_NAME}, édité par ${v(info.publisher)}, est un jeu de motivation entre amis : tes séances de sport validées chargent la barre de ta team, et chaque semaine ratée vaut une carte SKIP.`,
       ],
     },
     {
@@ -111,14 +113,14 @@ export function termsSections(info: LegalInfo): LegalSection[] {
     {
       title: 'Abonnement',
       body: [
-        'NoSkip est payant (formule annuelle ou hebdomadaire, Pack Duo, offre Team), avec une période d’essai gratuite quand elle est proposée. Le paiement et le renouvellement automatique sont gérés par l’App Store ou Google Play ; tu peux résilier à tout moment depuis les réglages de ton compte store, au plus tard 24 h avant la fin de la période en cours.',
+        `${APP_NAME} est payant (formule annuelle ou hebdomadaire, Pack Duo, offre Team), avec une période d’essai gratuite quand elle est proposée. Le paiement et le renouvellement automatique sont gérés par l’App Store ou Google Play ; tu peux résilier à tout moment depuis les réglages de ton compte store, au plus tard 24 h avant la fin de la période en cours.`,
         'Le Pack Duo donne l’accès à toi et à un coéquipier ; l’offre Team à toute ta team (jusqu’à 8 joueurs) tant que l’abonnement est actif.',
       ],
     },
     {
       title: 'Santé',
       body: [
-        'NoSkip n’est pas un service médical. Adapte ton entraînement à ta condition physique ; en cas de blessure, utilise le joker et prends soin de toi.',
+        `${APP_NAME} n’est pas un service médical. Adapte ton entraînement à ta condition physique ; en cas de blessure, utilise le joker et prends soin de toi.`,
       ],
     },
     {

@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 
 import { db } from '@/lib/supabase';
 import { colors } from '@/theme/tokens';
+import { APP_NAME } from '../../../content/brand';
 
 const TOKEN_KEY = 'noskip.push.token.v1';
 
@@ -29,7 +30,7 @@ export function configureNotifications(): void {
   });
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
-      name: 'NoSkip',
+      name: APP_NAME,
       importance: AndroidImportance.HIGH,
       vibrationPattern: [0, 180, 120, 180],
       lightColor: colors.accent,

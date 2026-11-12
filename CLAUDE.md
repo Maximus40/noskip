@@ -431,7 +431,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - Vérifié en SQL sur le projet : anon n'a aucun droit, `authenticated` ne peut ni valider une séance, ni écrire skip_cards / subscriptions, ni lire le cache ; 0 table sans RLS ; bucket `avatars` présent ; semaine de jeu correcte (Paris).
 - Conseiller sécurité Supabase : restent 25 « SECURITY DEFINER exécutables par authenticated » (voulu : ce sont les RPC client, chacune vérifie `auth.uid()` et l'appartenance à la team), 3 infos « sans policy » (`gym_search_cache`, `shaky_alerts`, `rc_events` : voulu, service role uniquement) et `pg_net` dans public (voir phase 7).
 - La session cloud ne peut pas joindre `*.supabase.co` (proxy) : les tests HTTP réels se font depuis le téléphone ou ta machine.
-- Redirect URL `noskip://auth-callback` ajoutée par toi ✅.
+- Redirect URL `noskip://auth-callback` ajoutée par toi ✅ ; à ajouter : `dipsorchips://auth-callback` (nouveau nom).
 - E-mails : le serveur intégré de Supabase (plan gratuit) n'envoie qu'aux membres de l'organisation, quelques mails par heure, modèles non modifiables. **Avant d'inviter des potes : configurer un SMTP personnalisé (ex. Resend)**, puis ajouter `{{ .Token }}` au modèle « Magic link or OTP ».
 
 ### Notes d'environnement (session cloud)
@@ -449,6 +449,13 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - `supabase/config.toml` : les 10 fonctions avec leur `verify_jwt` (5 avec JWT, 4 cron, webhook RevenueCat) → `npx supabase functions deploy` déploie tout correctement.
 - `docs/STORE_CHECKLIST.md` : comptes, backend, push, abonnements, mentions légales, tests sur appareil, App Store Connect (étiquette de confidentialité, notes de review), Google Play (sécurité des données, déclaration de localisation en arrière-plan), après le lancement.
 - Icône NoSkip (disque orange sur fond `#111214`), calques Android adaptatifs, icône monochrome, splash et favicon générés par `scripts/make-icons.mjs` ; l'icône du template Expo (`assets/expo.icon`) est supprimée.
+
+### Nom de l'app : Dips or Chips
+- « NoSkip » était déjà pris dans l'App Store (dont une app concurrente au concept très proche). Nouveau nom choisi : **Dips or Chips** (dips = l'exercice, chips = le paquet du Canap'). Vérifié : aucune app ni marque à ce nom (recherche web ; INPI / EUIPO à confirmer directement).
+- Nom centralisé dans `content/brand.ts` (`APP_NAME`, `APP_WORDMARK`, `APP_SCHEME`). Sous l'icône iOS : « DipsOrChips ». Schéma de liens : `dipsorchips://` (invitations, retour du magic link). Paywall : « CHOISIS LES DIPS. ». Affiche SKIP : logo DIPS OR CHIPS, date courte (« 26 OCT. → 1ER NOV. »).
+- Inchangés volontairement (invisibles, les changer casserait des liens) : bundle id `com.noskipapp.app`, projet EAS `@noskip-app/noskip`, projet Supabase `noskip`, identifiants produits `noskip.*`, clés de stockage `noskip.*`, dépôt GitHub.
+- **À faire de ton côté** : Supabase → Authentication → URL Configuration → ajouter `dipsorchips://auth-callback` aux Redirect URLs.
+- Le texte de la spec ci-dessus (§0 à §9) garde le nom NoSkip : c'est le cahier des charges d'origine.
 
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.

@@ -9,6 +9,7 @@ import { onboardingStepNumber } from '@/domain/onboarding';
 import { registerForPush } from '@/features/notifications/push';
 import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { APP_WORDMARK } from '../../../content/brand';
 
 /** What the team actually sends: real copy from the Edge Functions. */
 const EXAMPLES = [
@@ -58,7 +59,7 @@ export default function NotificationsStep() {
           <View style={styles.dot} />
           <View style={styles.flex}>
             <Text variant="caption" color={colors.muted}>
-              {`NOSKIP · ${label}`}
+              {`${APP_WORDMARK} · ${label}`}
             </Text>
             <Text variant="bodyStrong">{body}</Text>
           </View>

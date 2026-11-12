@@ -96,7 +96,7 @@ export async function runOverpass(
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent': 'NoSkip/1.0 (gym search; contact via app store listing)',
+      'User-Agent': 'DipsOrChips/1.0 (gym search; contact via app store listing)',
     },
     body: `data=${encodeURIComponent(query)}`,
   });

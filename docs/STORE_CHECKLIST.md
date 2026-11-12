@@ -1,4 +1,4 @@
-# Checklist de publication NoSkip
+# Checklist de publication Dips or Chips
 
 À cocher dans l'ordre. ☐ = à faire de ton côté. Tout ce qui concerne le code est déjà en place.
 

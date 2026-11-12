@@ -7,6 +7,7 @@ import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { colors } from '@/theme/tokens';
 import { fonts } from '@/theme/typography';
+import { APP_WORDMARK } from '../../content/brand';
 
 type Props = {
   width: number;
@@ -68,10 +69,16 @@ export function SkipPoster({
       accessibilityLabel={`Carte SKIP. ${pseudo} a choisi le Canap'. ${line} ${teamName} ${formatKg(teamKg)} kilos, le Canap' ${skips}.`}
     >
       <View style={styles.top}>
-        <Text style={[styles.week, { fontSize: 11 * u, letterSpacing: 1.2 * u }]}>
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          style={[styles.week, { fontSize: 10 * u, letterSpacing: 0.8 * u }]}
+        >
           {weekLabel.toUpperCase()}
         </Text>
-        <Text style={[styles.logo, { fontSize: 15 * u, letterSpacing: 0.6 * u }]}>NOSKIP</Text>
+        <Text numberOfLines={1} style={[styles.logo, { fontSize: 12 * u, letterSpacing: 0.4 * u }]}>
+          {APP_WORDMARK}
+        </Text>
       </View>
 
       <View style={[styles.letters, { marginTop: 6 * u }]}>
@@ -131,9 +138,9 @@ export function SkipPoster({
 const styles = StyleSheet.create({
   poster: { backgroundColor: colors.paper, overflow: 'hidden' },
   flex: { flex: 1 },
-  top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  week: { fontFamily: fonts.semibold, color: POSTER_GREY },
-  logo: { fontFamily: fonts.expandedHeavy, color: POSTER_INK },
+  top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
+  week: { flexShrink: 1, fontFamily: fonts.semibold, color: POSTER_GREY },
+  logo: { flexShrink: 0, fontFamily: fonts.expandedHeavy, color: POSTER_INK },
   letters: { alignItems: 'flex-start' },
   letter: { fontFamily: fonts.black, color: POSTER_INK, includeFontPadding: false },
   canap: { position: 'absolute' },

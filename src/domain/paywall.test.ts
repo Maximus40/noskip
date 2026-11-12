@@ -48,7 +48,7 @@ describe('paywall wording', () => {
 
   it('call to action', () => {
     expect(ctaLabel(7)).toBe("COMMENCER L'ESSAI GRATUIT");
-    expect(ctaLabel(null)).toBe('PASSER EN MODE NOSKIP');
+    expect(ctaLabel(null)).toBe('CHOISIR LES DIPS');
   });
 
   it('store renewal disclosure', () => {

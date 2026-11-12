@@ -33,6 +33,7 @@ import {
 import { manageSubscription } from '@/features/subscriptions/revenuecat';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { APP_NAME } from '../../../content/brand';
 
 type Permission = 'granted' | 'denied' | 'undetermined' | null;
 
@@ -257,8 +258,8 @@ function planLine(e: Entitlement): string {
       ? `Offre Team de « ${e.teamName ?? 'ta team'} », offerte par ${e.offeredBy}${until}`
       : `Pack Duo offert par ${e.offeredBy}${until}`;
   }
-  const names = { individual: 'NoSkip Pro', duo: 'Pack Duo', team: 'Offre Team' } as const;
-  return `${e.source ? names[e.source] : 'NoSkip Pro'}${until}`;
+  const names = { individual: `${APP_NAME} Pro`, duo: 'Pack Duo', team: 'Offre Team' } as const;
+  return `${e.source ? names[e.source] : `${APP_NAME} Pro`}${until}`;
 }
 
 function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) {

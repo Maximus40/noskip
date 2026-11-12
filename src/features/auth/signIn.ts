@@ -87,7 +87,7 @@ export async function verifyEmailCode(email: string, code: string): Promise<void
   if (error) throw error;
 }
 
-/** Completes a magic-link sign-in from `noskip://auth-callback?code=…`. */
+/** Completes a magic-link sign-in from `dipsorchips://auth-callback?code=…`. */
 export async function completeAuthCallback(params: {
   code?: string;
   error_description?: string;

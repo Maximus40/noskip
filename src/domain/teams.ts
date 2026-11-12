@@ -1,4 +1,5 @@
 /** Team rules shared by screens. Mirrors the SQL limits (see migrations …000200 / …000600). */
+import { APP_NAME, APP_SCHEME } from '../../content/brand';
 
 export const INVITE_CODE_LENGTH = 8;
 export const STANDARD_TEAM_CAPACITY = 4;
@@ -13,7 +14,7 @@ export function normalizeInviteCode(input: string): string | null {
   return code.length === INVITE_CODE_LENGTH && ALPHABET.test(code) ? code : null;
 }
 
-/** Pulls a code out of anything pasted: a bare code, noskip://join/X or https://host/join/X. */
+/** Pulls a code out of anything pasted: a bare code, dipsorchips://join/X or https://host/join/X. */
 export function extractInviteCode(input: string): string | null {
   const fromLink = /join\/([A-Za-z0-9-]{8,9})/.exec(input);
   return normalizeInviteCode(fromLink ? fromLink[1] : input.trim());
@@ -26,19 +27,19 @@ export function formatInviteCode(code: string): string {
 
 /** Universal link when a web host is configured, custom scheme otherwise. */
 export function inviteUrl(code: string, host?: string | null): string {
-  return host ? `https://${host}/join/${code}` : `noskip://join/${code}`;
+  return host ? `https://${host}/join/${code}` : `${APP_SCHEME}://join/${code}`;
 }
 
 /** Bottom line of the SKIP poster: a readable link when a domain exists, the code otherwise. */
 export function posterInviteLabel(code: string, host?: string | null): string {
   return host
     ? `Rejoins la team → ${host}/join/${code}`
-    : `Rejoins la team sur NoSkip · code ${formatInviteCode(code)}`;
+    : `Rejoins la team sur ${APP_NAME} · code ${formatInviteCode(code)}`;
 }
 
 export function inviteMessage(teamName: string, code: string, host?: string | null): string {
   return (
-    `Rejoins « ${teamName} » sur NoSkip. Chaque séance charge la barre de la team, ` +
+    `Rejoins « ${teamName} » sur ${APP_NAME}. Chaque séance charge la barre de la team, ` +
     `chaque skip finit en carte pour le Canap'.\n${inviteUrl(code, host)}\n` +
     `Code : ${formatInviteCode(code)}`
   );

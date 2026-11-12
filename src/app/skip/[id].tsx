@@ -12,7 +12,7 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { posterInviteLabel } from '@/domain/teams';
-import { weekRangeLabel } from '@/domain/weekClose';
+import { weekShortLabel } from '@/domain/weekClose';
 import { feedback } from '@/features/feedback/feedback';
 import { useProfile } from '@/features/profile/api';
 import { shareSkipPoster } from '@/features/weeks/shareSkip';
@@ -94,7 +94,7 @@ export default function SkipCardScreen() {
             teamName={data.recap.teamName}
             teamKg={data.recap.totalKg}
             skips={data.recap.skipsCount}
-            weekLabel={weekRangeLabel(data.recap.weekStart)}
+            weekLabel={weekShortLabel(data.recap.weekStart)}
             inviteLabel={posterInviteLabel(data.recap.inviteCode, env?.inviteHost)}
           />
         ) : card.isError ? null : (

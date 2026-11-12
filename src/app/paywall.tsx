@@ -25,6 +25,7 @@ import { useBarState } from '@/features/teams/useBarState';
 import { toUserMessage } from '@/lib/errors';
 import { queryClient } from '@/lib/queryClient';
 import { colors, minTouch, radii, spacing } from '@/theme/tokens';
+import { APP_NAME } from '../../content/brand';
 
 /**
  * Écran de paiement (hard paywall, flat dark cards): a first look at the team bar, annual
@@ -92,10 +93,10 @@ export default function PaywallScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={enter(0)} style={styles.head}>
           <Text variant="label" color={colors.accent}>
-            NoSkip Pro
+            {APP_NAME} Pro
           </Text>
           <Text variant="display" style={styles.title} accessibilityRole="header">
-            PASSE EN MODE NOSKIP.
+            CHOISIS LES DIPS.
           </Text>
         </Animated.View>
 

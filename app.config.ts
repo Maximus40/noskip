@@ -20,13 +20,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const easProjectId = process.env.EAS_PROJECT_ID?.trim() || '429cef20-3b35-42e4-8524-2ede77044d30';
   return {
     ...config,
-    name: 'NoSkip',
+    // Store / system name; the home-screen label is shortened below (iOS truncates ~12 chars).
+    name: 'Dips or Chips',
     owner: 'noskip-app',
     slug: 'noskip',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
-    scheme: 'noskip',
+    scheme: 'dipsorchips',
     userInterfaceStyle: 'dark',
     backgroundColor: '#111214',
     ios: {
@@ -35,6 +36,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       usesAppleSignIn: true,
       // HTTPS only: exempt from export compliance (no questionnaire on each TestFlight upload).
       config: { usesNonExemptEncryption: false },
+      infoPlist: { CFBundleDisplayName: 'DipsOrChips' },
       ...(inviteHost ? { associatedDomains: [`applinks:${inviteHost}`] } : {}),
     },
     android: {
@@ -81,7 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           isAndroidBackgroundLocationEnabled: true,
           isAndroidForegroundServiceEnabled: false,
           locationWhenInUsePermission:
-            "NoSkip vérifie juste que t'es à ta salle. Ta team voit « venu » ou « pas venu », jamais où t'es.",
+            "Dips or Chips vérifie juste que t'es à ta salle. Ta team voit « venu » ou « pas venu », jamais où t'es.",
           locationAlwaysAndWhenInUsePermission:
             'Pour pointer ta séance tout seul, même téléphone en poche. Ta position ne quitte jamais ton téléphone.',
         },

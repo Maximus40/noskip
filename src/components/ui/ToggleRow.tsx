@@ -20,7 +20,7 @@ type Props = {
   disabled?: boolean;
 };
 
-/** A settings row with NoSkip's own switch: orange when on, knob slides (fade if reduced). */
+/** A settings row with the app's own switch: orange when on, knob slides (fade if reduced). */
 export function ToggleRow({ label, detail, value, onChange, disabled }: Props) {
   const reduced = useReducedMotion();
   const x = useSharedValue(value ? 1 : 0);

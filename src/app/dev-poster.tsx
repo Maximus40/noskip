@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { skipLineText } from '../../content/skip-lines';
 import { SkipPoster } from '@/components/SkipPoster';
 import { colors, spacing } from '@/theme/tokens';
+import { APP_NAME } from '../../content/brand';
 
 /** Development-only: the SKIP poster with sample data, for visual QA (no backend). */
 export default function DevPoster() {
@@ -17,8 +18,8 @@ export default function DevPoster() {
         teamName="Les Déchaînés"
         teamKg={200}
         skips={1}
-        weekLabel="Semaine du 26 oct. au 1er nov."
-        inviteLabel="Rejoins la team sur NoSkip · code ABCD-2345"
+        weekLabel="26 oct. → 1er nov."
+        inviteLabel={`Rejoins la team sur ${APP_NAME} · code ABCD-2345`}
         animated={false}
       />
     </View>

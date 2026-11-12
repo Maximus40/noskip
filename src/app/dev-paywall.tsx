@@ -10,6 +10,7 @@ import { Text } from '@/components/ui/Text';
 import { platesFor } from '@/domain/bar';
 import { ctaLabel, renewalNotice } from '@/domain/paywall';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { APP_NAME } from '../../content/brand';
 
 const plans = [
   {
@@ -72,10 +73,10 @@ export default function DevPaywall() {
       }
     >
       <Text variant="label" color={colors.accent}>
-        NoSkip Pro
+        {APP_NAME} Pro
       </Text>
       <Text variant="display" style={styles.title}>
-        PASSE EN MODE NOSKIP.
+        CHOISIS LES DIPS.
       </Text>
       <View style={styles.barCard}>
         <Text variant="caption" color={colors.muted} style={styles.stretch}>

@@ -95,7 +95,7 @@ describe('paywall', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Avec tes potes' }));
     await fireEvent.press(screen.getByRole('radio', { name: 'Pack Duo, 89,99 €/an' }));
     expect(screen.getByRole('radio', { name: 'Offrir à Karim' })).toBeTruthy();
-    await fireEvent.press(screen.getByRole('button', { name: 'PASSER EN MODE NOSKIP' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'CHOISIR LES DIPS' }));
     await waitFor(() => expect(mockBuy).toHaveBeenCalled());
     expect(mockBuy.mock.calls[0][0]).toMatchObject({ partnerId: 'karim', teamId: null });
   });
