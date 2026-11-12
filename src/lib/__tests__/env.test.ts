@@ -1,4 +1,4 @@
-import { parseEnv } from '../env';
+import { parseEnv, PUBLIC_DEFAULTS } from '../env';
 
 const KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYW5vbiJ9.c2lnbmF0dXJl';
 
@@ -26,5 +26,16 @@ describe('parseEnv', () => {
       parseEnv({ supabaseUrl: url, supabaseAnonKey: 'eyJhbGci••••••••••••••••••••' }),
     ).toBeNull();
     expect(parseEnv({ supabaseUrl: url, supabaseAnonKey: 'x'.repeat(40) })).toBeNull();
+  });
+
+  it('falls back to the public defaults when the build value is missing or masked', () => {
+    expect(parseEnv({}, PUBLIC_DEFAULTS)).toEqual(PUBLIC_DEFAULTS);
+    expect(
+      parseEnv({ supabaseAnonKey: 'eyJhbGci••••••••••••••••••••' }, PUBLIC_DEFAULTS)
+        ?.supabaseAnonKey,
+    ).toBe(PUBLIC_DEFAULTS.supabaseAnonKey);
+    expect(
+      parseEnv({ supabaseUrl: 'https://other.supabase.co', supabaseAnonKey: KEY }, PUBLIC_DEFAULTS),
+    ).toEqual({ supabaseUrl: 'https://other.supabase.co', supabaseAnonKey: KEY });
   });
 });
