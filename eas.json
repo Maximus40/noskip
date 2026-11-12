@@ -7,8 +7,7 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "environment": "development",
-      "channel": "development"
+      "environment": "development"
     },
     "development-simulator": {
       "extends": "development",
@@ -17,12 +16,10 @@
     "preview": {
       "distribution": "internal",
       "environment": "preview",
-      "channel": "preview",
       "android": { "buildType": "apk" }
     },
     "production": {
       "environment": "production",
-      "channel": "production",
       "autoIncrement": true
     }
   },
