@@ -169,6 +169,14 @@ export default function GymStep() {
           ))}
         </View>
       )}
+
+      {search.isSuccess ? (
+        <Text variant="caption" color={colors.muted}>
+          Ta salle n&apos;apparaît pas ? Elle n&apos;est pas encore sur OpenStreetMap, la carte
+          libre qu&apos;on utilise. Ajoute-la en 2 minutes avec l&apos;app gratuite Every Door ou
+          sur openstreetmap.org : elle apparaîtra ici peu après.
+        </Text>
+      ) : null}
     </OnboardingScreen>
   );
 }

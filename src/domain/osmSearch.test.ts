@@ -10,6 +10,11 @@ describe('nominatimUrl', () => {
     expect(url.toString()).not.toContain('50.6312');
   });
 
+  it('can widen the box for "Autour de moi"', () => {
+    const url = new URL(nominatimUrl({ mode: 'near', lat: 50.45, lng: 3.03 }, 25000));
+    expect(url.searchParams.get('viewbox')).toBe(viewbox(50.45, 3.03, 25000));
+  });
+
   it('searches by name around the player, or in France without a position', () => {
     const near = new URL(
       nominatimUrl({ mode: 'name', query: ' Basic-Fit ', lat: 50.63, lng: 3.06 }),

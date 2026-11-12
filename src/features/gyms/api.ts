@@ -1,7 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { coarse } from '@/domain/geo';
-import { nominatimUrl, type OsmGymHit, type OsmSearch, parseNominatim } from '@/domain/osmSearch';
+import {
+  NEAR_RADII_M,
+  nominatimUrl,
+  type OsmGymHit,
+  type OsmSearch,
+  parseNominatim,
+} from '@/domain/osmSearch';
 import { functionErrorCode } from '@/lib/errors';
 import { db } from '@/lib/supabase';
 
@@ -23,11 +29,11 @@ export function gymSearchBody(search: GymSearch): Record<string, unknown> {
 }
 
 /** Phone → Nominatim. Each phone has its own IP: OSM services throttle shared cloud servers. */
-async function searchOnPhone(search: GymSearch): Promise<FoundGym[]> {
+async function nominatim(url: string): Promise<FoundGym[]> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10_000);
   try {
-    const res = await fetch(nominatimUrl(search), {
+    const res = await fetch(url, {
       headers: {
         Accept: 'application/json',
         'Accept-Language': 'fr',
@@ -40,6 +46,19 @@ async function searchOnPhone(search: GymSearch): Promise<FoundGym[]> {
   } finally {
     clearTimeout(timer);
   }
+}
+
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function searchOnPhone(search: GymSearch): Promise<FoundGym[]> {
+  if (search.mode === 'name') return nominatim(nominatimUrl(search));
+  // Widen 3 → 10 → 25 km until something shows up (≥ 1 s apart: Nominatim usage policy).
+  for (const [i, radius] of NEAR_RADII_M.entries()) {
+    if (i > 0) await pause(1100);
+    const hits = await nominatim(nominatimUrl(search, radius));
+    if (hits.length) return hits;
+  }
+  return [];
 }
 
 async function searchOnServer(search: GymSearch): Promise<FoundGym[]> {

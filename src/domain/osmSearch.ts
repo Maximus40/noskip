@@ -6,7 +6,8 @@ import { coarse } from './geo';
  * player picks (OSM API) instead of searching. The phone sends a position rounded to ~1 km.
  */
 export const NOMINATIM_SEARCH_URL = 'https://nominatim.openstreetmap.org/search';
-const NEAR_RADIUS_M = 3000;
+/** "Autour de moi" widens step by step: towns outside big cities often have no gym within 3 km. */
+export const NEAR_RADII_M = [3000, 10000, 25000] as const;
 const NAME_RADIUS_M = 30000;
 const LIMIT = 40;
 
@@ -30,12 +31,12 @@ export function viewbox(lat: number, lng: number, radiusM: number): string {
   return `${r(lng - dLng)},${r(lat + dLat)},${r(lng + dLng)},${r(lat - dLat)}`;
 }
 
-export function nominatimUrl(search: OsmSearch): string {
+export function nominatimUrl(search: OsmSearch, nearRadiusM: number = NEAR_RADII_M[0]): string {
   const p = new URLSearchParams({ format: 'jsonv2', addressdetails: '1', limit: String(LIMIT) });
   if (search.mode === 'near') {
     p.set('q', '[leisure=fitness_centre]');
     p.set('bounded', '1');
-    p.set('viewbox', viewbox(coarse(search.lat), coarse(search.lng), NEAR_RADIUS_M));
+    p.set('viewbox', viewbox(coarse(search.lat), coarse(search.lng), nearRadiusM));
   } else {
     p.set('q', search.query.trim());
     if (search.lat !== undefined && search.lng !== undefined) {
