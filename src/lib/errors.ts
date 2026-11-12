@@ -16,6 +16,8 @@ const MESSAGES: Record<string, string> = {
   already_validated_today: "Séance déjà validée aujourd'hui. Reviens demain.",
   invalid_started_at: "L'heure d'arrivée ne colle pas. Réessaie depuis la salle.",
   gym_search_unavailable: 'La recherche de salles ne répond pas. Réessaie dans un instant.',
+  not_a_gym: "Ce lieu n'est pas enregistré comme salle de sport dans OpenStreetMap.",
+  gym_not_found: 'Salle introuvable dans OpenStreetMap. Choisis-en une autre.',
   invalid_input: 'Quelque chose cloche dans ta saisie.',
   invalid_email: "Cette adresse e-mail n'a pas l'air valide.",
   otp_expired: 'Code expiré ou incorrect. Demande-en un nouveau.',

@@ -4,6 +4,7 @@ import { File } from 'expo-file-system';
 import { useUserId } from '@/features/auth/AuthProvider';
 import type { Json, Tables, TablesUpdate } from '@/lib/database.types';
 import { db } from '@/lib/supabase';
+import { type FoundGym, resolveGym } from '@/features/gyms/api';
 
 export type Profile = Tables<'profiles'>;
 export type LifterTitle = Profile['title'];
@@ -106,9 +107,20 @@ export function useChooseGym() {
   const uid = useUserId();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ gymId, primary = true }: { gymId: string; primary?: boolean }) => {
+    mutationFn: async ({
+      gymId,
+      gym,
+      primary = true,
+    }: {
+      gymId?: string;
+      /** A search hit: verified and stored by the server first if it has no id yet. */
+      gym?: FoundGym;
+      primary?: boolean;
+    }) => {
+      const id = gymId ?? (gym ? await resolveGym(gym) : null);
+      if (!id) throw new Error('gym_not_found');
       const { data, error } = await db().rpc('choose_gym', {
-        p_gym_id: gymId,
+        p_gym_id: id,
         p_make_primary: primary,
       });
       if (error) throw error;

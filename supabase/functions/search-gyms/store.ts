@@ -32,6 +32,15 @@ export function supabaseGymStore(db: SupabaseClient): GymStore {
       if (error) throw error;
       return data as GymRow[];
     },
+    async findByOsmId(osmId) {
+      const { data, error } = await db
+        .from('gyms')
+        .select(COLUMNS)
+        .eq('osm_id', osmId)
+        .maybeSingle();
+      if (error) throw error;
+      return (data as GymRow | null) ?? null;
+    },
     async putCache(key, gymIds) {
       const { error } = await db
         .from('gym_search_cache')

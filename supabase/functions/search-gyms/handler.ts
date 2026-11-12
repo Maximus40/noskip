@@ -4,6 +4,7 @@ import type { Authenticator } from '../_shared/auth.ts';
 import { coarse, distanceMeters } from '../_shared/geo.ts';
 import { corsHeaders, errorResponse, HttpError, json, log, readJson } from '../_shared/http.ts';
 import { nameUrl, nearUrl, runNominatim } from './nominatim.ts';
+import { fetchOsmGym, OSM_API_URL, osmIdSchema } from './osmapi.ts';
 import { type Fetcher, nameQuery, nearQuery, type OsmGym, runOverpassAny } from './overpass.ts';
 
 export type GymRow = OsmGym & { id: string };
@@ -13,6 +14,7 @@ export interface GymStore {
   getCached(key: string, maxAgeMs: number): Promise<GymRow[] | null>;
   upsertGyms(gyms: OsmGym[]): Promise<GymRow[]>;
   putCache(key: string, gymIds: string[]): Promise<void>;
+  findByOsmId(osmId: string): Promise<GymRow | null>;
 }
 
 export type Deps = {
@@ -23,10 +25,14 @@ export type Deps = {
   overpassUrls: readonly string[];
   /** Query Nominatim first (fast); Overpass is then the fallback. Off in unit tests. */
   useNominatim?: boolean;
+  /** OpenStreetMap API used to verify a gym picked on the phone. */
+  osmApiUrl?: string;
   now?: () => number;
 };
 
 const point = { lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) };
+
+export const resolveSchema = z.object({ mode: z.literal('resolve'), osm_id: osmIdSchema });
 
 export const inputSchema = z.discriminatedUnion('mode', [
   z.object({
@@ -75,7 +81,24 @@ export function createHandler(deps: Deps) {
     try {
       if (req.method !== 'POST') throw new HttpError(405, 'method_not_allowed');
       await deps.authenticate(req);
-      const parsed = inputSchema.safeParse(await readJson(req));
+      const body = await readJson(req);
+
+      // The phone searched OSM itself; verify the pick against the OSM API and store it.
+      const resolve = resolveSchema.safeParse(body);
+      if (resolve.success) {
+        const known = await deps.store.findByOsmId(resolve.data.osm_id);
+        if (known) return json({ gym: known });
+        const gym = await fetchOsmGym(
+          deps.fetcher,
+          deps.osmApiUrl ?? OSM_API_URL,
+          resolve.data.osm_id,
+        );
+        const [row] = await deps.store.upsertGyms([gym]);
+        log('info', 'search-gyms', 'resolved', { osm_type: gym.osm_id.split('/')[0] });
+        return json({ gym: row });
+      }
+
+      const parsed = inputSchema.safeParse(body);
       if (!parsed.success) throw new HttpError(400, 'invalid_input');
       const input = parsed.data;
 

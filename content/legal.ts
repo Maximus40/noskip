@@ -43,7 +43,7 @@ export function privacySections(info: LegalInfo): LegalSection[] {
       body: [
         'Pour savoir si tu es à ta salle, ton téléphone compare sa position à celle de ta salle (cercle de 150 m). Ce calcul se fait sur le téléphone.',
         'Le serveur ne reçoit jamais de coordonnées GPS : seulement l’identifiant de ta salle et l’heure d’arrivée et de départ de ta séance. Aucun trajet n’est enregistré.',
-        'Pour chercher une salle « autour de moi », la position est arrondie à environ 1 km avant d’être envoyée, utilisée pour la recherche, puis oubliée.',
+        'Pour chercher une salle « autour de moi », ton téléphone interroge directement le moteur de recherche d’OpenStreetMap (Nominatim) avec une position arrondie à environ 1 km. Nos serveurs ne la reçoivent que si ce moteur ne répond pas, et ne la conservent jamais.',
       ],
     },
     {
@@ -71,7 +71,7 @@ export function privacySections(info: LegalInfo): LegalSection[] {
     {
       title: 'Prestataires',
       body: [
-        'Supabase (hébergement de la base de données et des fonctions serveur, région Paris), Expo (acheminement des notifications), RevenueCat, Apple et Google (abonnements et connexion), OpenStreetMap / Overpass (recherche de salles, position arrondie).',
+        'Supabase (hébergement de la base de données et des fonctions serveur, région Paris), Expo (acheminement des notifications), RevenueCat, Apple et Google (abonnements et connexion), OpenStreetMap (Nominatim et Overpass pour la recherche de salles, avec une position arrondie à ~1 km ; API OpenStreetMap pour vérifier la salle choisie).',
       ],
     },
     {

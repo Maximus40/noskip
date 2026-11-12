@@ -28,6 +28,9 @@ function memoryStore() {
       cache.set(key, { ids, at: Date.now() });
       return Promise.resolve();
     },
+    findByOsmId(osmId) {
+      return Promise.resolve([...gyms.values()].find((g) => g.osm_id === osmId) ?? null);
+    },
   };
   return { store, cache };
 }
@@ -229,6 +232,84 @@ Deno.test('falls back to Overpass when Nominatim fails', async () => {
   assert.equal((await res.json()).gyms.length, 2);
   assert.equal(urls.length, 2);
   assert.ok(new URL(urls[0]).searchParams.get('q') === '[leisure=fitness_centre]');
+});
+
+function resolver(payloads: Record<string, { status?: number; body: unknown }>) {
+  const urls: string[] = [];
+  const { store } = memoryStore();
+  const handler = createHandler({
+    authenticate: () => Promise.resolve({ id: 'user-1' }),
+    store,
+    overpassUrls: [],
+    osmApiUrl: 'https://osm.test/api/0.6',
+    fetcher: (url) => {
+      urls.push(String(url));
+      const p = payloads[String(url)] ?? { status: 404, body: {} };
+      return Promise.resolve(new Response(JSON.stringify(p.body), { status: p.status ?? 200 }));
+    },
+  });
+  return { handler, urls };
+}
+
+Deno.test('resolve: verifies a node against the OSM API, stores it once', async () => {
+  const { handler, urls } = resolver({
+    'https://osm.test/api/0.6/node/42.json': {
+      body: {
+        elements: [
+          {
+            type: 'node',
+            id: 42,
+            lat: 50.62,
+            lon: 3.07,
+            tags: { leisure: 'fitness_centre', name: 'Basic-Fit', 'addr:city': 'Lille' },
+          },
+        ],
+      },
+    },
+  });
+  const first = await handler(post({ mode: 'resolve', osm_id: 'node/42' }));
+  assert.equal(first.status, 200);
+  const { gym } = await first.json();
+  assert.deepEqual(
+    { osm_id: gym.osm_id, name: gym.name, lat: gym.lat, address: gym.address },
+    { osm_id: 'node/42', name: 'Basic-Fit', lat: 50.62, address: 'Lille' },
+  );
+  assert.ok(gym.id);
+  const again = await handler(post({ mode: 'resolve', osm_id: 'node/42' }));
+  assert.equal((await again.json()).gym.id, gym.id);
+  assert.equal(urls.length, 1);
+});
+
+Deno.test('resolve: a way gets the centre of its nodes', async () => {
+  const { handler } = resolver({
+    'https://osm.test/api/0.6/way/7/full.json': {
+      body: {
+        elements: [
+          { type: 'node', id: 1, lat: 50, lon: 3 },
+          { type: 'node', id: 2, lat: 50.002, lon: 3.002 },
+          { type: 'way', id: 7, tags: { leisure: 'fitness_centre', name: 'On Air' } },
+        ],
+      },
+    },
+  });
+  const { gym } = await (await handler(post({ mode: 'resolve', osm_id: 'way/7' }))).json();
+  assert.ok(Math.abs(gym.lat - 50.001) < 1e-9);
+  assert.ok(Math.abs(gym.lng - 3.001) < 1e-9);
+});
+
+Deno.test('resolve: refuses places that are not gyms, unknown ids and bad input', async () => {
+  const { handler } = resolver({
+    'https://osm.test/api/0.6/node/5.json': {
+      body: { elements: [{ type: 'node', id: 5, lat: 1, lon: 1, tags: { name: 'Chez moi' } }] },
+    },
+  });
+  const notGym = await handler(post({ mode: 'resolve', osm_id: 'node/5' }));
+  assert.equal(notGym.status, 422);
+  assert.deepEqual(await notGym.json(), { error: 'not_a_gym' });
+  const unknown = await handler(post({ mode: 'resolve', osm_id: 'node/6' }));
+  assert.equal(unknown.status, 404);
+  const bad = await handler(post({ mode: 'resolve', osm_id: 'relation/1' }));
+  assert.equal(bad.status, 400);
 });
 
 Deno.test('cache keys are coarse and normalised', () => {

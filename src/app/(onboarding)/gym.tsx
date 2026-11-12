@@ -88,10 +88,7 @@ export default function GymStep() {
               disabled={!selected || choose.isPending}
               onPress={() =>
                 selected &&
-                choose.mutate(
-                  { gymId: selected.id, primary: false },
-                  { onSuccess: () => router.back() },
-                )
+                choose.mutate({ gym: selected, primary: false }, { onSuccess: () => router.back() })
               }
             />
             <Button
@@ -101,10 +98,7 @@ export default function GymStep() {
               disabled={!selected || choose.isPending}
               onPress={() =>
                 selected &&
-                choose.mutate(
-                  { gymId: selected.id, primary: true },
-                  { onSuccess: () => router.back() },
-                )
+                choose.mutate({ gym: selected, primary: true }, { onSuccess: () => router.back() })
               }
             />
           </>
@@ -113,8 +107,7 @@ export default function GymStep() {
             label={selected ? `C'est ma salle` : 'Choisis ta salle'}
             disabled={!selected || choose.isPending}
             onPress={() =>
-              selected &&
-              choose.mutate({ gymId: selected.id }, { onSuccess: () => router.replace('/') })
+              selected && choose.mutate({ gym: selected }, { onSuccess: () => router.replace('/') })
             }
           />
         )
@@ -162,8 +155,8 @@ export default function GymStep() {
         <View style={styles.list} accessibilityRole="radiogroup">
           {gyms.map((gym) => (
             <OptionCard
-              key={gym.id}
-              selected={selected?.id === gym.id}
+              key={gym.osm_id}
+              selected={selected?.osm_id === gym.osm_id}
               onPress={() => setSelected(gym)}
               title={gym.name}
               subtitle={[
