@@ -1,4 +1,4 @@
-import { Redirect } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -31,14 +31,28 @@ const plans = [
   },
 ] as const;
 
+const teamPlan = {
+  key: 'team',
+  priceString: '149,99 €',
+  price: 149.99,
+  currency: 'EUR',
+  period: 'P1Y',
+  trialDays: null,
+} as const;
+
 /**
  * Development-only: the paywall layout (same blocks as src/app/paywall.tsx) with sample store
  * prices, for visual QA and the App Store review screenshot of the subscriptions.
  */
 export default function DevPaywall() {
-  const [selected, setSelected] = useState<'annual' | 'weekly'>('annual');
+  // ?plan=weekly | team: that plan selected (team also opens "Plus de 4 joueurs ?").
+  const plan = useLocalSearchParams<{ plan?: string }>().plan;
+  const showTeam = plan === 'team';
+  const [selected, setSelected] = useState<'annual' | 'weekly' | 'team'>(
+    plan === 'team' || plan === 'weekly' ? plan : 'annual',
+  );
   if (!__DEV__) return <Redirect href="/" />;
-  const option = plans.find((p) => p.key === selected)!;
+  const option = selected === 'team' ? teamPlan : plans.find((p) => p.key === selected)!;
   const plates = platesFor(
     [
       {
@@ -88,15 +102,17 @@ export default function DevPaywall() {
       <Text variant="display" style={styles.title}>
         CHOISIS LES DIPS.
       </Text>
-      <View style={styles.barCard}>
-        <Text variant="caption" color={colors.muted} style={styles.stretch}>
-          Ta team · Les Déchaînés
-        </Text>
-        <TeamBar plates={plates} width={320} accessibilityLabel="Barre" />
-        <Text variant="caption" color="#C9CACE">
-          La barre se charge. Ton disque manque.
-        </Text>
-      </View>
+      {showTeam ? null : (
+        <View style={styles.barCard}>
+          <Text variant="caption" color={colors.muted} style={styles.stretch}>
+            Ta team · Les Déchaînés
+          </Text>
+          <TeamBar plates={plates} width={320} accessibilityLabel="Barre" />
+          <Text variant="caption" color="#C9CACE">
+            La barre se charge. Ton disque manque.
+          </Text>
+        </View>
+      )}
       <View style={styles.crew}>
         <Text variant="label" color={colors.accent}>
           Un pote paie, toute la team joue
@@ -111,6 +127,22 @@ export default function DevPaywall() {
           onPress={() => setSelected(p.key)}
         />
       ))}
+      {showTeam ? (
+        <>
+          <View style={styles.friendsRow}>
+            <Text variant="bodyStrong">Plus de 4 joueurs ?</Text>
+            <Text variant="bodyStrong" color={colors.accent}>
+              −
+            </Text>
+          </View>
+          <PlanCard
+            option={teamPlan}
+            selected={selected === 'team'}
+            onPress={() => setSelected('team')}
+            detail="Toute la team « Les Déchaînés » joue, jusqu’à 8 joueurs."
+          />
+        </>
+      ) : null}
     </Screen>
   );
 }
@@ -124,6 +156,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     padding: spacing.lg,
     gap: spacing.xs,
+  },
+  friendsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: 44,
+    paddingHorizontal: spacing.xs,
   },
   links: { flexDirection: 'row', justifyContent: 'center', gap: spacing.lg },
   link: { textDecorationLine: 'underline' },
