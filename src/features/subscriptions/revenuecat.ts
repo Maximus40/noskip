@@ -8,10 +8,37 @@ export const PRO_ENTITLEMENT = 'pro';
 /** Offering holding the Team package (the current offering holds annual + weekly). */
 export const FRIENDS_OFFERING = 'friends';
 
-// Public SDK keys (they ship in the app). Expo inlines EXPO_PUBLIC_* at build time.
+/**
+ * Public SDK keys: they ship inside every app, so the production iOS key also lives in code
+ * (like the Supabase publishable key) and a missing or mangled build value falls back to it.
+ */
+export const REVENUECAT_PUBLIC_DEFAULTS = {
+  ios: 'appl_NcQNGjxxAhRHnpMpYJcPREVoHHB',
+  android: null,
+} as const;
+
+/** The build value when it looks like a RevenueCat public key, otherwise the default. */
+export function pickSdkKey(
+  value: string | undefined,
+  prefix: 'appl_' | 'goog_',
+  fallback: string | null,
+): string | null {
+  const v = value?.trim() ?? '';
+  return new RegExp(`^${prefix}[A-Za-z0-9]+$`).test(v) ? v : fallback;
+}
+
+// Expo inlines EXPO_PUBLIC_* at build time (static property access required).
 const KEYS = {
-  ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY?.trim() || null,
-  android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY?.trim() || null,
+  ios: pickSdkKey(
+    process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
+    'appl_',
+    REVENUECAT_PUBLIC_DEFAULTS.ios,
+  ),
+  android: pickSdkKey(
+    process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY,
+    'goog_',
+    REVENUECAT_PUBLIC_DEFAULTS.android,
+  ),
 };
 
 export function revenueCatKey(): string | null {

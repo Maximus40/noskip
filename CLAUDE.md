@@ -468,11 +468,16 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - App : écran de paiement (« Un pote paie, toute la team joue », noms des potes couverts, « Plus de 4 joueurs ? » → Team), bandeau « Offert par {pseudo} », Réglages → Abonnement, CGU. Pas besoin de nouveau build (JS uniquement).
 - Étape 2 prévue (après contrat Apple actif) : boutique (skins de disques/barre, packs de vannes du Canap', cartes de défi). Jamais de séance, de disque ni d'esquive de carte SKIP achetable.
 
+### Abonnements App Store + RevenueCat (12/11/2026)
+- App Store Connect : groupe « Dips or Chips Pro » (id 22573802), 3 abonnements : Team `noskip.team.annual` 149,99 € (niveau 1), Annuel `noskip.pro.annual` 59,99 € + essai gratuit 1 semaine, Hebdo `noskip.pro.weekly` 4,99 € + essai 3 jours ; tous pays, pas de partage familial, pas d'achats multipostes, localisation FR. Captures de vérification : `design/qa/review-paywall-{annual,weekly,team}.{png,jpg}` (générées par `node scripts/visual-qa.mjs <out> "/dev-paywall?plan=weekly|team" 430x932@3`). À soumettre avec la première version de l'app.
+- RevenueCat : projet « Dips or chips », app App Store reliée (clé d'achat intégré + clé API App Store Connect), 3 produits, entitlement `pro` (3 produits), offre `default` (Current : `$rc_annual`, `$rc_weekly`), offre `friends` (package `team`). Clé SDK publique iOS intégrée par défaut dans `src/features/subscriptions/revenuecat.ts` (`REVENUECAT_PUBLIC_DEFAULTS`).
+- Reste : webhook RevenueCat → `revenuecat-webhook` + secret `REVENUECAT_WEBHOOK_AUTH` ; test d'achat en bac à sable (compte Sandbox sur l'iPhone).
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app` (`com.noskip.app` était déjà pris chez Apple) ; reste : clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
 3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
-4. **RevenueCat** + 3 produits dans les stores (sans Pack Duo) + webhook + `REVENUECAT_WEBHOOK_AUTH` (README §7).
+4. **RevenueCat** : ✅ iOS configuré (produits, `pro`, offres, clé SDK) ; reste le webhook + `REVENUECAT_WEBHOOK_AUTH`, puis Android plus tard.
 5. **Mentions légales** : éditeur, e-mail de contact, URLs publiques de la confidentialité et des CGU.
 6. **SMTP** (Resend…) avant d'inviter des potes.
 7. **Domaine** pour les liens d'invitation universels (facultatif, conseillé).
