@@ -30,9 +30,9 @@ import {
   setDevProBypass,
   useEntitlement,
   useHasPro,
+  useManageSubscription,
   useRestore,
 } from '@/features/subscriptions/api';
-import { manageSubscription } from '@/features/subscriptions/revenuecat';
 import { toUserMessage } from '@/lib/errors';
 import { queryClient } from '@/lib/queryClient';
 import { colors, radii, spacing } from '@/theme/tokens';
@@ -274,6 +274,7 @@ function planLine(e: Entitlement): string {
 function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) {
   const entitlement = useEntitlement();
   const hasPro = useHasPro();
+  const manage = useManageSubscription();
   // Each visit re-reads the server: a purchase can land a few seconds after the store's OK.
   useFocusEffect(
     useCallback(() => {
@@ -314,7 +315,7 @@ function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) 
           label="Gérer mon abonnement"
           variant="secondary"
           withArrow={false}
-          onPress={() => manageSubscription().catch((err) => onError(toUserMessage(err)))}
+          onPress={() => manage().catch((err) => onError(toUserMessage(err)))}
         />
       ) : null}
       {paymentsAvailable() && entitlement.data && !entitlement.data.isPayer && !syncing ? (

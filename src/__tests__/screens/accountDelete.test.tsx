@@ -15,6 +15,7 @@ jest.mock('@/features/account/api', () => ({
 jest.mock('@/features/subscriptions/api', () => ({
   paymentsAvailable: () => true,
   useEntitlement: () => ({ data: mockEntitlement }),
+  useManageSubscription: () => jest.fn(async () => undefined),
 }));
 
 describe('account deletion', () => {

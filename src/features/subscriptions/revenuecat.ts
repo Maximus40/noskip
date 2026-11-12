@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import Purchases, { type CustomerInfo, type PurchasesPackage } from 'react-native-purchases';
 
 import { planForProduct, trialDays } from '@/domain/paywall';
@@ -170,6 +170,26 @@ export async function restore(userId: string): Promise<boolean> {
 }
 
 /** Opens the store's subscription management page. */
-export async function manageSubscription(): Promise<void> {
-  await Purchases.showManageSubscriptions();
+/** The store's own subscription pages (fallback when the SDK cannot open its sheet). */
+export const STORE_SUBSCRIPTIONS_URL = {
+  ios: 'https://apps.apple.com/account/subscriptions',
+  android: 'https://play.google.com/store/account/subscriptions',
+} as const;
+
+/**
+ * Opens the store's "manage subscription" page. The SDK must be configured first: after a cold
+ * start nothing has touched RevenueCat yet, and the sheet silently did nothing.
+ */
+export async function manageSubscription(userId: string): Promise<void> {
+  try {
+    if (await ensureRevenueCat(userId)) {
+      await Purchases.showManageSubscriptions();
+      return;
+    }
+  } catch {
+    // Fall back to the store page below.
+  }
+  await Linking.openURL(
+    Platform.OS === 'android' ? STORE_SUBSCRIPTIONS_URL.android : STORE_SUBSCRIPTIONS_URL.ios,
+  );
 }

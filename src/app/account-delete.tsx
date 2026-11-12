@@ -8,8 +8,11 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 import { useDeleteAccount } from '@/features/account/api';
-import { paymentsAvailable, useEntitlement } from '@/features/subscriptions/api';
-import { manageSubscription } from '@/features/subscriptions/revenuecat';
+import {
+  paymentsAvailable,
+  useEntitlement,
+  useManageSubscription,
+} from '@/features/subscriptions/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -22,6 +25,7 @@ const GONE = [
 
 /** Suppression du compte (exigence App Store) : définitive, confirmée en tapant SUPPRIMER. */
 export default function AccountDeleteScreen() {
+  const manage = useManageSubscription();
   const [typed, setTyped] = useState('');
   const remove = useDeleteAccount();
   const entitlement = useEntitlement();
@@ -94,7 +98,7 @@ export default function AccountDeleteScreen() {
               label="Gérer mon abonnement"
               variant="secondary"
               withArrow={false}
-              onPress={() => manageSubscription().catch(() => undefined)}
+              onPress={() => manage().catch(() => undefined)}
             />
           ) : null}
         </View>

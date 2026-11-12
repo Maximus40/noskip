@@ -6,6 +6,7 @@ import { db } from '@/lib/supabase';
 
 import {
   loadPlans,
+  manageSubscription,
   type PlanOption,
   purchase,
   restore,
@@ -120,4 +121,10 @@ export function useRestore() {
   const uid = useUserId();
   const refresh = useRefreshAccess();
   return useMutation({ mutationFn: () => restore(uid), onSuccess: refresh });
+}
+
+/** "Gérer mon abonnement": the store's page for this player's subscription. */
+export function useManageSubscription() {
+  const uid = useUserId();
+  return () => manageSubscription(uid);
 }
