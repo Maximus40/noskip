@@ -454,6 +454,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - « NoSkip » était déjà pris dans l'App Store (dont une app concurrente au concept très proche). Nouveau nom choisi : **Dips or Chips** (dips = l'exercice, chips = le paquet du Canap'). Vérifié : aucune app ni marque à ce nom (recherche web ; INPI / EUIPO à confirmer directement).
 - Nom centralisé dans `content/brand.ts` (`APP_NAME`, `APP_WORDMARK`, `APP_SCHEME`). Sous l'icône iOS : « DipsOrChips ». Schéma de liens : `dipsorchips://` (invitations, retour du magic link). Paywall : « CHOISIS LES DIPS. ». Affiche SKIP : logo DIPS OR CHIPS, date courte (« 26 OCT. → 1ER NOV. »).
 - Inchangés volontairement (invisibles, les changer casserait des liens) : bundle id `com.noskipapp.app`, projet EAS `@noskip-app/noskip`, projet Supabase `noskip`, identifiants produits `noskip.*`, clés de stockage `noskip.*`, dépôt GitHub.
+- Fiche App Store Connect créée (12/11/2026) : nom réservé **« Dips or Chips: défi muscu »**, langue Français, bundle `com.noskipapp.app`, SKU `dipsorchips`. Sous-titre suggéré : « Va à la salle avec ta team ».
 - **À faire de ton côté** : Supabase → Authentication → URL Configuration → ajouter `dipsorchips://auth-callback` aux Redirect URLs.
 - Le texte de la spec ci-dessus (§0 à §9) garde le nom NoSkip : c'est le cahier des charges d'origine.
 
