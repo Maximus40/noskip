@@ -92,7 +92,7 @@ function useInvalidateTeams() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all([
-      queryClient.invalidateQueries({ queryKey: myTeamsKey(uid) }),
+      queryClient.invalidateQueries({ queryKey: myTeamsKey(uid), refetchType: 'all' }),
       queryClient.invalidateQueries({ queryKey: ['team-board'] }),
     ]);
 }
