@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -10,6 +9,7 @@ import { registerForPush } from '@/features/notifications/push';
 import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { colors, radii, spacing } from '@/theme/tokens';
 import { APP_WORDMARK } from '../../../content/brand';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 /** What the team actually sends: real copy from the Edge Functions. */
 const EXAMPLES = [
@@ -20,11 +20,11 @@ const EXAMPLES = [
 
 /** Étape 9 : permission notifications. */
 export default function NotificationsStep() {
+  const goNext = useGoNext();
   const [busy, setBusy] = useState(false);
   const markAsked = useUpdateLocalOnboarding();
 
-  const next = () =>
-    markAsked.mutate({ notificationsAsked: true }, { onSuccess: () => router.replace('/') });
+  const next = () => markAsked.mutate({ notificationsAsked: true }, { onSuccess: () => goNext() });
 
   async function enable() {
     setBusy(true);

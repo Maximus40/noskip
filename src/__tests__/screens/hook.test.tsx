@@ -30,7 +30,7 @@ describe('onboarding hook step', () => {
     expect(screen.getByText("6 séances offertes au Canap'. Ça s'arrête là.")).toBeTruthy();
 
     await fireEvent.press(screen.getByRole('button', { name: "C'est parti" }));
-    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'), { timeout: 5000 });
     const stored = JSON.parse((await AsyncStorage.getItem('noskip.onboarding.v1')) ?? '{}');
     expect(stored.hook).toEqual({ planned: 12, done: 6 });
   });

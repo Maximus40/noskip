@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
 
 import { OnboardingScreen } from '@/components/OnboardingScreen';
@@ -8,8 +7,10 @@ import { Text } from '@/components/ui/Text';
 import { hookVerdict, onboardingStepNumber } from '@/domain/onboarding';
 import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { colors } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 export default function HookStep() {
+  const goNext = useGoNext();
   const [planned, setPlanned] = useState(12);
   const [done, setDone] = useState(5);
   const save = useUpdateLocalOnboarding();
@@ -24,9 +25,7 @@ export default function HookStep() {
         <Button
           label="C'est parti"
           disabled={save.isPending}
-          onPress={() =>
-            save.mutate({ hook: { planned, done } }, { onSuccess: () => router.replace('/') })
-          }
+          onPress={() => save.mutate({ hook: { planned, done } }, { onSuccess: () => goNext() })}
         />
       }
     >

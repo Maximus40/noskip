@@ -16,10 +16,12 @@ import { useLocalOnboarding, useUpdateLocalOnboarding } from '@/features/onboard
 import { useCreateTeam, useJoinTeam, useMyTeams, useTeamPreview } from '@/features/teams/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, spacing } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 type Mode = 'create' | 'join';
 
 export default function TeamSetupStep() {
+  const goNext = useGoNext();
   const local = useLocalOnboarding();
   const updateLocal = useUpdateLocalOnboarding();
   const teams = useMyTeams();
@@ -46,7 +48,7 @@ export default function TeamSetupStep() {
     join.mutate(pending, {
       onSuccess: () => {
         updateLocal.mutate({ pendingInviteCode: null });
-        router.replace('/');
+        goNext();
       },
     });
   }, [pending, mode, preview.data, join, updateLocal]);
@@ -64,7 +66,7 @@ export default function TeamSetupStep() {
           <Button
             label="Continuer"
             variant="secondary"
-            onPress={() => router.replace('/')}
+            onPress={() => goNext()}
             accessibilityHint="Tu pourras inviter plus tard depuis l'onglet Teams"
           />
         }
@@ -104,7 +106,7 @@ export default function TeamSetupStep() {
               join.mutate(code, {
                 onSuccess: () => {
                   updateLocal.mutate({ pendingInviteCode: null });
-                  router.replace('/');
+                  goNext();
                 },
               })
             }

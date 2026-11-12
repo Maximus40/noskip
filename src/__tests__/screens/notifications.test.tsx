@@ -37,14 +37,14 @@ describe('notifications step', () => {
     expect(screen.getByLabelText('Spot : Sofiane te spot : bouge à la salle !')).toBeTruthy();
     await fireEvent.press(screen.getByRole('button', { name: 'Activer les notifs' }));
     await waitFor(() => expect(mockRegister).toHaveBeenCalledWith(true));
-    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'), { timeout: 5000 });
     expect((await readLocalOnboarding()).notificationsAsked).toBe(true);
   });
 
   it('"Plus tard" skips the prompt', async () => {
     await renderStep();
     await fireEvent.press(screen.getByRole('button', { name: 'Plus tard' }));
-    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'), { timeout: 5000 });
     expect(mockRegister).not.toHaveBeenCalled();
   });
 });

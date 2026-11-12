@@ -16,10 +16,12 @@ import { type FoundGym, useGymSearch } from '@/features/gyms/api';
 import { useChooseGym } from '@/features/profile/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, spacing } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 type Point = { lat: number; lng: number };
 
 export default function GymStep() {
+  const goNext = useGoNext();
   const editing = useLocalSearchParams<{ edit?: string }>().edit === '1';
   const [query, setQuery] = useState('');
   // Precise position stays in memory on the phone, only used to sort and show distances.
@@ -109,7 +111,7 @@ export default function GymStep() {
             label={selected ? `C'est ma salle` : 'Choisis ta salle'}
             disabled={!selected || choose.isPending}
             onPress={() =>
-              selected && choose.mutate({ gym: selected }, { onSuccess: () => router.replace('/') })
+              selected && choose.mutate({ gym: selected }, { onSuccess: () => goNext() })
             }
           />
         )

@@ -10,6 +10,7 @@ import { onboardingStepNumber } from '@/domain/onboarding';
 import { useMergeOnboardingAnswers, useProfile, useSetWeeklyGoal } from '@/features/profile/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 const GOALS = [
   { value: 2, title: '2 séances', subtitle: 'Tranquille, mais toutes les semaines.' },
@@ -19,6 +20,7 @@ const GOALS = [
 ] as const;
 
 export default function GoalStep() {
+  const goNext = useGoNext();
   const editing = useLocalSearchParams<{ edit?: string }>().edit === '1';
   const profile = useProfile();
   const [goal, setGoal] = useState<number | null>(null);
@@ -46,7 +48,7 @@ export default function GoalStep() {
                 return;
               }
               await merge.mutateAsync({ goal_confirmed_at: new Date().toISOString() });
-              router.replace('/');
+              goNext();
             } catch {
               // Shown through ErrorNote.
             }

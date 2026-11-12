@@ -22,8 +22,10 @@ import {
 } from '@/features/profile/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 export default function LifterCardStep() {
+  const goNext = useGoNext();
   const editing = useLocalSearchParams<{ edit?: string }>().edit === '1';
   const profile = useProfile();
   const update = useUpdateProfile();
@@ -66,7 +68,7 @@ export default function LifterCardStep() {
           onPress={() =>
             update.mutate(
               { pseudo: currentPseudo.trim(), title: currentTitle },
-              { onSuccess: () => (editing ? router.back() : router.replace('/')) },
+              { onSuccess: () => (editing ? router.back() : goNext()) },
             )
           }
         />

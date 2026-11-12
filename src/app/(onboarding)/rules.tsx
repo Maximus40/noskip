@@ -11,6 +11,7 @@ import { onboardingStepNumber } from '@/domain/onboarding';
 import { useAcceptAllRules } from '@/features/teams/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, spacing } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 const RULES = [
   ['Tu fixes ton objectif.', 'Chaque séance de 40 min à ta salle charge 20 kg sur la barre.'],
@@ -20,6 +21,7 @@ const RULES = [
 ] as const;
 
 export default function RulesStep() {
+  const goNext = useGoNext();
   const [accepted, setAccepted] = useState(false);
   const accept = useAcceptAllRules();
 
@@ -31,7 +33,7 @@ export default function RulesStep() {
         <Button
           label="Je signe"
           disabled={!accepted || accept.isPending}
-          onPress={() => accept.mutate(undefined, { onSuccess: () => router.replace('/') })}
+          onPress={() => accept.mutate(undefined, { onSuccess: () => goNext() })}
         />
       }
     >

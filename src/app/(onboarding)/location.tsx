@@ -1,5 +1,4 @@
 import * as Location from 'expo-location';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
@@ -11,6 +10,7 @@ import { useGymPoints } from '@/features/checkin/useCheckin';
 import { syncGeofences } from '@/features/checkin/tasks';
 import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { useGoNext } from '@/features/onboarding/useGoNext';
 
 type Outcome = 'always' | 'while_using' | 'denied' | null;
 
@@ -24,13 +24,13 @@ const PROMISES = [
 ] as const;
 
 export default function LocationStep() {
+  const goNext = useGoNext();
   const [outcome, setOutcome] = useState<Outcome>(null);
   const [busy, setBusy] = useState(false);
   const markAsked = useUpdateLocalOnboarding();
   const { gyms } = useGymPoints();
 
-  const done = () =>
-    markAsked.mutate({ locationAsked: true }, { onSuccess: () => router.replace('/') });
+  const done = () => markAsked.mutate({ locationAsked: true }, { onSuccess: () => goNext() });
 
   async function ask() {
     setBusy(true);
