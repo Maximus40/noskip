@@ -127,6 +127,8 @@ export async function loadPlans(
   const offerings = await Purchases.getOfferings();
   const solo: PlanOption[] = [];
   for (const pkg of offerings.current?.availablePackages ?? []) {
+    // A Team product misplaced in the current offering must never show up as "Annuel".
+    if (planForProduct(pkg.product.identifier) !== 'individual') continue;
     if (pkg.packageType === 'ANNUAL') solo.push(toOption('annual', pkg));
     else if (pkg.packageType === 'WEEKLY') solo.push(toOption('weekly', pkg));
   }
