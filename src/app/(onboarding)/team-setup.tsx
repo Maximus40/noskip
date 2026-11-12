@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -51,7 +50,7 @@ export default function TeamSetupStep() {
         goNext();
       },
     });
-  }, [pending, mode, preview.data, join, updateLocal]);
+  }, [pending, mode, preview.data, join, updateLocal, goNext]);
 
   const error = create.error ?? join.error ?? (preview.error && code ? preview.error : null);
 

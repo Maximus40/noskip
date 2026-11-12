@@ -10,7 +10,7 @@ import { colors, minTouch, radii, spacing } from '@/theme/tokens';
 
 const SEEN_KEY = 'noskip.gift-seen.v1';
 
-/** "Offert par {pseudo}": shown once when a teammate's Pack Duo or Team plan covers me. */
+/** "Offert par {pseudo}": shown once when a paying teammate (or a Team plan) covers me. */
 export function GiftBanner() {
   const entitlement = useEntitlement();
   const gift = entitlement.data?.active && entitlement.data.offeredBy ? entitlement.data : null;
@@ -39,7 +39,9 @@ export function GiftBanner() {
         <Text variant="body">
           {gift.source === 'team'
             ? `L’offre Team de « ${gift.teamName ?? 'ta team'} » te couvre. Bienvenue dans le game.`
-            : `${gift.offeredBy} t’offre son Pack Duo. Plus d’excuse maintenant.`}
+            : gift.source === 'duo'
+              ? `${gift.offeredBy} t’offre son Pack Duo. Plus d’excuse maintenant.`
+              : `L’abonnement de ${gift.offeredBy} couvre toute la team${gift.teamName ? ` « ${gift.teamName} »` : ''}. Toi, tu joues gratuitement. Plus d’excuse.`}
         </Text>
       </View>
       <PressableScale

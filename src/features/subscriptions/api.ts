@@ -55,7 +55,7 @@ async function fetchEntitlement(): Promise<Entitlement> {
   };
 }
 
-/** Server view of my plan (own, Duo offered by a teammate, or a team's plan). */
+/** Server view of my plan (own, covered by a paying teammate, or a team's plan). */
 export function useEntitlement() {
   const uid = useUserId();
   return useQuery({ queryKey: entitlementKey(uid), queryFn: fetchEntitlement });
@@ -103,11 +103,8 @@ function useRefreshAccess() {
 export function usePurchase() {
   const refresh = useRefreshAccess();
   return useMutation({
-    mutationFn: (input: {
-      option: PlanOption;
-      partnerId?: string | null;
-      teamId?: string | null;
-    }) => purchase(input.option, { partnerId: input.partnerId, teamId: input.teamId }),
+    mutationFn: (input: { option: PlanOption; teamId?: string | null }) =>
+      purchase(input.option, { teamId: input.teamId }),
     onSuccess: refresh,
   });
 }

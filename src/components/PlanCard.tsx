@@ -18,7 +18,7 @@ export function PlanCard({
   onPress: () => void;
   detail?: string;
 }) {
-  const names = { annual: 'Annuel', weekly: 'Hebdo', duo: 'Pack Duo', team: 'Team' } as const;
+  const names = { annual: 'Annuel', weekly: 'Hebdo', team: 'Team' } as const;
   const trial = trialLabel(option.trialDays);
   const price = `${option.priceString}${periodSuffix(option.period)}`;
   return (

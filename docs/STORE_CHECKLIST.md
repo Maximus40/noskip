@@ -30,12 +30,13 @@
 ## D. Abonnements
 
 - ☐ Contrats « Applications payantes » signés (App Store Connect → Accords ; Play Console → Profil de paiement).
-- ☐ 4 abonnements créés dans chaque store (voir README §7), avec essais 7 j (annuel) et 3 j (hebdo).
-- ☐ RevenueCat : apps, entitlement `pro`, offre courante (Annuel + Hebdo), offre `friends` (Duo + Team),
+- ☐ 3 abonnements créés dans chaque store (voir README §7), avec essais 7 j (annuel) et 3 j (hebdo).
+- ☐ RevenueCat : apps, entitlement `pro`, offre courante (Annuel + Hebdo), offre `friends` (Team),
   webhook, clés SDK dans `.env` / EAS.
 - ☐ Achat test : bac à sable iOS (compte Sandbox) et testeurs de licence Google Play. Vérifier que la ligne
   apparaît dans `subscriptions` et que l'app débloque.
-- ☐ Tester Pack Duo (le pote est débloqué, « Offert par … ») et Team (8 places).
+- ☐ Tester « un pote paie, toute la team joue » (les potes passent l'écran de paiement, « Offert par … ») et
+  Team (8 places).
 
 ## E. Contenu et mentions légales
 

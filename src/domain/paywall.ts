@@ -84,3 +84,16 @@ export function renewalNotice(input: {
     : `${price}.`;
   return `${start.charAt(0).toUpperCase()}${start.slice(1)} Renouvellement automatique, résiliable à tout moment dans les réglages de ton compte ${store}, au plus tard 24 h avant la fin de la période en cours.`;
 }
+
+/** Who the personal plan covers, with the teammates' names when there are some. */
+export function crewLine(names: string[]): string {
+  if (!names.length) {
+    return 'Ton abonnement couvre aussi jusqu’à 3 potes dans ta team. Invite-les : ils jouent gratuitement.';
+  }
+  const shown = names.slice(0, 3);
+  const list =
+    shown.length === 1
+      ? shown[0]
+      : `${shown.slice(0, -1).join(', ')} et ${shown[shown.length - 1]}`;
+  return `Ton abonnement couvre aussi ${list} : ça ne ${shown.length === 1 ? 'lui' : 'leur'} coûte rien.`;
+}

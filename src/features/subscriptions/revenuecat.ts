@@ -5,7 +5,7 @@ import { planForProduct, trialDays } from '@/domain/paywall';
 
 /** RevenueCat entitlement that unlocks the whole game. */
 export const PRO_ENTITLEMENT = 'pro';
-/** Offering holding the Pack Duo and Team packages (the current offering holds annual + weekly). */
+/** Offering holding the Team package (the current offering holds annual + weekly). */
 export const FRIENDS_OFFERING = 'friends';
 
 // Public SDK keys (they ship in the app). Expo inlines EXPO_PUBLIC_* at build time.
@@ -59,7 +59,7 @@ export async function revenueCatHasPro(userId: string): Promise<boolean> {
   return isProActive(await Purchases.getCustomerInfo());
 }
 
-export type PlanKey = 'annual' | 'weekly' | 'duo' | 'team';
+export type PlanKey = 'annual' | 'weekly' | 'team';
 
 export type PlanOption = {
   key: PlanKey;
@@ -71,7 +71,7 @@ export type PlanOption = {
   trialDays: number | null;
 };
 
-const ORDER: Record<PlanKey, number> = { annual: 0, weekly: 1, duo: 0, team: 1 };
+const ORDER: Record<PlanKey, number> = { annual: 0, weekly: 1, team: 2 };
 
 function toOption(key: PlanKey, pkg: PurchasesPackage): PlanOption {
   const p = pkg.product;
@@ -106,8 +106,8 @@ export async function loadPlans(
   solo.sort((a, b) => ORDER[a.key] - ORDER[b.key]);
   const friends: PlanOption[] = [];
   for (const pkg of offerings.all[FRIENDS_OFFERING]?.availablePackages ?? []) {
-    const plan = planForProduct(pkg.product.identifier);
-    if (plan === 'duo' || plan === 'team') friends.push(toOption(plan, pkg));
+    // The Pack Duo is no longer sold: any personal plan already covers up to 3 teammates.
+    if (planForProduct(pkg.product.identifier) === 'team') friends.push(toOption('team', pkg));
   }
   friends.sort((a, b) => ORDER[a.key] - ORDER[b.key]);
   return { solo, friends };
@@ -116,15 +116,14 @@ export async function loadPlans(
 export type PurchaseResult = 'unlocked' | 'pending' | 'cancelled';
 
 /**
- * Buys a plan. The Duo partner / the Team are passed as subscriber attributes, which the
- * webhook reads to grant Pro to the right people.
+ * Buys a plan. For the Team plan, the team is passed as a subscriber attribute, which the
+ * webhook reads to cover the right team.
  */
 export async function purchase(
   option: PlanOption,
-  target: { partnerId?: string | null; teamId?: string | null } = {},
+  target: { teamId?: string | null } = {},
 ): Promise<PurchaseResult> {
   const attributes: Record<string, string | null> = {};
-  if (option.key === 'duo') attributes.noskip_duo_partner = target.partnerId ?? null;
   if (option.key === 'team') attributes.noskip_team_id = target.teamId ?? null;
   if (Object.keys(attributes).length) await Purchases.setAttributes(attributes);
   try {

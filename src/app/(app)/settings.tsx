@@ -254,12 +254,18 @@ function planLine(e: Entitlement): string {
     ? ` · jusqu’au ${new Date(e.expiresAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
     : '';
   if (e.offeredBy) {
-    return e.source === 'team'
-      ? `Offre Team de « ${e.teamName ?? 'ta team'} », offerte par ${e.offeredBy}${until}`
-      : `Pack Duo offert par ${e.offeredBy}${until}`;
+    if (e.source === 'team') {
+      return `Offre Team de « ${e.teamName ?? 'ta team'} », offerte par ${e.offeredBy}${until}`;
+    }
+    if (e.source === 'duo') return `Pack Duo offert par ${e.offeredBy}${until}`;
+    return `Offert par ${e.offeredBy}, dont l’abonnement couvre « ${e.teamName ?? 'ta team'} »${until}`;
   }
   const names = { individual: `${APP_NAME} Pro`, duo: 'Pack Duo', team: 'Offre Team' } as const;
-  return `${e.source ? names[e.source] : `${APP_NAME} Pro`}${until}`;
+  const covers =
+    e.source !== 'team' && e.teamName
+      ? ` · couvre aussi tes potes de « ${e.teamName} » (jusqu’à 4 joueurs)`
+      : '';
+  return `${e.source ? names[e.source] : `${APP_NAME} Pro`}${until}${covers}`;
 }
 
 function SubscriptionCard({ onError }: { onError: (m: string | null) => void }) {

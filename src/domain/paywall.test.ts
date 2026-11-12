@@ -1,4 +1,5 @@
 import {
+  crewLine,
   ctaLabel,
   formatPrice,
   periodSuffix,
@@ -60,5 +61,18 @@ describe('paywall wording', () => {
     expect(
       renewalNotice({ priceString: '4,99 €', period: 'P1W', trialDays: null, platform: 'android' }),
     ).toMatch(/^4,99 €\/semaine\. Renouvellement automatique.*Google Play/);
+  });
+});
+
+describe('crewLine', () => {
+  it('invites to bring friends when the team is empty', () => {
+    expect(crewLine([])).toMatch(/jusqu’à 3 potes.*gratuitement/);
+  });
+
+  it('names up to 3 teammates', () => {
+    expect(crewLine(['Karim'])).toBe('Ton abonnement couvre aussi Karim : ça ne lui coûte rien.');
+    expect(crewLine(['Karim', 'Sofiane', 'Léa', 'Max'])).toBe(
+      'Ton abonnement couvre aussi Karim, Sofiane et Léa : ça ne leur coûte rien.',
+    );
   });
 });

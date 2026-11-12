@@ -219,22 +219,26 @@ l'identifiant `com.noskipapp.app` (avec les capacités Sign in with Apple, Push 
 
 ## 7. RevenueCat
 
-1. **Stores** : crée 4 abonnements (même groupe d'abonnement sur iOS) :
+1. **Stores** : crée 3 abonnements (même groupe d'abonnement sur iOS) :
 
    | Produit              | Prix           | Essai   |
    | -------------------- | -------------- | ------- |
    | `noskip.pro.annual`  | 59,99 €/an     | 7 jours |
    | `noskip.pro.weekly`  | 4,99 €/semaine | 3 jours |
-   | `noskip.duo.annual`  | 89,99 €/an     | —       |
    | `noskip.team.annual` | 149,99 €/an    | —       |
 
-   Le serveur déduit la formule du nom (`pro` / `duo` / `team`) : garde ces préfixes.
+   Le serveur déduit la formule du nom (`pro` / `team`) : garde ces préfixes.
+
+   **« Un pote paie, toute la team joue »** : un abonnement Annuel ou Hebdo (essai compris) donne aussi accès,
+   gratuitement, aux autres joueurs de la première team du payeur tant qu'elle compte 4 joueurs au plus
+   (`app_private.crew_sponsor`). L'offre Team couvre les teams de 5 à 8. Le Pack Duo n'est plus vendu (le
+   serveur sait encore gérer un ancien produit `noskip.duo.*`).
 
 2. **RevenueCat** : projet + apps iOS (App Store Connect API key / clé d'achat in-app) et Android (compte de
-   service Google Play). Entitlement **`pro`** rattaché aux 4 produits.
+   service Google Play). Entitlement **`pro`** rattaché aux 3 produits.
 3. **Offerings** :
    - offre **courante** : packages `$rc_annual` (Annuel) et `$rc_weekly` (Hebdo) ;
-   - offre **`friends`** : un package pour `noskip.duo.annual`, un pour `noskip.team.annual`.
+   - offre **`friends`** : un package pour `noskip.team.annual`.
      Les prix et formules se changent dans RevenueCat sans mise à jour de l'app ; les _Experiments_ permettent de
      tester 4,99 € contre 6,99 € la semaine (critère : revenu par installation).
 4. **Webhook** : Integrations → Webhooks → URL
@@ -243,8 +247,8 @@ l'identifiant `com.noskipapp.app` (avec les capacités Sign in with Apple, Push 
 5. Clés SDK publiques dans `.env` et les environnements EAS (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`,
    `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`).
 
-L'app identifie le joueur dans RevenueCat par son id Supabase, et pose les attributs `noskip_duo_partner` /
-`noskip_team_id` avant un achat Duo / Team : le webhook sait à qui offrir Pro.
+L'app identifie le joueur dans RevenueCat par son id Supabase, et pose l'attribut `noskip_team_id` avant un
+achat Team : le webhook sait quelle team couvrir.
 
 ## 8. Vie privée : ce qui part vers le serveur
 

@@ -461,11 +461,18 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **À faire de ton côté** : Supabase → Authentication → URL Configuration → ajouter `dipsorchips://auth-callback` aux Redirect URLs.
 - Le texte de la spec ci-dessus (§0 à §9) garde le nom NoSkip : c'est le cahier des charges d'origine.
 
+### Accès gratuit pour les invités : « un pote paie, toute la team joue » (12/11/2026)
+- Décision : la spec §2.8 (« pas de version gratuite », Pack Duo) est remplacée. Un abonnement Annuel ou Hebdo (essai compris) couvre aussi, gratuitement, les autres joueurs de la **première team** du payeur (celle créée ou rejointe en premier) tant qu'elle compte **4 joueurs au plus**. Les invités d'un payeur ne voient donc jamais l'écran de paiement. L'offre Team (149,99 €/an) couvre les teams de 5 à 8.
+- **Pack Duo retiré** (moins cher et moins généreux que l'abonnement normal devenu « 4 joueurs »). 3 produits : `noskip.pro.annual`, `noskip.pro.weekly`, `noskip.team.annual`. Le serveur gère encore un ancien `noskip.duo.*`.
+- Serveur : migration `…001500_crew_access.sql` (`app_private.crew_team`, `crew_sponsor`, `has_pro` et `my_entitlement` étendus ; appliquée en 3 morceaux `crew_access_1_sponsor`, `_2_has_pro`, `_3_entitlement`). La couverture ne se propage pas : un invité qui crée sa propre team ne couvre personne. 15 tests SQL (`92_crew_access.test.sql`).
+- App : écran de paiement (« Un pote paie, toute la team joue », noms des potes couverts, « Plus de 4 joueurs ? » → Team), bandeau « Offert par {pseudo} », Réglages → Abonnement, CGU. Pas besoin de nouveau build (JS uniquement).
+- Étape 2 prévue (après contrat Apple actif) : boutique (skins de disques/barre, packs de vannes du Canap', cartes de défi). Jamais de séance, de disque ni d'esquive de carte SKIP achetable.
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app` (`com.noskip.app` était déjà pris chez Apple) ; reste : clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
 3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
-4. **RevenueCat** + produits dans les stores + webhook + `REVENUECAT_WEBHOOK_AUTH` (README §7).
+4. **RevenueCat** + 3 produits dans les stores (sans Pack Duo) + webhook + `REVENUECAT_WEBHOOK_AUTH` (README §7).
 5. **Mentions légales** : éditeur, e-mail de contact, URLs publiques de la confidentialité et des CGU.
 6. **SMTP** (Resend…) avant d'inviter des potes.
 7. **Domaine** pour les liens d'invitation universels (facultatif, conseillé).

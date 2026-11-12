@@ -12,7 +12,7 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
-import { ctaLabel, renewalNotice } from '@/domain/paywall';
+import { crewLine, ctaLabel, renewalNotice } from '@/domain/paywall';
 import {
   paymentsAvailable,
   setDevProBypass,
@@ -29,7 +29,9 @@ import { APP_NAME } from '../../content/brand';
 
 /**
  * Écran de paiement (hard paywall, flat dark cards): a first look at the team bar, annual
- * (default, best offer) or weekly, "Avec tes potes" (Pack Duo, Team), restore. No way around it.
+ * (default, best offer) or weekly, the Team plan for 5 to 8 players, restore. No way around it.
+ * "Un pote paie, toute la team joue": a personal plan also covers up to 3 teammates (server rule
+ * app_private.crew_sponsor), so invitees of a paying player never land here.
  */
 export default function PaywallScreen() {
   const reduced = useReducedMotion();
@@ -42,15 +44,13 @@ export default function PaywallScreen() {
   const plans = usePlans();
   const buy = usePurchase();
   const restore = useRestore();
-  const [selected, setSelected] = useState<'annual' | 'weekly' | 'duo' | 'team'>('annual');
+  const [selected, setSelected] = useState<'annual' | 'weekly' | 'team'>('annual');
   const [showFriends, setShowFriends] = useState(false);
-  const [partnerId, setPartnerId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   const all = [...(plans.data?.solo ?? []), ...(plans.data?.friends ?? [])];
   const option = all.find((o) => o.key === selected) ?? plans.data?.solo[0] ?? null;
   const teammates = (board.data ?? []).filter((r) => !r.is_me);
-  const partner = partnerId ?? teammates[0]?.user_id ?? null;
   const enter = (i: number) => (reduced ? FadeIn : FadeInDown.delay(i * 90).duration(400));
 
   async function onBuy() {
@@ -59,7 +59,6 @@ export default function PaywallScreen() {
     try {
       const result = await buy.mutateAsync({
         option,
-        partnerId: option.key === 'duo' ? partner : null,
         teamId: option.key === 'team' ? (team?.id ?? null) : null,
       });
       if (result === 'unlocked') router.replace('/');
@@ -132,10 +131,7 @@ export default function PaywallScreen() {
                 key={t.id}
                 label={t.name}
                 active={i === teamIndex}
-                onPress={() => {
-                  setTeamIndex(i);
-                  setPartnerId(null);
-                }}
+                onPress={() => setTeamIndex(i)}
               />
             ))}
           </View>
@@ -177,6 +173,18 @@ export default function PaywallScreen() {
           </View>
         ) : (
           <Animated.View entering={enter(2)} style={styles.gap} accessibilityRole="radiogroup">
+            <View style={styles.crew}>
+              <Text variant="label" color={colors.accent}>
+                Un pote paie, toute la team joue
+              </Text>
+              <Text variant="body">
+                {crewLine(
+                  // A personal plan covers the player's oldest team: the first one in the list.
+                  teamIndex === 0 ? teammates.map((m) => m.pseudo ?? 'ton pote') : [],
+                )}
+              </Text>
+            </View>
+
             {plans.data!.solo.map((o) => (
               <PlanCard
                 key={o.key}
@@ -186,52 +194,31 @@ export default function PaywallScreen() {
               />
             ))}
 
-            <PressableScale
-              onPress={() => setShowFriends((v) => !v)}
-              accessibilityRole="button"
-              accessibilityLabel="Avec tes potes"
-              accessibilityHint="Pack Duo et offre Team"
-              accessibilityState={{ expanded: showFriends }}
-              style={styles.friendsToggle}
-            >
-              <Text variant="bodyStrong">Avec tes potes</Text>
-              <Text variant="bodyStrong" color={colors.accent}>
-                {showFriends ? '−' : '+'}
-              </Text>
-            </PressableScale>
+            {plans.data!.friends.length ? (
+              <PressableScale
+                onPress={() => setShowFriends((v) => !v)}
+                accessibilityRole="button"
+                accessibilityLabel="Plus de 4 joueurs ?"
+                accessibilityHint="Offre Team, jusqu’à 8 joueurs"
+                accessibilityState={{ expanded: showFriends }}
+                style={styles.friendsToggle}
+              >
+                <Text variant="bodyStrong">Plus de 4 joueurs ?</Text>
+                <Text variant="bodyStrong" color={colors.accent}>
+                  {showFriends ? '−' : '+'}
+                </Text>
+              </PressableScale>
+            ) : null}
 
             {showFriends
               ? plans.data!.friends.map((o) => (
-                  <View key={o.key} style={styles.gap}>
-                    <PlanCard
-                      option={o}
-                      selected={selected === o.key}
-                      onPress={() => setSelected(o.key)}
-                      detail={
-                        o.key === 'duo'
-                          ? 'Pro pour toi et un pote de ta team.'
-                          : `Pro pour toute la team${team ? ` « ${team.name} »` : ''}, jusqu’à 8 joueurs.`
-                      }
-                    />
-                    {o.key === 'duo' && selected === 'duo' ? (
-                      teammates.length ? (
-                        <View style={styles.chips}>
-                          {teammates.map((m) => (
-                            <Chip
-                              key={m.user_id}
-                              label={`Offrir à ${m.pseudo ?? 'un pote'}`}
-                              active={partner === m.user_id}
-                              onPress={() => setPartnerId(m.user_id)}
-                            />
-                          ))}
-                        </View>
-                      ) : (
-                        <Text variant="caption" color={colors.muted}>
-                          Pas encore de pote dans ta team : le premier qui la rejoint en profitera.
-                        </Text>
-                      )
-                    ) : null}
-                  </View>
+                  <PlanCard
+                    key={o.key}
+                    option={o}
+                    selected={selected === o.key}
+                    onPress={() => setSelected(o.key)}
+                    detail={`Toute la team${team ? ` « ${team.name} »` : ''} joue, jusqu’à 8 joueurs.`}
+                  />
                 ))
               : null}
           </Animated.View>
@@ -292,6 +279,12 @@ function LinkButton({ label, onPress }: { label: string; onPress: () => void }) 
 }
 
 const styles = StyleSheet.create({
+  crew: {
+    borderRadius: radii.card,
+    backgroundColor: colors.card,
+    padding: spacing.lg,
+    gap: spacing.xs,
+  },
   friendsToggle: {
     flexDirection: 'row',
     justifyContent: 'space-between',

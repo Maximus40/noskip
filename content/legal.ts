@@ -113,8 +113,8 @@ export function termsSections(info: LegalInfo): LegalSection[] {
     {
       title: 'Abonnement',
       body: [
-        `${APP_NAME} est payant (formule annuelle ou hebdomadaire, Pack Duo, offre Team), avec une période d’essai gratuite quand elle est proposée. Le paiement et le renouvellement automatique sont gérés par l’App Store ou Google Play ; tu peux résilier à tout moment depuis les réglages de ton compte store, au plus tard 24 h avant la fin de la période en cours.`,
-        'Le Pack Duo donne l’accès à toi et à un coéquipier ; l’offre Team à toute ta team (jusqu’à 8 joueurs) tant que l’abonnement est actif.',
+        `${APP_NAME} est payant (formule annuelle ou hebdomadaire, offre Team), avec une période d’essai gratuite quand elle est proposée. Le paiement et le renouvellement automatique sont gérés par l’App Store ou Google Play ; tu peux résilier à tout moment depuis les réglages de ton compte store, au plus tard 24 h avant la fin de la période en cours.`,
+        'Une formule annuelle ou hebdomadaire donne aussi l’accès, sans frais, aux autres joueurs de ta première team (celle que tu as créée ou rejointe en premier) tant qu’elle compte 4 joueurs au plus. L’offre Team donne l’accès à toute ta team, jusqu’à 8 joueurs. Ces accès durent tant que l’abonnement de celui qui paie est actif.',
       ],
     },
     {

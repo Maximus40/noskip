@@ -34,10 +34,7 @@ jest.mock('@/features/subscriptions/api', () => ({
         option('annual', 59.99, '59,99 €', 'P1Y', 7),
         option('weekly', 4.99, '4,99 €', 'P1W', 3),
       ],
-      friends: [
-        option('duo', 89.99, '89,99 €', 'P1Y', null),
-        option('team', 149.99, '149,99 €', 'P1Y', null),
-      ],
+      friends: [option('team', 149.99, '149,99 €', 'P1Y', null)],
     },
   }),
   usePurchase: () => ({ mutateAsync: mockBuy, isPending: false }),
@@ -89,15 +86,23 @@ describe('paywall', () => {
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
   });
 
-  it('Pack Duo is offered to the chosen teammate', async () => {
+  it('says the plan covers the teammates', async () => {
+    await render(<PaywallScreen />);
+    expect(screen.getByText('Un pote paie, toute la team joue')).toBeTruthy();
+    expect(
+      screen.getByText('Ton abonnement couvre aussi Karim : ça ne lui coûte rien.'),
+    ).toBeTruthy();
+    expect(screen.queryByText(/Pack Duo/)).toBeNull();
+  });
+
+  it('the Team plan covers the shown team', async () => {
     mockBuy.mockResolvedValue('unlocked');
     await render(<PaywallScreen />);
-    await fireEvent.press(screen.getByRole('button', { name: 'Avec tes potes' }));
-    await fireEvent.press(screen.getByRole('radio', { name: 'Pack Duo, 89,99 €/an' }));
-    expect(screen.getByRole('radio', { name: 'Offrir à Karim' })).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: 'Plus de 4 joueurs ?' }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Team, 149,99 €/an' }));
     await fireEvent.press(screen.getByRole('button', { name: 'CHOISIR LES DIPS' }));
     await waitFor(() => expect(mockBuy).toHaveBeenCalled());
-    expect(mockBuy.mock.calls[0][0]).toMatchObject({ partnerId: 'karim', teamId: null });
+    expect(mockBuy.mock.calls[0][0]).toMatchObject({ teamId: 'team-1' });
   });
 
   it('a cancelled purchase stays on the paywall; restore explains when nothing is found', async () => {
