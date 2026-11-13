@@ -23,7 +23,7 @@ export const PUBLISHER: Publisher = {
 };
 
 /** Public site with the legal pages and the support page (GitHub Pages of the repository). */
-export const SITE_URL = 'https://maximus40.github.io/noskip';
+export const SITE_URL = 'https://pulseaiagency.github.io/dipsorchips';
 
 export const SITE_PAGES = {
   support: `${SITE_URL}/`,

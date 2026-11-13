@@ -439,7 +439,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 ### Notes d'environnement (session cloud)
 - Le proxy réseau bloque api.expo.dev, GitHub (hors git), Google Fonts, docs.expo.dev, Overpass et les couches d'images Docker : utiliser `EXPO_OFFLINE=1 npx expo install <pkg>`. Seul le registre npm est joignable. `supabase start` impossible ici → PostgreSQL 16 local (voir ci-dessus).
 - API à vérifier dans les `.d.ts` locaux (Expo 58 a changé) : `Tabs` vient de `expo-router/js-tabs` ; `BottomTabBarProps` expose `navigateToTab(routeKey)`.
-- Dépôt : https://github.com/Maximus40/noskip (branche `main`).
+- Dépôt : https://github.com/PulseAiAgency/dipsorchips (branche `main`) ; ancien nom Maximus40/noskip (GitHub redirige).
 
 ### Design (`design/`)
 - Reçus : `README.md`, `html/Canap-repos|skip|disque|pr.html`, `html/V3-Disque.html`.
@@ -476,7 +476,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ### Mentions légales et site public (13/11/2026)
 - Éditeur : **PulseAi Agency** (entreprise individuelle), 60 rue François 1er, 75008 Paris (domiciliation), SIRET 508 598 778 00035, contact `contact.pulsaiagency@gmail.com`. Pas de téléphone (choix de l'éditeur). Tout est dans `content/publisher.ts` (EXPO_PUBLIC_LEGAL_* peuvent encore surcharger).
-- Site public généré depuis `content/legal.ts` par `npm run build:site` dans `docs/` (servi par GitHub Pages, branche `main`, dossier `/docs`) : support `https://maximus40.github.io/noskip/`, confidentialité `/confidentialite/`, CGU `/cgu/`, mentions légales `/mentions-legales/`. `npm run check` échoue si `docs/` est périmé.
+- Site public généré depuis `content/legal.ts` par `npm run build:site` dans `docs/` (servi par GitHub Pages, branche `main`, dossier `/docs`) : support `https://pulseaiagency.github.io/dipsorchips/`, confidentialité `/confidentialite/`, CGU `/cgu/`, mentions légales `/mentions-legales/`. `npm run check` échoue si `docs/` est périmé.
 - App : écran Réglages → Mentions légales (`/legal-notice`).
 
 ### Reste à faire de ton côté

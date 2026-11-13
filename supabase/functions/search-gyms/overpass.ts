@@ -93,8 +93,8 @@ export const OVERPASS_HEADERS = {
   'Content-Type': 'application/x-www-form-urlencoded',
   Accept: 'application/json',
   'User-Agent':
-    'DipsOrChips/1.0 (gym search for a fitness app; +https://github.com/Maximus40/noskip)',
-  Referer: 'https://github.com/Maximus40/noskip',
+    'DipsOrChips/1.0 (gym search for a fitness app; +https://pulseaiagency.github.io/dipsorchips/)',
+  Referer: 'https://pulseaiagency.github.io/dipsorchips/',
 } as const;
 
 export async function runOverpass(

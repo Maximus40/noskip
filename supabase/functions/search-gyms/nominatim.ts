@@ -12,8 +12,8 @@ export const NOMINATIM_HEADERS = {
   Accept: 'application/json',
   'Accept-Language': 'fr',
   'User-Agent':
-    'DipsOrChips/1.0 (gym search for a fitness app; +https://github.com/Maximus40/noskip)',
-  Referer: 'https://github.com/Maximus40/noskip',
+    'DipsOrChips/1.0 (gym search for a fitness app; +https://pulseaiagency.github.io/dipsorchips/)',
+  Referer: 'https://pulseaiagency.github.io/dipsorchips/',
 } as const;
 
 const NAME_SEARCH_RADIUS_M = 30000;
