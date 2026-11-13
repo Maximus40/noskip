@@ -469,6 +469,10 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **Fiche App Store** : nom « NOXCUSE : Muscu entre potes » (27/30), sous-titre « Défi salle de sport en team » (27/30), mots-clés `gym,motivation,amis,séance,fitness,musculation,objectif,habitude,série,régularité,entraînement` (94/100, sans répéter les mots du nom ni du sous-titre).
 - **Logo** (13/11/2026, `design/logo/noxcuse-logos.{html,png}`) : icône = piste B (deux barres chargées qui se croisent en X, potes en blanc, toi en orange, fond `#111214`), générée par `node scripts/make-icons.mjs` (iOS, Android adaptatif + monochrome, splash, favicons de l'app et du site) ; logo écrit = piste C « NOXCUSE. » (Archivo Black, point orange) : composant `src/components/Wordmark.tsx`, affiché sur l'écran d'accroche, sur l'affiche SKIP (point en encre : un seul point orange sur l'affiche) et en en-tête du site (police servie depuis `docs/fonts/`).
 
+### Premier build TestFlight (13/11/2026)
+- `eas build --platform ios --profile production` ✅ (certificat de distribution réutilisé, profil App Store et clé APNs créés par EAS), `eas submit --platform ios --latest` ✅ (clé API App Store Connect générée par EAS, rôle APP_MANAGER). App App Store Connect id `6833982038`, groupe TestFlight interne « Team (Expo) » créé par EAS avec ton compte.
+- À tester sur ce build (sans Expo sur le PC) : icône et nom NOXCUSE, connexion Apple, achat bac à sable, notifications push (clé APNs maintenant en place), pointage réel à la salle.
+
 ### Accès gratuit pour les invités : « un pote paie, toute la team joue » (12/11/2026)
 - Décision : la spec §2.8 (« pas de version gratuite », Pack Duo) est remplacée. Un abonnement Annuel ou Hebdo (essai compris) couvre aussi, gratuitement, les autres joueurs de la **première team** du payeur (celle créée ou rejointe en premier) tant qu'elle compte **4 joueurs au plus**. Les invités d'un payeur ne voient donc jamais l'écran de paiement. L'offre Team (149,99 €/an) couvre les teams de 5 à 8.
 - **Pack Duo retiré** (moins cher et moins généreux que l'abonnement normal devenu « 4 joueurs »). 3 produits : `noskip.pro.annual`, `noskip.pro.weekly`, `noskip.team.annual`. Le serveur gère encore un ancien `noskip.duo.*`.
@@ -489,7 +493,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
-2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app` (`com.noskip.app` était déjà pris chez Apple) ; reste : clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
+2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app`, clé APNs créée par EAS (13/11/2026), premier build envoyé sur TestFlight.
 3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
 4. **RevenueCat** : ✅ iOS configuré et testé en bac à sable (achat → webhook → accès) ; Android plus tard.
 5. **Mentions légales** : ✅ éditeur, adresse, SIRET, e-mail, site public (GitHub Pages) ; à coller dans App Store Connect : URL d'assistance et URL de confidentialité.
