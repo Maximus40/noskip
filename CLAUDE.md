@@ -471,7 +471,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ### Premier build TestFlight (13/11/2026)
 - `eas build --platform ios --profile production` ✅ (certificat de distribution réutilisé, profil App Store et clé APNs créés par EAS), `eas submit --platform ios --latest` ✅ (clé API App Store Connect générée par EAS, rôle APP_MANAGER). App App Store Connect id `6833982038`, groupe TestFlight interne « Team (Expo) » créé par EAS avec ton compte.
-- À tester sur ce build (sans Expo sur le PC) : icône et nom NOXCUSE, connexion Apple, achat bac à sable, notifications push (clé APNs maintenant en place), pointage réel à la salle.
+- ✅ Installé via TestFlight (build 1.0.0 (4)) et vérifié : icône et nom NOXCUSE, connexion Apple, jeton push iOS enregistré sur le serveur, cycle complet d'abonnement bac à sable reçu par le webhook (achat, renouvellements, résiliation, expiration, nouvel achat). Reste à tester : pointage réel à la salle, notif reçue d'un pote, invité couvert (« Offert par … ») avec un 2e compte.
 
 ### Accès gratuit pour les invités : « un pote paie, toute la team joue » (12/11/2026)
 - Décision : la spec §2.8 (« pas de version gratuite », Pack Duo) est remplacée. Un abonnement Annuel ou Hebdo (essai compris) couvre aussi, gratuitement, les autres joueurs de la **première team** du payeur (celle créée ou rejointe en premier) tant qu'elle compte **4 joueurs au plus**. Les invités d'un payeur ne voient donc jamais l'écran de paiement. L'offre Team (149,99 €/an) couvre les teams de 5 à 8.
