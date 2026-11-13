@@ -155,7 +155,7 @@ export function noticeSections(info: LegalInfo): LegalSection[] {
     {
       title: 'Éditeur',
       body: [
-        `${APP_NAME} (application mobile et site ${SITE_PAGES.support}) est édité par ${v(info.publisher)}, entrepreneur individuel.`,
+        `${APP_NAME} (application mobile et site ${SITE_PAGES.support}) est édité par ${v(info.publisher)}, entreprise individuelle.`,
         `Adresse : ${v(info.address)}.`,
         `SIRET : ${v(info.siret)}.`,
         `Contact : ${v(info.email)}.`,

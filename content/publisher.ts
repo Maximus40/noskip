@@ -16,9 +16,9 @@ export type Publisher = {
 };
 
 export const PUBLISHER: Publisher = {
-  name: null,
-  address: null,
-  siret: null,
+  name: 'PulseAi Agency',
+  address: '60 rue François 1er, 75008 Paris, France',
+  siret: '508 598 778 00035',
   email: null,
 };
 
