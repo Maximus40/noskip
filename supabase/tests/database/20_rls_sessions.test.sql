@@ -9,7 +9,11 @@ insert into public.gyms (osm_id, name, lat, lng) values ('node/1002', 'Autre Sal
 select tests.authenticate_as(:'alice');
 select id as team_a from public.create_team('Les Déchaînés') \gset
 select count(*) from public.choose_gym(:'gym');
-select id as sess from public.start_session(:'gym', now() - interval '50 minutes', 'geofence') \gset
+-- Opened earlier today (Paris): never before midnight, or the "today" status would not match.
+select id as sess from public.start_session(:'gym',
+  greatest(now() - interval '50 minutes',
+           date_trunc('day', now() at time zone 'Europe/Paris') at time zone 'Europe/Paris'),
+  'geofence') \gset
 select tests.ok(:'sess' is not null, 'player can open a session at her gym');
 
 -- Direct writes on sessions are forbidden.

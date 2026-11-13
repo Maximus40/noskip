@@ -30,12 +30,28 @@ else
   PORT="${PG_PORT:-54329}"
   DATA="${PG_DATA:-/var/tmp/noskip-pg}"
   as_pg() { if [[ "$(id -u)" == "0" ]]; then su postgres -c "$*"; else bash -c "$*"; fi; }
+  # The SQL tests open sessions "earlier today" (up to 2 h ago, Paris time). Right after
+  # midnight in Paris that falls on the previous day and the "today" checks fail, so when
+  # libfaketime is installed the throwaway server then runs at 12:00 (Paris) the same day.
+  # Never for --prepare-only (the week simulation compares server and script clocks).
+  FAKETIME_LIB="$(ls /usr/lib/*/faketime/libfaketime.so.1 2>/dev/null | head -1 || true)"
+  CLOCK=real
+  if [[ -n "$FAKETIME_LIB" && "${1:-}" != "--prepare-only" && 10#$(TZ=Europe/Paris date +%H) -lt 4 ]]; then
+    CLOCK="@$(TZ=Europe/Paris date +%F) 11:00:00"
+  fi
+  if pg_isready -q -h localhost -p "$PORT" 2>/dev/null && [[ "$(cat "$DATA/clock" 2>/dev/null || echo real)" != "$CLOCK" ]]; then
+    as_pg "$PG_BIN/pg_ctl -D $DATA/data -m fast -w stop >/dev/null"
+  fi
   if ! pg_isready -q -h localhost -p "$PORT" 2>/dev/null; then
     if [[ ! -f "$DATA/data/PG_VERSION" ]]; then
       mkdir -p "$DATA"; [[ "$(id -u)" == "0" ]] && chown postgres:postgres "$DATA"
       as_pg "$PG_BIN/initdb -D $DATA/data -U postgres --auth=trust -E UTF8 >/dev/null"
     fi
-    as_pg "$PG_BIN/pg_ctl -D $DATA/data -o '-p $PORT -k $DATA -c listen_addresses=localhost' -l $DATA/log -w start >/dev/null"
+    ENVS=""
+    [[ "$CLOCK" != "real" ]] && ENVS="LD_PRELOAD=$FAKETIME_LIB FAKETIME='$CLOCK' "
+    as_pg "${ENVS}$PG_BIN/pg_ctl -D $DATA/data -o '-p $PORT -k $DATA -c listen_addresses=localhost' -l $DATA/log -w start >/dev/null"
+    echo "$CLOCK" > "$DATA/clock"
+    [[ "$CLOCK" != "real" ]] && echo "(horloge de test fixée à 12:00 Paris : il est juste après minuit)"
   fi
   ADMIN_URL="postgresql://postgres@localhost:$PORT/postgres"
   URL="postgresql://postgres@localhost:$PORT/$TEST_DB"

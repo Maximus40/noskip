@@ -438,6 +438,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ### Notes d'environnement (session cloud)
 - Le proxy réseau bloque api.expo.dev, GitHub (hors git), Google Fonts, docs.expo.dev, Overpass et les couches d'images Docker : utiliser `EXPO_OFFLINE=1 npx expo install <pkg>`. Seul le registre npm est joignable. `supabase start` impossible ici → PostgreSQL 16 local (voir ci-dessus).
+- Tests SQL juste après minuit (Paris) : ils ouvrent des séances « plus tôt aujourd'hui » ; si `libfaketime` est installé (`apt-get install faketime`), `scripts/db-test.sh` démarre alors la base jetable à 12:00 Paris (jamais pour `--prepare-only`, utilisé par la simulation).
 - API à vérifier dans les `.d.ts` locaux (Expo 58 a changé) : `Tabs` vient de `expo-router/js-tabs` ; `BottomTabBarProps` expose `navigateToTab(routeKey)`.
 - Dépôt : https://github.com/PulseAiAgency/noskip, à renommer `noxcuse` (branche `main`) ; ancien nom Maximus40/noskip (GitHub redirige).
 
