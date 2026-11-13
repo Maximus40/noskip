@@ -18,6 +18,7 @@ export default function HookStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/hook')}
+      brand
       canGoBack={false}
       title="Le mois dernier, t'avais prévu combien de séances ?"
       subtitle="Et t'en as fait combien ? Sois honnête, personne ne regarde. Enfin, pas encore."

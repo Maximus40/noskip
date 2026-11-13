@@ -1,6 +1,6 @@
-// Renders the NoSkip app icon, Android adaptive layers, splash mark and favicon from one SVG
-// drawing (an orange plate seen from the front) with the pre-installed Playwright Chromium.
-// Usage: node scripts/make-icons.mjs
+// Renders the NOXCUSE app icon, Android adaptive layers, splash mark and favicons from one SVG
+// drawing (two loaded barbells crossing into an X: the teammates' bar in off-white, yours in
+// orange) with the pre-installed Playwright Chromium. Usage: node scripts/make-icons.mjs
 import { execSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -12,17 +12,24 @@ const { chromium } = require('playwright');
 
 const BG = '#111214';
 const ACCENT = '#FF6A3D';
-const INK = '#0E0E0F';
+const WHITE = '#F5F5F0';
 
-/** Plate centred at (c, c), outer radius r. `mono` draws a single-colour silhouette. */
-function plate(c, r, mono = false) {
-  const fill = mono ? '#FFFFFF' : ACCENT;
-  const cut = mono ? 'transparent' : INK;
-  return `
-    <circle cx="${c}" cy="${c}" r="${r}" fill="${fill}"/>
-    <circle cx="${c}" cy="${c}" r="${r * 0.86}" fill="none" stroke="${cut}" stroke-opacity="${mono ? 0 : 0.28}" stroke-width="${r * 0.035}"/>
-    <circle cx="${c}" cy="${c}" r="${r * 0.42}" fill="none" stroke="${cut}" stroke-opacity="${mono ? 0 : 0.28}" stroke-width="${r * 0.035}"/>
-    <circle cx="${c}" cy="${c}" r="${r * 0.2}" fill="${mono ? 'black' : BG}"/>`;
+/**
+ * One barbell along the x axis, centred on the origin, in a 1000-unit box: bar 760 × 44 and two
+ * plates 58 × 240. Rotated ±45° it reaches about ±354 units, so `scale` sizes the whole X.
+ */
+function bar(color) {
+  return `<rect x="-380" y="-22" width="760" height="44" rx="22" fill="${color}"/>
+    <rect x="-330" y="-120" width="58" height="240" rx="14" fill="${color}"/>
+    <rect x="272" y="-120" width="58" height="240" rx="14" fill="${color}"/>`;
+}
+
+/** The crossed bars centred at (c, c); `extent` = half the width of the X in pixels. */
+function cross(c, extent, colors = [WHITE, ACCENT]) {
+  const k = extent / 354;
+  return `<g transform="translate(${c} ${c}) scale(${k})">
+    <g transform="rotate(45)">${bar(colors[0])}</g>
+    <g transform="rotate(-45)">${bar(colors[1])}</g></g>`;
 }
 
 function svg(size, body, background = null) {
@@ -31,25 +38,24 @@ function svg(size, body, background = null) {
     ${body}</svg>`;
 }
 
-// Monochrome: the hole must be cut out, so use a mask.
-function monoSvg(size) {
-  const c = size / 2;
-  const r = size * 0.3;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    <defs><mask id="m"><rect width="${size}" height="${size}" fill="white"/><circle cx="${c}" cy="${c}" r="${r * 0.2}" fill="black"/></mask></defs>
-    <circle cx="${c}" cy="${c}" r="${r}" fill="#FFFFFF" mask="url(#m)"/></svg>`;
-}
-
 const outputs = [
-  // iOS / generic icon: opaque, full bleed (the OS rounds the corners).
-  ['assets/images/icon.png', 1024, svg(1024, plate(512, 330), BG), false],
-  // Android adaptive icon: 108dp canvas, safe zone = inner 66dp → plate radius ≤ ~0.3.
-  ['assets/images/android-icon-foreground.png', 512, svg(512, plate(256, 150)), true],
+  // iOS / App Store icon: opaque, full bleed (the OS rounds the corners).
+  ['assets/images/icon.png', 1024, svg(1024, cross(512, 330), BG), false],
+  // Android adaptive icon: 108dp canvas, safe zone = inner 66dp → X half-width ≤ ~0.3 of the side.
+  ['assets/images/android-icon-foreground.png', 512, svg(512, cross(256, 150)), true],
   ['assets/images/android-icon-background.png', 512, svg(512, '', BG), false],
-  ['assets/images/android-icon-monochrome.png', 432, monoSvg(432), true],
+  [
+    'assets/images/android-icon-monochrome.png',
+    432,
+    svg(432, cross(216, 126, ['#FFFFFF', '#FFFFFF'])),
+    true,
+  ],
   // Splash mark (shown at 76 dp on #111214).
-  ['assets/images/splash-icon.png', 456, svg(456, plate(228, 220)), true],
-  ['assets/images/favicon.png', 48, svg(48, plate(24, 21), BG), false],
+  ['assets/images/splash-icon.png', 456, svg(456, cross(228, 210)), true],
+  ['assets/images/favicon.png', 48, svg(48, cross(24, 19), BG), false],
+  // Public site (docs/): favicon and Apple touch icon.
+  ['docs/favicon.png', 64, svg(64, cross(32, 25), BG), false],
+  ['docs/apple-touch-icon.png', 180, svg(180, cross(90, 58), BG), false],
 ];
 
 const browser = await chromium.launch();

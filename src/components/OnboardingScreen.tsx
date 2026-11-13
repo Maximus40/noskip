@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Wordmark } from '@/components/Wordmark';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Text } from '@/components/ui/Text';
 import { ONBOARDING_TOTAL } from '@/domain/onboarding';
@@ -18,6 +19,8 @@ type Props = {
   canGoBack?: boolean;
   /** Reused from the settings (edit mode): no progress bar, this label instead of the step. */
   editLabel?: string;
+  /** Shows the NOXCUSE. logo above the step label (first screens). */
+  brand?: boolean;
 };
 
 /** Shared frame of the 10 onboarding steps: segmented progress, giant title, sticky action. */
@@ -30,6 +33,7 @@ export function OnboardingScreen({
   footer,
   canGoBack = true,
   editLabel,
+  brand = false,
 }: Props) {
   return (
     <SafeAreaView style={styles.fill} edges={['top', 'bottom']}>
@@ -67,6 +71,7 @@ export function OnboardingScreen({
           )}
         </View>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {brand ? <Wordmark size={28} style={styles.brand} /> : null}
           <Text variant="label" color={colors.accent}>
             {editLabel ?? label ?? `Étape ${step} / ${ONBOARDING_TOTAL}`}
           </Text>
@@ -88,6 +93,7 @@ export function OnboardingScreen({
 
 const styles = StyleSheet.create({
   fill: { flex: 1, backgroundColor: colors.bg },
+  brand: { marginBottom: spacing.sm },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -3,11 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, Keyframe, useReducedMotion } from 'react-native-reanimated';
 
 import { Canap } from '@/components/Canap';
+import { Wordmark } from '@/components/Wordmark';
 import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { colors } from '@/theme/tokens';
 import { fonts } from '@/theme/typography';
-import { APP_WORDMARK } from '../../content/brand';
 
 type Props = {
   width: number;
@@ -76,9 +76,7 @@ export function SkipPoster({
         >
           {weekLabel.toUpperCase()}
         </Text>
-        <Text numberOfLines={1} style={[styles.logo, { fontSize: 12 * u, letterSpacing: 0.4 * u }]}>
-          {APP_WORDMARK}
-        </Text>
+        <Wordmark size={14 * u} color={POSTER_INK} dotColor={POSTER_INK} style={styles.logo} />
       </View>
 
       <View style={[styles.letters, { marginTop: 6 * u }]}>
@@ -140,7 +138,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   week: { flexShrink: 1, fontFamily: fonts.semibold, color: POSTER_GREY },
-  logo: { flexShrink: 0, fontFamily: fonts.expandedHeavy, color: POSTER_INK },
+  logo: { flexShrink: 0 },
   letters: { alignItems: 'flex-start' },
   letter: { fontFamily: fonts.black, color: POSTER_INK, includeFontPadding: false },
   canap: { position: 'absolute' },

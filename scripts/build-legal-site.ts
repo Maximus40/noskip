@@ -2,7 +2,7 @@
 // app and the web pages always say the same thing. Usage:
 //   deno run --sloppy-imports --allow-read --allow-write --allow-env scripts/build-legal-site.ts
 //   ... --check   (fails if docs/ is out of date; part of `npm run check`)
-import { APP_NAME } from '../content/brand.ts';
+import { APP_NAME, APP_WORDMARK } from '../content/brand.ts';
 import {
   type LegalSection,
   legalInfo,
@@ -39,7 +39,8 @@ const NAV = [
   ['Mentions légales', SITE_PAGES.notice],
 ] as const;
 
-function page(title: string, heading: string, body: string): string {
+function page(title: string, heading: string, body: string, depth: number): string {
+  const root = depth ? '../'.repeat(depth) : './';
   return `<!doctype html>
 <html lang="fr">
 <head>
@@ -47,13 +48,17 @@ function page(title: string, heading: string, body: string): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} · ${esc(APP_NAME)}</title>
 <meta name="description" content="${esc(`${APP_NAME} : ${title}`)}">
+<link rel="icon" type="image/png" href="${root}favicon.png">
+<link rel="apple-touch-icon" href="${root}apple-touch-icon.png">
 <style>
+  @font-face { font-family: ArchivoBlack; src: url('${root}fonts/Archivo-Black.ttf') format('truetype'); font-display: swap; }
   :root { color-scheme: dark; --bg: #111214; --card: #1D1E22; --text: #F5F5F0; --muted: #A3A4A9; --accent: #FF6A3D; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
     font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
-  .brand { color: var(--accent); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; }
+  .brand { font-family: ArchivoBlack, sans-serif; font-size: 28px; letter-spacing: -.05em; color: var(--text); text-decoration: none; }
+  .brand span { color: var(--accent); }
   h1 { font-size: clamp(32px, 8vw, 48px); line-height: 1.05; letter-spacing: -.02em; margin: 8px 0 24px; text-transform: uppercase; }
   nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 32px; }
   nav a { color: var(--muted); }
@@ -67,7 +72,7 @@ function page(title: string, heading: string, body: string): string {
 </head>
 <body>
 <main>
-<div class="brand">${esc(APP_NAME)}</div>
+<a class="brand" href="${root}" aria-label="${esc(APP_NAME)}">${esc(APP_WORDMARK)}<span>.</span></a>
 <h1>${esc(heading)}</h1>
 <nav>${NAV.map(([label, url]) => `<a href="${url}"${label === title ? ' aria-current="page"' : ''}>${esc(label)}</a>`).join('')}</nav>
 ${body}
@@ -121,23 +126,54 @@ const support: LegalSection[] = [
 ];
 
 const files: Record<string, string> = {
-  'index.html': page('Support', `${APP_NAME}.`, sections(support)),
+  'index.html': page('Support', `${APP_NAME}.`, sections(support), 0),
   'confidentialite/index.html': page(
     'Confidentialité',
     'Politique de confidentialité.',
     sections(privacySections(info)),
+    1,
   ),
-  'cgu/index.html': page('CGU', 'Conditions d’utilisation.', sections(termsSections(info))),
+  'cgu/index.html': page('CGU', 'Conditions d’utilisation.', sections(termsSections(info)), 1),
   'mentions-legales/index.html': page(
     'Mentions légales',
     'Mentions légales.',
     sections(noticeSections(info)),
+    1,
   ),
   // Serve the files as they are (no Jekyll processing).
   '.nojekyll': '',
 };
 
+// The logo font (SIL OFL, see assets/fonts/OFL.txt) is served with the site.
+const fontSrc = new URL('../assets/fonts/Archivo-Black.ttf', import.meta.url);
+const fontDst = new URL('fonts/Archivo-Black.ttf', OUT);
+const fontBytes = await Deno.readFile(fontSrc);
+let fontCurrent: Uint8Array | null = null;
+try {
+  fontCurrent = await Deno.readFile(fontDst);
+} catch {
+  fontCurrent = null;
+}
+const sameFont =
+  fontCurrent !== null &&
+  fontCurrent.length === fontBytes.length &&
+  fontCurrent.every((b, i) => b === fontBytes[i]);
+
 let stale = false;
+if (!sameFont) {
+  if (check) {
+    console.error('docs/fonts/Archivo-Black.ttf is out of date: run npm run build:site');
+    stale = true;
+  } else {
+    await Deno.mkdir(new URL('fonts/', OUT), { recursive: true });
+    await Deno.writeFile(fontDst, fontBytes);
+    await Deno.copyFile(
+      new URL('../assets/fonts/OFL.txt', import.meta.url),
+      new URL('fonts/OFL.txt', OUT),
+    );
+    console.log('wrote docs/fonts/Archivo-Black.ttf');
+  }
+}
 for (const [path, content] of Object.entries(files)) {
   const url = new URL(path, OUT);
   let current: string | null = null;
