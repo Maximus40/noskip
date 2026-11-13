@@ -73,7 +73,7 @@ export function BreakingNewsPoster({ ref, ...p }: PosterProps) {
       <View style={[styles.studio, { height: 300 * u, marginTop: 16 * u }]}>
         <View style={[styles.desk, { height: 54 * u }]} />
         <View style={[styles.canap, { left: 0, right: 0, bottom: 34 * u }]}>
-          <Canap mood="smug" size={190 * u} accessible={false} />
+          <Canap mood="wink" size={190 * u} accessible={false} />
         </View>
         <Text
           style={[

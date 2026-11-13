@@ -1,7 +1,9 @@
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { Canap, type CanapMood } from '@/components/Canap';
 import { SkipPoster } from '@/components/SkipPoster';
+import { Text } from '@/components/ui/Text';
 import { BreakingNewsPoster } from '@/components/posters/BreakingNewsPoster';
 import { GameOverPoster } from '@/components/posters/GameOverPoster';
 import { GoldPoster } from '@/components/posters/GoldPoster';
@@ -31,10 +33,12 @@ const POSTERS = {
   news: BreakingNewsPoster,
 } as const;
 
-/** Development only: one SKIP poster style with sample data (?style=…), for visual QA. */
+/** Development only: one SKIP poster style with sample data (?style=…, or ?style=moods for every
+ * Canap' face), for visual QA. */
 export default function DevPosters() {
   const style = useLocalSearchParams<{ style?: string }>().style ?? 'classic';
   if (!__DEV__) return <Redirect href="/" />;
+  if (style === 'moods') return <Moods />;
   const Poster = POSTERS[style as keyof typeof POSTERS] ?? SkipPoster;
   return (
     <View style={styles.screen}>
@@ -43,4 +47,33 @@ export default function DevPosters() {
   );
 }
 
-const styles = StyleSheet.create({ screen: { flex: 1, backgroundColor: colors.bg, padding: 15 } });
+const MOODS: CanapMood[] = [
+  'idle',
+  'smug',
+  'sad',
+  'crushed',
+  'laughing',
+  'cool',
+  'evil',
+  'sleepy',
+  'wink',
+];
+
+function Moods() {
+  return (
+    <View style={[styles.screen, styles.grid]}>
+      {MOODS.map((m) => (
+        <View key={m} style={styles.cell}>
+          <Canap mood={m} size={110} />
+          <Text>{m}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg, padding: 15 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  cell: { width: 115, alignItems: 'center', paddingVertical: 6 },
+});

@@ -80,7 +80,7 @@ export function RedCardPoster({ ref, ...p }: PosterProps) {
           ]}
         />
         <View style={[styles.canap, { right: -4 * u, bottom: 0 }]}>
-          <Canap mood="smug" size={150 * u} accessible={false} />
+          <Canap mood="laughing" size={150 * u} accessible={false} />
         </View>
       </View>
 

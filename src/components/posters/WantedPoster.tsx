@@ -76,7 +76,7 @@ export function WantedPoster({ ref, ...p }: PosterProps) {
       <View style={[styles.portrait, { height: 230 * u, marginTop: 16 * u, borderWidth: 3 * u }]}>
         <Text style={[styles.initial, { fontSize: 150 * u, lineHeight: 160 * u }]}>{initial}</Text>
         <View style={[styles.canap, { right: 6 * u, bottom: 4 * u }]}>
-          <Canap mood="smug" size={92 * u} accessible={false} />
+          <Canap mood="sleepy" size={92 * u} accessible={false} />
         </View>
         <Animated.View
           entering={stampIn}

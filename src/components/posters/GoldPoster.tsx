@@ -80,13 +80,13 @@ export function GoldPoster({ ref, ...p }: PosterProps) {
               fontSize={big}
               letterSpacing={-10 * u}
             >
-              IP.
+              IP
             </SvgText>
           </Svg>
         </Animated.View>
 
         <View style={[styles.canap, { right: 24 * u, top: 278 * u }]}>
-          <Canap mood="smug" size={104 * u} accessible={false} />
+          <Canap mood="cool" size={104 * u} accessible={false} />
         </View>
 
         <View style={{ flex: 1 }} />

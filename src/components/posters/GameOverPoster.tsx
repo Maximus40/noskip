@@ -97,7 +97,7 @@ export function GameOverPoster({ ref, ...p }: PosterProps) {
             style={[styles.hud, { fontSize: 12 * u }]}
           >{`PV RESTANTS : ${'█'.repeat(10)}`}</Text>
         </View>
-        <Canap mood="smug" size={150 * u} accessible={false} />
+        <Canap mood="evil" size={150 * u} accessible={false} />
       </View>
 
       <Text

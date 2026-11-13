@@ -18,7 +18,7 @@ type Props = {
   skips: number;
   inviteLabel: string;
   weekLabel: string;
-  /** Stamp animation ("SK" then "IP."). Off for the off-screen capture. */
+  /** Stamp animation ("SK" then "IP"). Off for the off-screen capture. */
   animated?: boolean;
   ref?: Ref<ComponentRef<typeof View>>;
 };
@@ -26,7 +26,7 @@ type Props = {
 const POSTER_INK = '#0E0E0F';
 const POSTER_GREY = '#55565B';
 
-// "SK" then "IP." drop like a rubber stamp: big and transparent → slammed in place.
+// "SK" then "IP" drop like a rubber stamp: big and transparent → slammed in place.
 const stamp = (delay: number) =>
   new Keyframe({
     0: { opacity: 0, transform: [{ scale: 1.8 }, { rotate: '-4deg' }] },
@@ -84,7 +84,7 @@ export function SkipPoster({
           SK
         </Animated.Text>
         <Animated.Text entering={enter(420)} style={[styles.letter, letters]}>
-          IP.
+          IP
         </Animated.Text>
       </View>
 
