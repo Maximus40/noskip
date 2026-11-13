@@ -12,8 +12,8 @@ export const NOMINATIM_HEADERS = {
   Accept: 'application/json',
   'Accept-Language': 'fr',
   'User-Agent':
-    'DipsOrChips/1.0 (gym search for a fitness app; +https://pulseaiagency.github.io/dipsorchips/)',
-  Referer: 'https://pulseaiagency.github.io/dipsorchips/',
+    'Noxcuse/1.0 (gym search for a fitness app; +https://pulseaiagency.github.io/noxcuse/)',
+  Referer: 'https://pulseaiagency.github.io/noxcuse/',
 } as const;
 
 const NAME_SEARCH_RADIUS_M = 30000;

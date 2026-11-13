@@ -100,7 +100,7 @@ export default function DevPaywall() {
         {APP_NAME} Pro
       </Text>
       <Text variant="display" style={styles.title}>
-        CHOISIS LES DIPS.
+        ZÉRO EXCUSE.
       </Text>
       {showTeam ? null : (
         <View style={styles.barCard}>

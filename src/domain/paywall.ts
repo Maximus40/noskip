@@ -65,7 +65,7 @@ export function perWeekLabel(yearlyPrice: number, currency: string): string {
 }
 
 export function ctaLabel(days: number | null): string {
-  return days ? "COMMENCER L'ESSAI GRATUIT" : 'CHOISIR LES DIPS';
+  return days ? "COMMENCER L'ESSAI GRATUIT" : "C'EST PARTI";
 }
 
 /** Auto-renewal disclosure required by the stores, under the buy button. */

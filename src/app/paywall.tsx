@@ -102,7 +102,7 @@ export default function PaywallScreen() {
             {canClose ? <LinkButton label="Fermer" onPress={() => router.back()} /> : null}
           </View>
           <Text variant="display" style={styles.title} accessibilityRole="header">
-            CHOISIS LES DIPS.
+            ZÉRO EXCUSE.
           </Text>
         </Animated.View>
 

@@ -3,8 +3,8 @@
 // see them and changing them would break stored data, purchases or the EAS project link.
 
 /** Full name: App Store title, legal texts, share messages. */
-export const APP_NAME = 'Dips or Chips';
+export const APP_NAME = 'NOXCUSE';
 /** Logo / poster wordmark. */
-export const APP_WORDMARK = 'DIPS OR CHIPS';
-/** Deep-link scheme (`dipsorchips://join/<code>`, `dipsorchips://auth-callback`). */
-export const APP_SCHEME = 'dipsorchips';
+export const APP_WORDMARK = 'NOXCUSE';
+/** Deep-link scheme (`noxcuse://join/<code>`, `noxcuse://auth-callback`). */
+export const APP_SCHEME = 'noxcuse';

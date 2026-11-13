@@ -14,7 +14,7 @@ export function normalizeInviteCode(input: string): string | null {
   return code.length === INVITE_CODE_LENGTH && ALPHABET.test(code) ? code : null;
 }
 
-/** Pulls a code out of anything pasted: a bare code, dipsorchips://join/X or https://host/join/X. */
+/** Pulls a code out of anything pasted: a bare code, noxcuse://join/X or https://host/join/X. */
 export function extractInviteCode(input: string): string | null {
   const fromLink = /join\/([A-Za-z0-9-]{8,9})/.exec(input);
   return normalizeInviteCode(fromLink ? fromLink[1] : input.trim());

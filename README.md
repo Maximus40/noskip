@@ -1,4 +1,4 @@
-# Dips or Chips
+# NOXCUSE
 
 App mobile iOS + Android de motivation à la salle entre potes. Chaque séance validée (au moins 40 min à
 ta salle, détectée par géolocalisation) charge un disque sur la barre de ta team. Si tu rates ton objectif de la
@@ -159,7 +159,7 @@ Vérification : `select jobname, schedule from cron.job;`.
 
 Supabase → Authentication :
 
-- **URL Configuration** → Redirect URLs : `dipsorchips://auth-callback`.
+- **URL Configuration** → Redirect URLs : `noxcuse://auth-callback`.
 - **Providers** → Apple : Services ID, Team ID, Key ID et clé `.p8` (Apple Developer → Certificates, IDs &
   Profiles → Keys, avec « Sign in with Apple »). Ajoute `com.noskipapp.app` dans « Client IDs ».
 - **Providers** → Google : client Web (id + secret) et, dans « Client IDs », les clients iOS et Android.

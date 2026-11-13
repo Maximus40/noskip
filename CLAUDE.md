@@ -439,7 +439,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 ### Notes d'environnement (session cloud)
 - Le proxy réseau bloque api.expo.dev, GitHub (hors git), Google Fonts, docs.expo.dev, Overpass et les couches d'images Docker : utiliser `EXPO_OFFLINE=1 npx expo install <pkg>`. Seul le registre npm est joignable. `supabase start` impossible ici → PostgreSQL 16 local (voir ci-dessus).
 - API à vérifier dans les `.d.ts` locaux (Expo 58 a changé) : `Tabs` vient de `expo-router/js-tabs` ; `BottomTabBarProps` expose `navigateToTab(routeKey)`.
-- Dépôt : https://github.com/PulseAiAgency/dipsorchips (branche `main`) ; ancien nom Maximus40/noskip (GitHub redirige).
+- Dépôt : https://github.com/PulseAiAgency/noskip, à renommer `noxcuse` (branche `main`) ; ancien nom Maximus40/noskip (GitHub redirige).
 
 ### Design (`design/`)
 - Reçus : `README.md`, `html/Canap-repos|skip|disque|pr.html`, `html/V3-Disque.html`.
@@ -461,6 +461,12 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **À faire de ton côté** : Supabase → Authentication → URL Configuration → ajouter `dipsorchips://auth-callback` aux Redirect URLs.
 - Le texte de la spec ci-dessus (§0 à §9) garde le nom NoSkip : c'est le cahier des charges d'origine.
 
+### Nouveau nom : NOXCUSE (13/11/2026)
+- « Dips or Chips » remplacé par **NOXCUSE** (choix de l'éditeur ; aucune app ni marque trouvée à ce nom, INPI à vérifier). `content/brand.ts` : `APP_NAME` / `APP_WORDMARK` = `NOXCUSE`, schéma `noxcuse://`. Sous l'icône : « NOXCUSE ». Paywall : « ZÉRO EXCUSE. », bouton sans essai « C'EST PARTI ».
+- Site public : `https://pulseaiagency.github.io/noxcuse/` (dépôt GitHub à nommer `noxcuse`, compte `PulseAiAgency`).
+- À faire de ton côté : App Store Connect (nom de l'app + nom d'affichage du groupe d'abonnements), Supabase → Redirect URLs `noxcuse://auth-callback`, nouveau build (nom sous l'icône + schéma), captures de vérification à renvoyer (`design/qa/review-paywall-*`).
+- Inchangés : bundle id `com.noskipapp.app`, produits `noskip.*`, projets EAS / Supabase / RevenueCat.
+
 ### Accès gratuit pour les invités : « un pote paie, toute la team joue » (12/11/2026)
 - Décision : la spec §2.8 (« pas de version gratuite », Pack Duo) est remplacée. Un abonnement Annuel ou Hebdo (essai compris) couvre aussi, gratuitement, les autres joueurs de la **première team** du payeur (celle créée ou rejointe en premier) tant qu'elle compte **4 joueurs au plus**. Les invités d'un payeur ne voient donc jamais l'écran de paiement. L'offre Team (149,99 €/an) couvre les teams de 5 à 8.
 - **Pack Duo retiré** (moins cher et moins généreux que l'abonnement normal devenu « 4 joueurs »). 3 produits : `noskip.pro.annual`, `noskip.pro.weekly`, `noskip.team.annual`. Le serveur gère encore un ancien `noskip.duo.*`.
@@ -476,7 +482,7 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 
 ### Mentions légales et site public (13/11/2026)
 - Éditeur : **PulseAi Agency** (entreprise individuelle), 60 rue François 1er, 75008 Paris (domiciliation), SIRET 508 598 778 00035, contact `contact.pulsaiagency@gmail.com`. Pas de téléphone (choix de l'éditeur). Tout est dans `content/publisher.ts` (EXPO_PUBLIC_LEGAL_* peuvent encore surcharger).
-- Site public généré depuis `content/legal.ts` par `npm run build:site` dans `docs/` (servi par GitHub Pages, branche `main`, dossier `/docs`) : support `https://pulseaiagency.github.io/dipsorchips/`, confidentialité `/confidentialite/`, CGU `/cgu/`, mentions légales `/mentions-legales/`. `npm run check` échoue si `docs/` est périmé.
+- Site public généré depuis `content/legal.ts` par `npm run build:site` dans `docs/` (servi par GitHub Pages, branche `main`, dossier `/docs`) : support `https://pulseaiagency.github.io/noxcuse/`, confidentialité `/confidentialite/`, CGU `/cgu/`, mentions légales `/mentions-legales/`. `npm run check` échoue si `docs/` est périmé.
 - App : écran Réglages → Mentions légales (`/legal-notice`).
 
 ### Reste à faire de ton côté

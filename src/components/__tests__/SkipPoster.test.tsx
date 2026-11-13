@@ -14,7 +14,7 @@ describe('SkipPoster', () => {
         teamKg={1240}
         skips={1}
         weekLabel="26 oct. → 1er nov."
-        inviteLabel="Rejoins la team sur Dips or Chips · code ABCD-2345"
+        inviteLabel="Rejoins la team sur NOXCUSE · code ABCD-2345"
         animated={false}
       />,
     );

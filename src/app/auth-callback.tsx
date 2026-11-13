@@ -9,7 +9,7 @@ import { Text } from '@/components/ui/Text';
 import { completeAuthCallback } from '@/features/auth/signIn';
 import { toUserMessage } from '@/lib/errors';
 
-/** Landing for the magic link: dipsorchips://auth-callback?code=… */
+/** Landing for the magic link: noxcuse://auth-callback?code=… */
 export default function AuthCallback() {
   const params = useLocalSearchParams<{ code?: string; error_description?: string }>();
   const [error, setError] = useState<string | null>(null);

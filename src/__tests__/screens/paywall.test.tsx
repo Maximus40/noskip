@@ -106,7 +106,7 @@ describe('paywall', () => {
     await render(<PaywallScreen />);
     await fireEvent.press(screen.getByRole('button', { name: 'Plus de 4 joueurs ?' }));
     await fireEvent.press(screen.getByRole('radio', { name: 'Team, 149,99 €/an' }));
-    await fireEvent.press(screen.getByRole('button', { name: 'CHOISIR LES DIPS' }));
+    await fireEvent.press(screen.getByRole('button', { name: "C'EST PARTI" }));
     await waitFor(() => expect(mockBuy).toHaveBeenCalled());
     expect(mockBuy.mock.calls[0][0]).toMatchObject({ teamId: 'team-1' });
   });

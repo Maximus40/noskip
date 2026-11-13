@@ -21,13 +21,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     ...config,
     // Store / system name; the home-screen label is shortened below (iOS truncates ~12 chars).
-    name: 'Dips or Chips',
+    name: 'NOXCUSE',
     owner: 'noskip-app',
     slug: 'noskip',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
-    scheme: 'dipsorchips',
+    scheme: 'noxcuse',
     userInterfaceStyle: 'dark',
     backgroundColor: '#111214',
     ios: {
@@ -36,7 +36,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       usesAppleSignIn: true,
       // HTTPS only: exempt from export compliance (no questionnaire on each TestFlight upload).
       config: { usesNonExemptEncryption: false },
-      infoPlist: { CFBundleDisplayName: 'DipsOrChips' },
+      infoPlist: { CFBundleDisplayName: 'NOXCUSE' },
       ...(inviteHost ? { associatedDomains: [`applinks:${inviteHost}`] } : {}),
     },
     android: {
@@ -83,7 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           isAndroidBackgroundLocationEnabled: true,
           isAndroidForegroundServiceEnabled: false,
           locationWhenInUsePermission:
-            "Dips or Chips vérifie juste que t'es à ta salle. Ta team voit « venu » ou « pas venu », jamais où t'es.",
+            "NOXCUSE vérifie juste que t'es à ta salle. Ta team voit « venu » ou « pas venu », jamais où t'es.",
           locationAlwaysAndWhenInUsePermission:
             'Pour pointer ta séance tout seul, même téléphone en poche. Ta position ne quitte jamais ton téléphone.',
         },

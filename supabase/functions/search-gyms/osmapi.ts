@@ -12,7 +12,7 @@ export const OSM_API_URL = 'https://api.openstreetmap.org/api/0.6';
 export const OSM_API_HEADERS = {
   Accept: 'application/json',
   'User-Agent':
-    'DipsOrChips/1.0 (gym search for a fitness app; +https://pulseaiagency.github.io/dipsorchips/)',
+    'Noxcuse/1.0 (gym search for a fitness app; +https://pulseaiagency.github.io/noxcuse/)',
 } as const;
 
 export const osmIdSchema = z.string().regex(/^(node|way)\/[0-9]{1,15}$/);

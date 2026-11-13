@@ -15,7 +15,7 @@ import { useAcceptTeamRules, useJoinTeam, useTeamPreview } from '@/features/team
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
 
-/** Deep link dipsorchips://join/<code> (and https://<host>/join/<code>). */
+/** Deep link noxcuse://join/<code> (and https://<host>/join/<code>). */
 export default function JoinScreen() {
   const params = useLocalSearchParams<{ code: string }>();
   const code = normalizeInviteCode(params.code ?? '');

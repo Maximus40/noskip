@@ -20,28 +20,24 @@ describe('invite codes', () => {
   });
 
   it('extracts codes from links', () => {
-    expect(extractInviteCode('dipsorchips://join/ABCD2345')).toBe('ABCD2345');
-    expect(extractInviteCode('https://dipsorchips.app/join/abcd-2345?utm=x')).toBe('ABCD2345');
-    expect(extractInviteCode('Rejoins-nous ! https://dipsorchips.app/join/ABCD2345')).toBe(
-      'ABCD2345',
-    );
+    expect(extractInviteCode('noxcuse://join/ABCD2345')).toBe('ABCD2345');
+    expect(extractInviteCode('https://noxcuse.app/join/abcd-2345?utm=x')).toBe('ABCD2345');
+    expect(extractInviteCode('Rejoins-nous ! https://noxcuse.app/join/ABCD2345')).toBe('ABCD2345');
     expect(extractInviteCode('abcd2345')).toBe('ABCD2345');
     expect(extractInviteCode('pas un code')).toBeNull();
   });
 
   it('formats and builds links', () => {
     expect(formatInviteCode('ABCD2345')).toBe('ABCD-2345');
-    expect(inviteUrl('ABCD2345')).toBe('dipsorchips://join/ABCD2345');
-    expect(inviteUrl('ABCD2345', 'dipsorchips.app')).toBe('https://dipsorchips.app/join/ABCD2345');
-    expect(posterInviteLabel('ABCD2345')).toBe(
-      'Rejoins la team sur Dips or Chips · code ABCD-2345',
+    expect(inviteUrl('ABCD2345')).toBe('noxcuse://join/ABCD2345');
+    expect(inviteUrl('ABCD2345', 'noxcuse.app')).toBe('https://noxcuse.app/join/ABCD2345');
+    expect(posterInviteLabel('ABCD2345')).toBe('Rejoins la team sur NOXCUSE · code ABCD-2345');
+    expect(posterInviteLabel('ABCD2345', 'noxcuse.app')).toBe(
+      'Rejoins la team → noxcuse.app/join/ABCD2345',
     );
-    expect(posterInviteLabel('ABCD2345', 'dipsorchips.app')).toBe(
-      'Rejoins la team → dipsorchips.app/join/ABCD2345',
-    );
-    const msg = inviteMessage('Les Déchaînés', 'ABCD2345', 'dipsorchips.app');
+    const msg = inviteMessage('Les Déchaînés', 'ABCD2345', 'noxcuse.app');
     expect(msg).toContain('« Les Déchaînés »');
-    expect(msg).toContain('https://dipsorchips.app/join/ABCD2345');
+    expect(msg).toContain('https://noxcuse.app/join/ABCD2345');
     expect(msg).toContain('Code : ABCD-2345');
   });
 });

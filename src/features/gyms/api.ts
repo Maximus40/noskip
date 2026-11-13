@@ -37,7 +37,7 @@ async function nominatim(url: string): Promise<FoundGym[]> {
       headers: {
         Accept: 'application/json',
         'Accept-Language': 'fr',
-        Referer: 'https://pulseaiagency.github.io/dipsorchips/',
+        Referer: 'https://pulseaiagency.github.io/noxcuse/',
       },
       signal: controller.signal,
     });
