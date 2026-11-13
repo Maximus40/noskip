@@ -474,12 +474,17 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - Webhook RevenueCat → `revenuecat-webhook` configuré (Production + Sandbox), secret `REVENUECAT_WEBHOOK_AUTH` posé dans Supabase par toi, événement de test → 200 (les événements TEST ne sont pas enregistrés dans `rc_events`, c'est voulu).
 - ✅ Achat test en bac à sable réussi (12/11/2026) : Annuel avec essai → événement `INITIAL_PURCHASE` reçu par le webhook, ligne `subscriptions` (individual, trialing, `noskip.pro.annual`), team couverte = la première du payeur. Reste à tester avec un 2e compte : un pote qui rejoint la team passe sans payer (« Offert par … »).
 
+### Mentions légales et site public (13/11/2026)
+- Éditeur : **PulseAi Agency** (entreprise individuelle), 60 rue François 1er, 75008 Paris (domiciliation), SIRET 508 598 778 00035, contact `contact.pulsaiagency@gmail.com`. Pas de téléphone (choix de l'éditeur). Tout est dans `content/publisher.ts` (EXPO_PUBLIC_LEGAL_* peuvent encore surcharger).
+- Site public généré depuis `content/legal.ts` par `npm run build:site` dans `docs/` (servi par GitHub Pages, branche `main`, dossier `/docs`) : support `https://maximus40.github.io/noskip/`, confidentialité `/confidentialite/`, CGU `/cgu/`, mentions légales `/mentions-legales/`. `npm run check` échoue si `docs/` est périmé.
+- App : écran Réglages → Mentions légales (`/legal-notice`).
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app` (`com.noskip.app` était déjà pris chez Apple) ; reste : clé Sign in with Apple (→ Supabase), clé APNs (→ `eas credentials`).
 3. **Google** : Play Console, clients OAuth Web/iOS/Android (→ `.env` + Supabase), Firebase + FCM v1 (→ `eas credentials`), clé Google Maps Android (facultative).
 4. **RevenueCat** : ✅ iOS configuré et testé en bac à sable (achat → webhook → accès) ; Android plus tard.
-5. **Mentions légales** : éditeur, e-mail de contact, URLs publiques de la confidentialité et des CGU.
+5. **Mentions légales** : ✅ éditeur, adresse, SIRET, e-mail, site public (GitHub Pages) ; à coller dans App Store Connect : URL d'assistance et URL de confidentialité.
 6. **SMTP** (Resend…) avant d'inviter des potes.
 7. **Domaine** pour les liens d'invitation universels (facultatif, conseillé).
 8. **PostHog** : clé à fournir, intégration pas encore faite (aucune mesure envoyée).

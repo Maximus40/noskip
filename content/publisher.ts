@@ -19,7 +19,7 @@ export const PUBLISHER: Publisher = {
   name: 'PulseAi Agency',
   address: '60 rue François 1er, 75008 Paris, France',
   siret: '508 598 778 00035',
-  email: null,
+  email: 'contact.pulsaiagency@gmail.com',
 };
 
 /** Public site with the legal pages and the support page (GitHub Pages of the repository). */
