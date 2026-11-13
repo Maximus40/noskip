@@ -35,8 +35,8 @@ describe('onboarding hook step', () => {
     expect(stored.hook).toEqual({ planned: 12, done: 6 });
   });
 
-  it('shows the 10-step progress', async () => {
+  it('shows how many steps are left', async () => {
     await renderWithClient();
-    expect(screen.getByRole('progressbar', { name: 'Étape 1 sur 10' })).toBeTruthy();
+    expect(screen.getByRole('progressbar', { name: 'Encore 10 étapes' })).toBeTruthy();
   });
 });

@@ -33,6 +33,11 @@ export default function GoalStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/goal')}
+      why={
+        editing
+          ? undefined
+          : 'Chaque séance validée charge un disque. Objectif tenu dimanche 20 h : la team valide. Raté : carte SKIP envoyée à toute la team.'
+      }
       editLabel={editing ? 'Réglages' : undefined}
       title="Combien de séances par semaine ?"
       subtitle="Un objectif que tu tiens vaut mieux qu'un objectif qui fait joli. Tu pourras le changer, effet la semaine suivante."

@@ -66,3 +66,21 @@ export function hookVerdict({ planned, done }: HookAnswers): string {
   const missed = planned - done;
   return `${missed} séance${missed > 1 ? 's' : ''} offerte${missed > 1 ? 's' : ''} au Canap'. Ça s'arrête là.`;
 }
+
+/**
+ * Steps the player still has to go through from `route` (included). With the player's state,
+ * steps already done (a returning player, a teammate who pays) are not counted, so the counter
+ * never seems to jump; without it (before sign-in), every following step counts.
+ */
+export function remainingSteps(route: OnboardingRoute, state: OnboardingState | null): number {
+  const index = ONBOARDING_STEPS.findIndex((s) => s.route === route);
+  if (index < 0) return 0;
+  const ahead = ONBOARDING_STEPS.slice(index);
+  if (!state) return ahead.length;
+  return ahead.filter((s, i) => i === 0 || !s.done(state)).length;
+}
+
+/** "Encore 4 étapes" / "Dernière étape". */
+export function remainingLabel(count: number): string {
+  return count <= 1 ? 'Dernière étape' : `Encore ${count} étapes`;
+}

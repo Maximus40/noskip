@@ -4,6 +4,8 @@ import {
   ONBOARDING_TOTAL,
   onboardingStepNumber,
   type OnboardingState,
+  remainingLabel,
+  remainingSteps,
 } from './onboarding';
 
 const fresh: OnboardingState = {
@@ -90,5 +92,44 @@ describe('hookVerdict', () => {
     );
     expect(hookVerdict({ planned: 8, done: 9 })).toMatch(/^Propre/);
     expect(hookVerdict({ planned: 0, done: 0 })).toMatch(/^Zéro/);
+  });
+});
+
+describe('remainingSteps', () => {
+  const blank = {
+    hookAnswered: true,
+    signedIn: true,
+    hasPrimaryGym: false,
+    goalConfirmed: false,
+    hasPseudo: false,
+    teamCount: 0,
+    locationAsked: false,
+    rulesAccepted: false,
+    notificationsAsked: false,
+    hasPro: false,
+  };
+
+  it('counts every following step before sign-in', () => {
+    expect(remainingSteps('/hook', null)).toBe(10);
+    expect(remainingSteps('/paywall', null)).toBe(1);
+  });
+
+  it('skips steps already done, so a returning player sees a short honest count', () => {
+    const returning = {
+      ...blank,
+      hasPrimaryGym: true,
+      goalConfirmed: true,
+      hasPseudo: true,
+      teamCount: 1,
+      rulesAccepted: true,
+      hasPro: true,
+    };
+    expect(remainingSteps('/location', returning)).toBe(2); // location + notifications
+    expect(remainingSteps('/notifications', returning)).toBe(1);
+  });
+
+  it('labels the count', () => {
+    expect(remainingLabel(1)).toBe('Dernière étape');
+    expect(remainingLabel(4)).toBe('Encore 4 étapes');
   });
 });

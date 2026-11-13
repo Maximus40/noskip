@@ -5,6 +5,10 @@ import type { HookAnswers } from '@/domain/onboarding';
 
 /** Device-local onboarding facts (before sign-in, or OS permission prompts already shown). */
 export type LocalOnboarding = {
+  /** The welcome pages were shown (or skipped) on this phone. */
+  welcomeSeen: boolean;
+  /** The coach marks of Ma team were shown on this phone. */
+  tutorialSeen: boolean;
   hook: HookAnswers | null;
   locationAsked: boolean;
   notificationsAsked: boolean;
@@ -15,6 +19,8 @@ export type LocalOnboarding = {
 const KEY = 'noskip.onboarding.v1';
 const QUERY_KEY = ['local-onboarding'] as const;
 const EMPTY: LocalOnboarding = {
+  welcomeSeen: false,
+  tutorialSeen: false,
   hook: null,
   locationAsked: false,
   notificationsAsked: false,

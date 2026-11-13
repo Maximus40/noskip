@@ -9,7 +9,11 @@ const mockRpc = jest.fn();
 jest.mock('expo-router', () => ({
   router: { replace: jest.fn(), back: jest.fn(), canGoBack: () => false },
 }));
-jest.mock('@/features/auth/AuthProvider', () => ({ useUserId: () => 'user-1' }));
+jest.mock('@/features/auth/AuthProvider', () => ({
+  useUserId: () => 'user-1',
+  // Signed-out frame: the progress counts every following step.
+  useAuth: () => ({ session: null }),
+}));
 jest.mock('@/lib/supabase', () => ({ db: () => ({ rpc: mockRpc }) }));
 
 function renderStep() {

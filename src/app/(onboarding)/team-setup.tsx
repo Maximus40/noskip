@@ -88,6 +88,7 @@ export default function TeamSetupStep() {
     <OnboardingScreen
       step={onboardingStepNumber('/team-setup')}
       title="Avec qui tu soulèves ?"
+      why="2 à 4 potes par team, la barre se charge avec les séances de tout le monde. Si l'un de vous paie l'abonnement, toute la team joue gratuitement."
       subtitle="Crée ta team ou rejoins celle de tes potes. À 2 ou 3, c'est là que ça marche le mieux."
       footer={
         effectiveMode === 'create' ? (

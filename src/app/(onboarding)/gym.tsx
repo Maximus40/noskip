@@ -77,6 +77,11 @@ export default function GymStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/gym')}
+      why={
+        editing
+          ? undefined
+          : 'Ton téléphone te pointe tout seul quand tu restes 40 min à ta salle. Seules les vraies salles (OpenStreetMap) comptent : pas de salle inventée.'
+      }
       editLabel={editing ? 'Réglages · tes salles' : undefined}
       title={editing ? 'Ajoute une salle.' : "C'est où, ta salle ?"}
       subtitle={

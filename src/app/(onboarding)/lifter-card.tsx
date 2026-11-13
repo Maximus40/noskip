@@ -58,6 +58,11 @@ export default function LifterCardStep() {
   return (
     <OnboardingScreen
       step={onboardingStepNumber('/lifter-card')}
+      why={
+        editing
+          ? undefined
+          : "Ta carte et ta couleur de disque, c'est ce que tes potes voient sur la barre de la team. Ta position, jamais."
+      }
       editLabel={editing ? 'Réglages' : undefined}
       title="Ta carte de lifter."
       subtitle="C'est elle que ta team verra sur la barre."

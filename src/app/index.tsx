@@ -24,7 +24,11 @@ export default function Index() {
 
   if (!configured) return <SetupRequired />;
   if (loading || !local.data) return <Loading />;
-  if (!session) return <Redirect href={local.data.hook ? '/sign-in' : '/hook'} />;
+  if (!session) {
+    // New phone, nothing answered yet: the welcome pages come first.
+    const first = local.data.hook ? '/sign-in' : local.data.welcomeSeen ? '/hook' : '/welcome';
+    return <Redirect href={first} />;
+  }
   return <SignedInGate />;
 }
 
