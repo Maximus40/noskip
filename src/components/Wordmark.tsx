@@ -8,7 +8,7 @@ type Props = {
   /** Font size in points. */
   size: number;
   color?: string;
-  /** The full stop is orange by default; the SKIP poster keeps it in ink (one orange point). */
+  /** The full stop is orange (the brand mark), on the dark screens as on the SKIP poster. */
   dotColor?: string;
   style?: TextStyle;
 };

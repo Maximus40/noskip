@@ -76,7 +76,7 @@ export function SkipPoster({
         >
           {weekLabel.toUpperCase()}
         </Text>
-        <Wordmark size={14 * u} color={POSTER_INK} dotColor={POSTER_INK} style={styles.logo} />
+        <Wordmark size={14 * u} color={POSTER_INK} style={styles.logo} />
       </View>
 
       <View style={[styles.letters, { marginTop: 6 * u }]}>
