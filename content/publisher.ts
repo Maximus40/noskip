@@ -11,8 +11,6 @@ export type Publisher = {
   address: string | null;
   /** SIRET number (micro-entreprise). */
   siret: string | null;
-  /** Phone number required by the LCEN for a professional publisher. */
-  phone: string | null;
   /** Contact address for users, privacy requests and the stores. */
   email: string | null;
 };
@@ -21,7 +19,6 @@ export const PUBLISHER: Publisher = {
   name: null,
   address: null,
   siret: null,
-  phone: null,
   email: null,
 };
 

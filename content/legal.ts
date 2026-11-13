@@ -10,7 +10,6 @@ export type LegalInfo = {
   publisher: string | null;
   address: string | null;
   siret: string | null;
-  phone: string | null;
   email: string | null;
   privacyUrl: string | null;
   termsUrl: string | null;
@@ -28,7 +27,6 @@ export function legalInfo(): LegalInfo {
     publisher: read(process.env.EXPO_PUBLIC_LEGAL_PUBLISHER) ?? PUBLISHER.name,
     address: PUBLISHER.address,
     siret: PUBLISHER.siret,
-    phone: PUBLISHER.phone,
     email: read(process.env.EXPO_PUBLIC_LEGAL_EMAIL) ?? PUBLISHER.email,
     privacyUrl: read(process.env.EXPO_PUBLIC_PRIVACY_URL) ?? SITE_PAGES.privacy,
     termsUrl: read(process.env.EXPO_PUBLIC_TERMS_URL) ?? SITE_PAGES.terms,
@@ -39,13 +37,7 @@ export function legalInfo(): LegalInfo {
 /** True when every field a store listing needs is set. */
 export const legalComplete = (info: LegalInfo) =>
   Boolean(
-    info.publisher &&
-    info.address &&
-    info.siret &&
-    info.phone &&
-    info.email &&
-    info.privacyUrl &&
-    info.termsUrl,
+    info.publisher && info.address && info.siret && info.email && info.privacyUrl && info.termsUrl,
   );
 
 export function privacySections(info: LegalInfo): LegalSection[] {
@@ -166,7 +158,7 @@ export function noticeSections(info: LegalInfo): LegalSection[] {
         `${APP_NAME} (application mobile et site ${SITE_PAGES.support}) est édité par ${v(info.publisher)}, entrepreneur individuel.`,
         `Adresse : ${v(info.address)}.`,
         `SIRET : ${v(info.siret)}.`,
-        `Téléphone : ${v(info.phone)}. E-mail : ${v(info.email)}.`,
+        `Contact : ${v(info.email)}.`,
       ],
     },
     {
