@@ -16,6 +16,7 @@ import {
   withPref,
 } from '@/domain/notifications';
 import { signOut } from '@/features/auth/signIn';
+import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { notificationPermission, registerForPush } from '@/features/notifications/push';
 import {
   LIFTER_TITLES,
@@ -42,6 +43,7 @@ type Permission = 'granted' | 'denied' | 'undetermined' | null;
 
 /** Réglages : notifications par type, sons et vibrations, compte. */
 export default function SettingsScreen() {
+  const saveLocal = useUpdateLocalOnboarding();
   const profile = useProfile();
   const update = useUpdateProfile();
   const [permission, setPermission] = useState<Permission>(null);
@@ -162,6 +164,22 @@ export default function SettingsScreen() {
         <ListRow title="Politique de confidentialité" onPress={() => router.push('/privacy')} />
         <ListRow title="Conditions d’utilisation" onPress={() => router.push('/terms')} />
         <ListRow title="Mentions légales" onPress={() => router.push('/legal-notice')} />
+      </View>
+
+      <View style={styles.card}>
+        <Text variant="caption" color={colors.muted}>
+          Aide
+        </Text>
+        <ListRow
+          title="Revoir l’intro"
+          subtitle="Les écrans d’accueil, puis le tutoriel de Ma team à ton prochain passage."
+          onPress={() =>
+            saveLocal.mutate(
+              { tutorialSeen: false },
+              { onSuccess: () => router.push({ pathname: '/welcome', params: { replay: '1' } }) },
+            )
+          }
+        />
       </View>
 
       <Button label="Se déconnecter" variant="ghost" withArrow={false} onPress={() => signOut()} />

@@ -30,13 +30,30 @@ import {
   useTeamBoard,
 } from '@/features/teams/api';
 import { useBarState } from '@/features/teams/useBarState';
+import { CoachMarks, CoachMarksProvider, useCoachTarget } from '@/features/tutorial/CoachMarks';
+import { TEAM_TUTORIAL } from '@/domain/tutorial';
+import { useLocalOnboarding, useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { useLatestClosedWeek } from '@/features/weeks/api';
 import { weekRangeLabel } from '@/domain/weekClose';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 /** Ma team: the team barbell over a dark map of the neighbourhood (glass on map). */
-export default function TeamScreen() {
+export default function TeamTab() {
+  return (
+    <CoachMarksProvider>
+      <TeamScreen />
+    </CoachMarksProvider>
+  );
+}
+
+function TeamScreen() {
+  const local = useLocalOnboarding();
+  const saveLocal = useUpdateLocalOnboarding();
+  const barTarget = useCoachTarget('bar');
+  const playersTarget = useCoachTarget('players');
+  const sessionTarget = useCoachTarget('session');
+  const historyTarget = useCoachTarget('history');
   const teams = useMyTeams();
   const [teamIndex, setTeamIndex] = useState(0);
   const team = teams.data?.[Math.min(teamIndex, (teams.data?.length ?? 1) - 1)];
@@ -207,7 +224,7 @@ export default function TeamScreen() {
                 </View>
               </Animated.View>
 
-              <Animated.View entering={enter(1)}>
+              <Animated.View entering={enter(1)} ref={barTarget} collapsable={false}>
                 <GlassPanel radius={radii.glass} style={styles.barPanel}>
                   {state.pr ? (
                     <View style={styles.prRow}>
@@ -269,7 +286,7 @@ export default function TeamScreen() {
                 </Animated.View>
               ) : null}
 
-              <Animated.View entering={enter(3)}>
+              <Animated.View entering={enter(3)} ref={playersTarget} collapsable={false}>
                 <GlassPanel radius={radii.glass} style={styles.players}>
                   {state.players.map((p) => {
                     const row = board.data?.find((r) => r.user_id === p.id);
@@ -337,24 +354,34 @@ export default function TeamScreen() {
         </ScrollView>
 
         <View style={styles.actions} pointerEvents="box-none">
-          <RoundGlassButton
-            onPress={() =>
-              router.push({ pathname: '/history', params: team ? { team: team.id } : {} })
-            }
-            accessibilityLabel="Historique des semaines"
-          >
-            <HistoryIcon color={colors.offWhite} />
-          </RoundGlassButton>
-          <RoundGlassButton
-            size="main"
-            accent
-            onPress={() => router.push('/session')}
-            accessibilityLabel={visit.data ? 'Séance en cours' : 'Je suis à la salle'}
-          >
-            <TimerIcon color={colors.accent} />
-          </RoundGlassButton>
+          <View ref={historyTarget} collapsable={false}>
+            <RoundGlassButton
+              onPress={() =>
+                router.push({ pathname: '/history', params: team ? { team: team.id } : {} })
+              }
+              accessibilityLabel="Historique des semaines"
+            >
+              <HistoryIcon color={colors.offWhite} />
+            </RoundGlassButton>
+          </View>
+          <View ref={sessionTarget} collapsable={false}>
+            <RoundGlassButton
+              size="main"
+              accent
+              onPress={() => router.push('/session')}
+              accessibilityLabel={visit.data ? 'Séance en cours' : 'Je suis à la salle'}
+            >
+              <TimerIcon color={colors.accent} />
+            </RoundGlassButton>
+          </View>
           <View style={styles.actionSpacer} />
         </View>
+        {/* First visit: the interactive tutorial, once the bar is on screen. */}
+        <CoachMarks
+          steps={TEAM_TUTORIAL}
+          visible={local.data?.tutorialSeen === false && Boolean(state)}
+          onDone={() => saveLocal.mutate({ tutorialSeen: true })}
+        />
       </SafeAreaView>
     </View>
   );
