@@ -1,4 +1,5 @@
-// revenuecat-webhook: RevenueCat → subscriptions / team_subscriptions (Pro, Pack Duo, Team).
+// revenuecat-webhook: RevenueCat → subscriptions / team_subscriptions (Pro, Team) and the shop
+// (one-time purchases noskip.shop.* → shop_purchases).
 // Authenticated with the Authorization header configured in RevenueCat (secret
 // REVENUECAT_WEBHOOK_AUTH); deployed without JWT verification. Idempotent per event id.
 import { adminClient, requireEnv } from '../_shared/auth.ts';

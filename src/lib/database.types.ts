@@ -229,6 +229,7 @@ export type Database = {
           primary_gym_changed_at: string | null;
           created_at: string;
           updated_at: string;
+          plate_skin: string;
         };
         Insert: {
           id: string;
@@ -249,6 +250,7 @@ export type Database = {
           primary_gym_changed_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          plate_skin?: string;
         };
         Update: {
           id?: string;
@@ -269,6 +271,7 @@ export type Database = {
           primary_gym_changed_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          plate_skin?: string;
         };
         Relationships: [];
       };
@@ -410,6 +413,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'shaky_alerts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      shop_purchases: {
+        Row: {
+          user_id: string;
+          product_id: string;
+          purchased_at: string;
+          revoked_at: string | null;
+          last_event_at: string | null;
+        };
+        Insert: {
+          user_id: string;
+          product_id: string;
+          purchased_at?: string;
+          revoked_at?: string | null;
+          last_event_at?: string | null;
+        };
+        Update: {
+          user_id?: string;
+          product_id?: string;
+          purchased_at?: string;
+          revoked_at?: string | null;
+          last_event_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shop_purchases_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -899,6 +934,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      equip_plate_skin: {
+        Args: {
+          p_skin: string;
+        };
+        Returns: string;
+      };
       increment_skip_share: {
         Args: {
           p_card: string;
@@ -958,6 +999,13 @@ export type Database = {
           gym_id: string;
           source: Database['public']['Enums']['session_source'];
           started_at: string;
+        }[];
+      };
+      my_shop: {
+        Args: never;
+        Returns: {
+          product_id: string;
+          equipped_skin: string;
         }[];
       };
       my_spots_today: {
@@ -1038,6 +1086,15 @@ export type Database = {
           today_status: string;
           joker_this_week: boolean;
           is_me: boolean;
+        }[];
+      };
+      team_cosmetics: {
+        Args: {
+          p_team: string;
+        };
+        Returns: {
+          user_id: string;
+          plate_skin: string;
         }[];
       };
       team_history: {

@@ -20,8 +20,30 @@ export type ApplyArgs = {
   teamId: string | null;
 };
 
+export type ShopArgs = {
+  eventId: string;
+  type: string;
+  userId: string;
+  productId: string;
+  /** A refund (CANCELLATION of a one-time purchase) takes the item back. */
+  revoke: boolean;
+  eventAt: string;
+};
+
 export interface SubscriptionStore {
   apply(args: ApplyArgs): Promise<Record<string, unknown>>;
+  /** One-time shop purchases (noskip.shop.*): never touch the subscription tables. */
+  applyShop(args: ShopArgs): Promise<Record<string, unknown>>;
+}
+
+/** Shop products are one-time purchases (skins, joke packs), never subscriptions. */
+export const isShopProduct = (productId: string) => productId.startsWith('noskip.shop.');
+
+/** RevenueCat event type for a shop product → grant, revoke or nothing. */
+export function shopActionFor(type: string): 'grant' | 'revoke' | null {
+  if (type === 'NON_RENEWING_PURCHASE' || type === 'INITIAL_PURCHASE') return 'grant';
+  if (type === 'CANCELLATION') return 'revoke';
+  return null;
 }
 
 export type Deps = {
@@ -106,8 +128,27 @@ export function createHandler(deps: Deps) {
       if (!parsed.success) throw new HttpError(400, 'invalid_input');
       const e = parsed.data.event;
 
-      const status = statusFor(e.type, e.period_type);
       const productId = e.new_product_id ?? e.product_id ?? null;
+      if (productId && isShopProduct(productId)) {
+        const action = shopActionFor(e.type);
+        const buyer = pickUserId([e.app_user_id, e.original_app_user_id, ...(e.aliases ?? [])]);
+        if (!action || !buyer) {
+          log('info', 'revenuecat-webhook', 'skipped', { type: e.type, shop: true });
+          return json({ skipped: action ? 'anonymous_user' : e.type });
+        }
+        const result = await deps.store.applyShop({
+          eventId: e.id,
+          type: e.type,
+          userId: buyer,
+          productId,
+          revoke: action === 'revoke',
+          eventAt: new Date(e.event_timestamp_ms ?? Date.now()).toISOString(),
+        });
+        log('info', 'revenuecat-webhook', 'applied', { type: e.type, ...result });
+        return json(result);
+      }
+
+      const status = statusFor(e.type, e.period_type);
       if (!status || !productId) {
         // TEST, TRANSFER, SUBSCRIPTION_PAUSED…: acknowledged, nothing to store.
         log('info', 'revenuecat-webhook', 'skipped', { type: e.type });

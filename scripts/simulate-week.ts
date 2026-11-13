@@ -59,6 +59,14 @@ const store: WeekStore = {
   dueWeek: () => scalar<string>('svc_due_week', ''),
   teamsToClose: async (week) =>
     (await rows<{ team_id: string }>('svc_teams_to_close', lit(week))).map((r) => r.team_id),
+  teamPacks: async (team) => {
+    // A scalar function's single column is named after the function.
+    const [row] = await rows<{ svc_team_joke_packs: string[] | null }>(
+      'svc_team_joke_packs',
+      lit(team),
+    );
+    return row?.svc_team_joke_packs ?? [];
+  },
   recentLines: async (team, limit) =>
     (await rows<{ line_id: string }>('svc_recent_skip_lines', `${lit(team)}, ${limit}`)).map(
       (r) => r.line_id,

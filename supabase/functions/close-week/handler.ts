@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { CronAuthorizer } from '../_shared/cron.ts';
 import { formatKg } from '../_shared/cron.ts';
 import { pickSkipLines, RECENT_LINES_AVOIDED } from '../_shared/generated/skipDraw.ts';
-import { SKIP_LINE_IDS } from '../_shared/generated/skipLineIds.ts';
+import { SKIP_LINE_IDS, SKIP_LINE_PACKS } from '../_shared/generated/skipLineIds.ts';
 import { corsHeaders, errorResponse, HttpError, json, log, readJson } from '../_shared/http.ts';
 import type { PushMessage } from '../_shared/push.ts';
 
@@ -26,6 +26,8 @@ export interface WeekStore {
   dueWeek(): Promise<string>;
   teamsToClose(week: string): Promise<string[]>;
   recentLines(team: string, limit: number): Promise<string[]>;
+  /** Shop packs owned by a member of the team (their lines join the draw). */
+  teamPacks(team: string): Promise<string[]>;
   memberIds(team: string): Promise<string[]>;
   closeTeamWeek(
     team: string,
@@ -123,11 +125,13 @@ export function createHandler(deps: Deps) {
     let failed = 0;
     for (const team of teams) {
       try {
-        const [recent, members] = await Promise.all([
+        const [recent, members, packs] = await Promise.all([
           store.recentLines(team, RECENT_LINES_AVOIDED),
           store.memberIds(team),
+          store.teamPacks(team),
         ]);
-        const drawn = pickSkipLines(SKIP_LINE_IDS, recent, members.length, deps.random);
+        const bank = [...SKIP_LINE_IDS, ...packs.flatMap((p) => SKIP_LINE_PACKS[p] ?? [])];
+        const drawn = pickSkipLines(bank, recent, members.length, deps.random);
         const lines = Object.fromEntries(members.map((id, i) => [id, drawn[i]]));
         const res = await store.closeTeamWeek(team, week, lines);
         if (res.newly_closed) closed += 1;

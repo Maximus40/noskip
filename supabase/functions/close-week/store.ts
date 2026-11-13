@@ -22,6 +22,8 @@ export function supabaseWeekStore(db: SupabaseClient): WeekStore {
           p_limit: limit,
         })
       ).map((r) => r.line_id),
+    teamPacks: async (team) =>
+      (await call<string[] | null>(db, 'svc_team_joke_packs', { p_team: team })) ?? [],
     memberIds: async (team) =>
       (await call<{ user_id: string }[]>(db, 'svc_team_member_ids', { p_team: team })).map(
         (r) => r.user_id,

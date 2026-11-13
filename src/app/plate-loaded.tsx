@@ -16,6 +16,7 @@ import { feedback } from '@/features/feedback/feedback';
 import { useProfile } from '@/features/profile/api';
 import { useDuoStreak, useMyTeams, useTeamBoard } from '@/features/teams/api';
 import { useBarState } from '@/features/teams/useBarState';
+import { useTeamSkins } from '@/features/shop/api';
 import { colors, minTouch, radii, spacing } from '@/theme/tokens';
 
 /** "Disque chargé" (design/html/V3-Disque.html): flat dark cards, the moment of the day. */
@@ -37,7 +38,8 @@ export default function PlateLoadedScreen() {
   const board = useTeamBoard(team?.id);
   const duo = useDuoStreak(team?.id);
   const [now] = useState(() => Date.now());
-  const state = useBarState(board.data, now);
+  const skins = useTeamSkins(team?.id);
+  const state = useBarState(board.data, now, skins.data);
   const reduced = useReducedMotion();
   const me = state?.players.find((p) => p.isMe);
   const newKey = me && me.done > 0 ? `${me.id}-${me.done - 1}` : null;

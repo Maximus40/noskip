@@ -6,7 +6,11 @@
  * new ones (a removed id falls back to the first line). After any change run
  * `npm run sync:shared` so the Edge Function draws from the same ids.
  */
-export type SkipLine = { id: string; text: string };
+/** Packs sold in the shop (noskip.shop.pack.<pack>): their lines join the team's draw. */
+export const JOKE_PACKS = ['foot', 'gaming'] as const;
+export type JokePack = (typeof JOKE_PACKS)[number];
+
+export type SkipLine = { id: string; text: string; pack?: JokePack };
 
 export const SKIP_LINES: readonly SkipLine[] = [
   { id: 'canap-pr-sieste', text: "Le Canap' vient de faire un PR de sieste." },
@@ -66,6 +70,82 @@ export const SKIP_LINES: readonly SkipLine[] = [
   { id: 'grasse-mat', text: "Grasse mat' validée, séance non validée." },
   { id: 'canap-sourire', text: "Le Canap' sourit. Il sait qu'il a gagné cette manche." },
   { id: 'revanche', text: "Le Canap' attend la revanche. Il n'a pas peur." },
+
+  // Pack Foot (shop).
+  {
+    id: 'foot-var',
+    text: 'VAR consultée : aucune séance de {pseudo} cette semaine. But refusé.',
+    pack: 'foot',
+  },
+  {
+    id: 'foot-banc',
+    text: "{pseudo} a passé la semaine sur le banc. Celui du Canap'.",
+    pack: 'foot',
+  },
+  {
+    id: 'foot-carton',
+    text: 'Carton rouge pour {pseudo} : expulsé de la salle par lui-même.',
+    pack: 'foot',
+  },
+  { id: 'foot-mercato', text: "Mercato surprise : {pseudo} signe au Canap' FC.", pack: 'foot' },
+  {
+    id: 'foot-tab',
+    text: "Séance perdue aux tirs au but. Le Canap' n'a même pas eu à plonger.",
+    pack: 'foot',
+  },
+  {
+    id: 'foot-coup-envoi',
+    text: "Seul sprint de la semaine : pour ne pas rater le coup d'envoi.",
+    pack: 'foot',
+  },
+  { id: 'foot-hors-jeu', text: 'Hors-jeu toute la semaine. Position : allongé.', pack: 'foot' },
+  {
+    id: 'foot-prolongations',
+    text: '« Je fais ma séance après le match. » Il y a eu prolongations. Sept jours.',
+    pack: 'foot',
+  },
+  {
+    id: 'foot-capitaine',
+    text: "Le capitaine du Canap' FC salue sa nouvelle recrue : {pseudo}.",
+    pack: 'foot',
+  },
+  { id: 'foot-remontada', text: "La remontada est prévue lundi. Comme d'habitude.", pack: 'foot' },
+
+  // Pack Gaming (shop).
+  {
+    id: 'gaming-afk',
+    text: "{pseudo} est AFK depuis lundi. Le Canap' a pris la manette.",
+    pack: 'gaming',
+  },
+  {
+    id: 'gaming-respawn',
+    text: 'Respawn à la salle prévu lundi. Chargement… 3 %.',
+    pack: 'gaming',
+  },
+  { id: 'gaming-quete', text: 'Quête « aller à la salle » : non commencée.', pack: 'gaming' },
+  {
+    id: 'gaming-lag',
+    text: "« J'ai eu du lag. » Sept jours de lag, c'est un record.",
+    pack: 'gaming',
+  },
+  { id: 'gaming-save', text: '{pseudo} a sauvegardé la partie. Pas la séance.', pack: 'gaming' },
+  {
+    id: 'gaming-boss',
+    text: "Boss de la semaine : le Canap'. Défaite sans combat.",
+    pack: 'gaming',
+  },
+  { id: 'gaming-xp', text: '+0 XP en force. +500 XP en canapé.', pack: 'gaming' },
+  {
+    id: 'gaming-tuto',
+    text: '{pseudo} est resté bloqué au tuto « prendre son sac de sport ».',
+    pack: 'gaming',
+  },
+  {
+    id: 'gaming-ranked',
+    text: "Classement de la team : {pseudo} descend en division Canap'.",
+    pack: 'gaming',
+  },
+  { id: 'gaming-gg', text: "GG au Canap', qui a gagné sans toucher la manette.", pack: 'gaming' },
 ];
 
 /** Text of a line for a player; unknown ids fall back to the first line. */

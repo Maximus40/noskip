@@ -193,3 +193,36 @@ export async function manageSubscription(userId: string): Promise<void> {
     Platform.OS === 'android' ? STORE_SUBSCRIPTIONS_URL.android : STORE_SUBSCRIPTIONS_URL.ios,
   );
 }
+
+/** Store prices of the shop items (one-time purchases), by product id. */
+export async function loadShopPrices(
+  userId: string,
+  productIds: readonly string[],
+): Promise<Record<string, string>> {
+  if (!(await ensureRevenueCat(userId))) throw new Error('payments_unavailable');
+  const products = await Purchases.getProducts(
+    [...productIds],
+    Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION,
+  );
+  return Object.fromEntries(products.map((p) => [p.identifier, p.priceString]));
+}
+
+/** Buys one shop item. The webhook records it on the server (shop_purchases). */
+export async function purchaseShopItem(
+  userId: string,
+  productId: string,
+): Promise<'bought' | 'cancelled'> {
+  if (!(await ensureRevenueCat(userId))) throw new Error('payments_unavailable');
+  const [product] = await Purchases.getProducts(
+    [productId],
+    Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION,
+  );
+  if (!product) throw new Error('product_unavailable');
+  try {
+    await Purchases.purchaseStoreProduct(product);
+    return 'bought';
+  } catch (err) {
+    if ((err as { userCancelled?: boolean | null }).userCancelled) return 'cancelled';
+    throw err;
+  }
+}

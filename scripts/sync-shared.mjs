@@ -18,7 +18,21 @@ const files = {
     header('src/domain/skipDraw.ts') + readFileSync(join(root, 'src/domain/skipDraw.ts'), 'utf8'),
   'skipLineIds.ts':
     header('content/skip-lines.ts') +
-    `export const SKIP_LINE_IDS: readonly string[] = [\n${SKIP_LINES.map((l) => `  '${l.id}',`).join('\n')}\n];\n`,
+    `/** Lines every team draws from. */\n` +
+    `export const SKIP_LINE_IDS: readonly string[] = [\n${SKIP_LINES.filter((l) => !l.pack)
+      .map((l) => `  '${l.id}',`)
+      .join('\n')}\n];\n\n` +
+    `/** Extra lines of the shop packs, drawn by teams where a member owns the pack. */\n` +
+    `export const SKIP_LINE_PACKS: Readonly<Record<string, readonly string[]>> = {\n${[
+      ...new Set(SKIP_LINES.filter((l) => l.pack).map((l) => l.pack)),
+    ]
+      .map(
+        (pack) =>
+          `  ${pack}: [\n${SKIP_LINES.filter((l) => l.pack === pack)
+            .map((l) => `    '${l.id}',`)
+            .join('\n')}\n  ],`,
+      )
+      .join('\n')}\n};\n`,
 };
 
 const check = process.argv.includes('--check');

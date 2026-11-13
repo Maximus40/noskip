@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { cronAuthorizer, formatKg } from '../_shared/cron.ts';
-import { SKIP_LINE_IDS } from '../_shared/generated/skipLineIds.ts';
+import { SKIP_LINE_IDS, SKIP_LINE_PACKS } from '../_shared/generated/skipLineIds.ts';
 import type { PushMessage } from '../_shared/push.ts';
 import {
   createHandler,
@@ -52,6 +52,7 @@ function fakeStore(opts: { failTeam?: string } = {}) {
     dueWeek: () => Promise.resolve('2026-10-26'),
     teamsToClose: () => Promise.resolve(['t1', 't2', 't3'].filter((t) => !state.closed.has(t))),
     recentLines: (team) => Promise.resolve(team === 't1' ? SKIP_LINE_IDS.slice(0, 20) : []),
+    teamPacks: (team) => Promise.resolve(team === 't2' ? ['foot'] : []),
     memberIds: (team) =>
       Promise.resolve(team === 't1' ? ['karim', 'maxime', 'sofiane'] : ['ines', 'tom']),
     closeTeamWeek: (team, _week, lines) => {
@@ -188,4 +189,10 @@ Deno.test('French copy', () => {
     "Bilan : la team a soulevé 0 kg. Le Canap' remporte la semaine.",
   );
   assert.equal(formatKg(980), '980');
+});
+
+Deno.test('a team draws its members shop packs on top of the base lines', () => {
+  const foot = SKIP_LINE_PACKS.foot;
+  assert.ok(foot.length >= 10);
+  for (const id of foot) assert.ok(!SKIP_LINE_IDS.includes(id), 'pack lines are not in the base');
 });

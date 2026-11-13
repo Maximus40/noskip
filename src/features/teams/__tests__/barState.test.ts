@@ -41,3 +41,14 @@ describe('barState', () => {
     expect(state.shaky).toBe(false);
   });
 });
+
+describe('shop skins on the bar', () => {
+  it('plates carry the skin their owner wears', () => {
+    const friday = new Date('2026-11-13T10:00:00+01:00').getTime();
+    const state = barState([row({ done: 1 }), row({ user_id: 'b', done: 1 })], friday, {
+      b: 'gold',
+    });
+    expect(state.plates.find((p) => p.playerId === 'b')?.skin).toBe('gold');
+    expect(state.plates.find((p) => p.playerId !== 'b')?.skin).toBeUndefined();
+  });
+});

@@ -14,6 +14,7 @@ import Animated, {
 import Svg, { Rect } from 'react-native-svg';
 
 import { type Plate, plateWidth } from '@/domain/bar';
+import { type PlateSkin, SKIN_PAINT } from '@/domain/shop';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -93,6 +94,7 @@ export function TeamBar({
                 x={left}
                 width={w}
                 color={plate.color}
+                skin={plate.skin}
                 animateFrom={isNew ? -40 : null}
               />,
               <PlateRect
@@ -100,6 +102,7 @@ export function TeamBar({
                 x={right}
                 width={w}
                 color={plate.color}
+                skin={plate.skin}
                 animateFrom={isNew ? 40 : null}
               />,
             ];
@@ -114,13 +117,16 @@ function PlateRect({
   x,
   width,
   color,
+  skin,
   animateFrom,
 }: {
   x: number;
   width: number;
   color: string;
+  skin?: PlateSkin;
   animateFrom: number | null;
 }) {
+  const paint = SKIN_PAINT[skin ?? 'classic'];
   const reduced = useReducedMotion();
   const offset = useSharedValue(animateFrom ?? 0);
   const opacity = useSharedValue(animateFrom === null ? 1 : 0);
@@ -138,14 +144,33 @@ function PlateRect({
   }, [animateFrom, reduced, offset, opacity]);
 
   const animatedProps = useAnimatedProps(() => ({ x: x + offset.value, opacity: opacity.value }));
+  // Shop skins: a stripe through the middle of the plate (carbon weave, chrome reflection).
+  const stripeProps = useAnimatedProps(() => ({
+    x: x + offset.value + width * 0.35,
+    opacity: opacity.value,
+  }));
   return (
-    <AnimatedRect
-      y={PLATE_Y}
-      width={width}
-      height={PLATE_H}
-      rx={3}
-      fill={color}
-      animatedProps={animatedProps}
-    />
+    <>
+      <AnimatedRect
+        y={PLATE_Y}
+        width={width}
+        height={PLATE_H}
+        rx={3}
+        fill={paint.body ?? color}
+        stroke={paint.rim ?? undefined}
+        strokeWidth={paint.rim ? 1.5 : 0}
+        animatedProps={animatedProps}
+      />
+      {paint.stripe ? (
+        <AnimatedRect
+          y={PLATE_Y + 10}
+          width={width * 0.3}
+          height={PLATE_H - 20}
+          rx={1.5}
+          fill={paint.stripe}
+          animatedProps={stripeProps}
+        />
+      ) : null}
+    </>
   );
 }

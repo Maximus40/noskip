@@ -491,6 +491,14 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - Site public généré depuis `content/legal.ts` par `npm run build:site` dans `docs/` (servi par GitHub Pages, branche `main`, dossier `/docs`) : support `https://pulseaiagency.github.io/noxcuse/`, confidentialité `/confidentialite/`, CGU `/cgu/`, mentions légales `/mentions-legales/`. `npm run check` échoue si `docs/` est périmé.
 - App : écran Réglages → Mentions légales (`/legal-notice`).
 
+### Onboarding v2 et boutique (14/11/2026)
+- **Accueil** : 3 écrans animés avant la première question (`(onboarding)/welcome.tsx`, contenu `src/domain/welcome.ts`) : barre de la team, disque qui se charge (vibration), affiche SKIP qui tombe comme un tampon ; « Passer » toujours visible ; une fois par téléphone (`welcomeSeen`).
+- **Compteur honnête** : « Encore N étapes » / « Dernière étape » (`remainingSteps`) : les étapes déjà faites ne comptent plus, le compteur ne saute plus. Cartes **« Pourquoi ? »** sur les étapes salle, objectif, carte et team.
+- **Tutoriel interactif** de Ma team à la première visite (`src/features/tutorial/CoachMarks.tsx`, contenu `src/domain/tutorial.ts`) : écran assombri, élément éclairé dans un cadre orange, bulle avec flèche (barre, potes/spot, bouton séance, historique), « Passer » ; une fois par téléphone (`tutorialSeen`). Réglages → Aide → **Revoir l'intro**.
+- **Boutique** (`src/app/shop.tsx`, entrée : Ma carte → La boutique, et Réglages) : achats uniques **cosmétiques** : skins de disques Or / Carbone / Chrome (`profiles.plate_skin`, vus par toute la team sur la barre) et packs de vannes Foot / Gaming (10 vannes chacun, ajoutées au tirage des cartes SKIP de la team si un membre possède le pack). Rien qui change le jeu. Serveur : migration `…001600_shop.sql` (appliquée en 3 morceaux `shop_1_tables`, `_2_player_rpcs`, `_3_webhook_and_grants`), 19 tests SQL ; webhook (v3) : les produits `noskip.shop.*` vont dans `shop_purchases` et ne donnent **jamais** l'abonnement ; `close-week` (v3) tire aussi les vannes des packs. Pages dev : `/dev-welcome`, `/dev-tutorial`, `/dev-skins`.
+- **À faire de ton côté** : créer les 5 achats intégrés non consommables dans App Store Connect (README §7 « Boutique ») et les ajouter dans RevenueCat ; nouveau build pour tester.
+- Pas fait : cartes de défi (demande des règles de jeu dédiées), prévues pour une V2 de la boutique.
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app`, clé APNs créée par EAS (13/11/2026), premier build envoyé sur TestFlight.

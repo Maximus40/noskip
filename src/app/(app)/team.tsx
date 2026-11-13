@@ -30,6 +30,7 @@ import {
   useTeamBoard,
 } from '@/features/teams/api';
 import { useBarState } from '@/features/teams/useBarState';
+import { useTeamSkins } from '@/features/shop/api';
 import { CoachMarks, CoachMarksProvider, useCoachTarget } from '@/features/tutorial/CoachMarks';
 import { TEAM_TUTORIAL } from '@/domain/tutorial';
 import { useLocalOnboarding, useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
@@ -81,7 +82,8 @@ function TeamScreen() {
     }, [team?.id]),
   );
 
-  const state = useBarState(board.data, now);
+  const skins = useTeamSkins(team?.id);
+  const state = useBarState(board.data, now, skins.data);
   const prefs = {
     sound: profile.data?.sound_enabled ?? true,
     haptics: profile.data?.haptics_enabled ?? true,

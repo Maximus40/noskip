@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
@@ -40,6 +40,12 @@ export default function LifterScreen() {
         </View>
       )}
       <ErrorNote message={card.error ? toUserMessage(card.error) : null} />
+      <Button
+        label="La boutique"
+        variant="secondary"
+        onPress={() => router.push('/shop')}
+        accessibilityHint="Skins de disques et packs de vannes"
+      />
       <View style={styles.bottomSpace} />
     </Screen>
   );

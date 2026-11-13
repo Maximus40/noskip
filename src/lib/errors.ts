@@ -54,6 +54,11 @@ const MESSAGES: Record<string, string> = {
   joker_already_used: 'Ton joker du mois est déjà grillé. Le prochain arrive le 1er.',
   goal_already_reached: 'Objectif déjà bouclé cette semaine : pas besoin de joker.',
   not_found: 'Introuvable. Ça a peut-être été supprimé.',
+  skin_not_owned:
+    'Ce skin n’est pas encore à toi. Si tu viens de l’acheter, patiente quelques secondes.',
+  invalid_skin: 'Ce skin n’existe pas.',
+  product_unavailable: 'Cet article n’est pas disponible pour le moment. Réessaie plus tard.',
+  payments_unavailable: 'Les achats ne sont pas disponibles dans cette version.',
 };
 
 export const GENERIC_ERROR = 'Oups, ça a coincé. Réessaie.';

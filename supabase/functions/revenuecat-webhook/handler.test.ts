@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 
-import { type ApplyArgs, createHandler, pickUserId, planForProduct, statusFor } from './handler.ts';
+import {
+  type ApplyArgs,
+  createHandler,
+  pickUserId,
+  planForProduct,
+  shopActionFor,
+  type ShopArgs,
+  statusFor,
+} from './handler.ts';
 
 const AUTH = 'Bearer whsec_test_value';
 const USER = '11111111-1111-4111-8111-111111111111';
@@ -8,6 +16,7 @@ const MATE = '22222222-2222-4222-8222-222222222222';
 
 function setup(authHeader: string | null = AUTH) {
   const applied: ApplyArgs[] = [];
+  const shop: ShopArgs[] = [];
   const handler = createHandler({
     authHeader,
     store: {
@@ -15,9 +24,13 @@ function setup(authHeader: string | null = AUTH) {
         applied.push(a);
         return Promise.resolve({ applied: a.plan });
       },
+      applyShop: (a) => {
+        shop.push(a);
+        return Promise.resolve({ applied: 'shop' });
+      },
     },
   });
-  return { handler, applied };
+  return { handler, applied, shop };
 }
 
 const post = (event: Record<string, unknown>, auth: string | null = AUTH) =>
@@ -115,4 +128,39 @@ Deno.test('mappings', () => {
   assert.equal(statusFor('TRANSFER', null), null);
   assert.equal(pickUserId(['$RCAnonymousID:1', undefined, USER]), USER);
   assert.equal(pickUserId([]), null);
+});
+
+Deno.test('shop purchases never touch the subscription', async () => {
+  const { handler, applied, shop } = setup();
+  const res = await handler(
+    post(
+      purchase({
+        id: 'evt-shop',
+        type: 'NON_RENEWING_PURCHASE',
+        product_id: 'noskip.shop.skin.gold',
+        period_type: 'NORMAL',
+        expiration_at_ms: null,
+      }),
+    ),
+  );
+  assert.equal(res.status, 200);
+  assert.equal(applied.length, 0);
+  assert.equal(shop.length, 1);
+  assert.equal(shop[0].productId, 'noskip.shop.skin.gold');
+  assert.equal(shop[0].revoke, false);
+  assert.equal(shop[0].userId, USER);
+});
+
+Deno.test('a refunded shop item is revoked; other shop events are skipped', async () => {
+  const { handler, shop } = setup();
+  await handler(
+    post(purchase({ id: 'evt-refund', type: 'CANCELLATION', product_id: 'noskip.shop.pack.foot' })),
+  );
+  assert.equal(shop[0].revoke, true);
+  const res = await handler(
+    post(purchase({ id: 'evt-x', type: 'BILLING_ISSUE', product_id: 'noskip.shop.pack.foot' })),
+  );
+  assert.deepEqual(await res.json(), { skipped: 'BILLING_ISSUE' });
+  assert.equal(shop.length, 1);
+  assert.equal(shopActionFor('EXPIRATION'), null);
 });

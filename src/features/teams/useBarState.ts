@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { allAchieved, type BarPlayer, platesFor, teamKg } from '@/domain/bar';
+import type { PlateSkin } from '@/domain/shop';
 import { weekRisk, type WeekRisk } from '@/domain/week';
 import { colors } from '@/theme/tokens';
 
@@ -14,8 +15,12 @@ export type BarState = {
   pr: boolean;
 };
 
-/** Turns the server board into what the bar and the player list draw. */
-export function barState(rows: BoardRow[], now: number): BarState {
+/** Turns the server board into what the bar and the player list draw (with shop skins). */
+export function barState(
+  rows: BoardRow[],
+  now: number,
+  skins: Readonly<Record<string, PlateSkin>> = {},
+): BarState {
   const players = rows.map((r) => {
     const base: BarPlayer = {
       id: r.user_id,
@@ -26,6 +31,7 @@ export function barState(rows: BoardRow[], now: number): BarState {
       done: r.done,
       status: r.today_status,
       joker: r.joker_this_week,
+      skin: skins[r.user_id],
     };
     const risk = weekRisk(
       { goal: base.goal, done: base.done, doneToday: base.status === 'done', joker: base.joker },
@@ -42,6 +48,10 @@ export function barState(rows: BoardRow[], now: number): BarState {
   };
 }
 
-export function useBarState(rows: BoardRow[] | undefined, now: number): BarState | null {
-  return useMemo(() => (rows ? barState(rows, now) : null), [rows, now]);
+export function useBarState(
+  rows: BoardRow[] | undefined,
+  now: number,
+  skins?: Readonly<Record<string, PlateSkin>>,
+): BarState | null {
+  return useMemo(() => (rows ? barState(rows, now, skins) : null), [rows, now, skins]);
 }

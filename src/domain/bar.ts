@@ -1,4 +1,5 @@
 /** The team barbell: one plate per validated session of the week (20 kg). Pure. */
+import type { PlateSkin } from './shop';
 import type { WeekRisk } from './week';
 
 export const KG_PER_SESSION = 20;
@@ -14,9 +15,17 @@ export type BarPlayer = {
   done: number;
   status: 'done' | 'at_gym' | 'not_yet';
   joker: boolean;
+  /** Cosmetic plate skin bought in the shop (absent = classic). */
+  skin?: PlateSkin;
 };
 
-export type Plate = { key: string; playerId: string; color: string; isMe: boolean };
+export type Plate = {
+  key: string;
+  playerId: string;
+  color: string;
+  isMe: boolean;
+  skin?: PlateSkin;
+};
 
 /**
  * Plates mounted on ONE sleeve, from the collar outwards (both sleeves are mirrored, as on a
@@ -32,6 +41,7 @@ export function platesFor(players: BarPlayer[], accent: string): Plate[] {
       playerId: p.id,
       color: p.isMe ? accent : p.color,
       isMe: p.isMe,
+      ...(p.skin && p.skin !== 'classic' ? { skin: p.skin } : {}),
     })),
   );
 }

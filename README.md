@@ -250,6 +250,23 @@ l'identifiant `com.noskipapp.app` (avec les capacités Sign in with Apple, Push 
 L'app identifie le joueur dans RevenueCat par son id Supabase, et pose l'attribut `noskip_team_id` avant un
 achat Team : le webhook sait quelle team couvrir.
 
+### Boutique (achats intégrés uniques)
+
+Cosmétiques uniquement : rien ne s'achète pour gagner (ni séance, ni disque, ni joker).
+
+| Produit (type : **non consommable**) | Prix conseillé | Effet                                                     |
+| ------------------------------------ | -------------- | --------------------------------------------------------- |
+| `noskip.shop.skin.gold`              | 1,99 €         | Disques Or sur la barre (vus par la team)                 |
+| `noskip.shop.skin.carbon`            | 1,99 €         | Disques Carbone                                           |
+| `noskip.shop.skin.chrome`            | 1,99 €         | Disques Chrome                                            |
+| `noskip.shop.pack.foot`              | 0,99 €         | +10 vannes Foot dans le tirage des cartes SKIP de la team |
+| `noskip.shop.pack.gaming`            | 0,99 €         | +10 vannes Gaming                                         |
+
+App Store Connect → ton app → **Monétisation → Achats intégrés** → **+** → **Non consommable**, avec ces
+identifiants. Dans RevenueCat, ajoute les 5 produits (Product catalog → Products), **sans** les rattacher à
+l'entitlement `pro` et sans offre : l'app les lit directement par leur identifiant. Le webhook enregistre
+l'achat dans `shop_purchases` (un remboursement le retire).
+
 ## 8. Vie privée : ce qui part vers le serveur
 
 Vérifié dans le code et par les tests :

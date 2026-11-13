@@ -83,6 +83,7 @@ function RootStack() {
       <Stack.Screen name="dev-paywall" />
       <Stack.Screen name="dev-welcome" />
       <Stack.Screen name="dev-tutorial" />
+      <Stack.Screen name="dev-skins" />
       <Stack.Protected guard={loading || session !== null}>
         <Stack.Screen name="(app)" options={{ animation: 'fade' }} />
         <Stack.Screen name="session" options={{ animation: 'fade' }} />
@@ -99,6 +100,7 @@ function RootStack() {
         <Stack.Screen name="team-manage/[id]" />
         <Stack.Screen name="my-data" />
         <Stack.Screen name="account-delete" />
+        <Stack.Screen name="shop" />
         <Stack.Screen name="dev" />
       </Stack.Protected>
     </Stack>
