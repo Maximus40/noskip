@@ -24,7 +24,7 @@ describe('SkipPoster', () => {
     ).toBeTruthy();
     expect(screen.getByText('1 240 kg')).toBeTruthy();
     expect(screen.getByText('SK')).toBeTruthy();
-    expect(screen.getByText('IP.')).toBeTruthy();
+    expect(screen.getByText('IP')).toBeTruthy();
     expect(screen.getByText('26 OCT. → 1ER NOV.')).toBeTruthy();
     expect(screen.getByLabelText(/^Carte SKIP\. Maxime a choisi le Canap'/)).toBeTruthy();
   });
