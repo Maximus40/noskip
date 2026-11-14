@@ -2,13 +2,19 @@
 import type { BarPlayer } from './bar';
 
 export type WelcomeSlide = {
-  key: 'team' | 'plate' | 'skip';
+  key: 'hero' | 'team' | 'plate' | 'skip';
   eyebrow: string;
   title: string;
   body: string;
 };
 
 export const WELCOME_SLIDES: readonly WelcomeSlide[] = [
+  {
+    key: 'hero',
+    eyebrow: 'Bienvenue dans',
+    title: 'NOXCUSE.',
+    body: 'Le jeu qui t’envoie à la salle. Avec tes potes, sans excuse.',
+  },
   {
     key: 'team',
     eyebrow: 'Ta team',

@@ -4,6 +4,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   ScrollView,
+  Text as RNText,
   type ScrollViewInstance,
   StyleSheet,
   useWindowDimensions,
@@ -11,6 +12,7 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown, Keyframe, useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { Canap } from '@/components/Canap';
 import { SkipPoster } from '@/components/SkipPoster';
@@ -25,6 +27,7 @@ import { WELCOME_DEMO_TEAM, WELCOME_SLIDES } from '@/domain/welcome';
 import { feedback } from '@/features/feedback/feedback';
 import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { colors, minTouch, radii, spacing } from '@/theme/tokens';
+import { fonts } from '@/theme/typography';
 
 /**
  * First screen of the app, before any question: three swipeable pages that sell the game
@@ -70,7 +73,8 @@ export default function Welcome() {
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <View style={styles.top}>
-        <Wordmark size={22} />
+        {/* The splash page already shows the brand in giant letters. */}
+        {page === 0 ? <View /> : <Wordmark size={22} />}
         {page < last ? (
           <PressableScale
             onPress={finish}
@@ -96,26 +100,30 @@ export default function Welcome() {
         contentOffset={{ x: startPage * width, y: 0 }}
         style={styles.flex}
       >
-        {WELCOME_SLIDES.map((slide, i) => (
-          <View key={slide.key} style={[styles.page, { width }]}>
-            <View style={styles.visual}>
-              {slide.key === 'team' ? <TeamVisual /> : null}
-              {slide.key === 'plate' ? <PlateVisual active={page === i} /> : null}
-              {slide.key === 'skip' ? <SkipVisual active={page === i} width={width} /> : null}
+        {WELCOME_SLIDES.map((slide, i) =>
+          slide.key === 'hero' ? (
+            <HeroPage key={slide.key} width={width} eyebrow={slide.eyebrow} body={slide.body} />
+          ) : (
+            <View key={slide.key} style={[styles.page, { width }]}>
+              <View style={styles.visual}>
+                {slide.key === 'team' ? <TeamVisual /> : null}
+                {slide.key === 'plate' ? <PlateVisual active={page === i} /> : null}
+                {slide.key === 'skip' ? <SkipVisual active={page === i} width={width} /> : null}
+              </View>
+              <View style={styles.copy}>
+                <Text variant="label" color={colors.accent}>
+                  {slide.eyebrow}
+                </Text>
+                <Text variant="display" style={styles.title} accessibilityRole="header">
+                  {slide.title}
+                </Text>
+                <Text variant="body" color="#C9CACE">
+                  {slide.body}
+                </Text>
+              </View>
             </View>
-            <View style={styles.copy}>
-              <Text variant="label" color={colors.accent}>
-                {slide.eyebrow}
-              </Text>
-              <Text variant="display" style={styles.title} accessibilityRole="header">
-                {slide.title}
-              </Text>
-              <Text variant="body" color="#C9CACE">
-                {slide.body}
-              </Text>
-            </View>
-          </View>
-        ))}
+          ),
+        )}
       </ScrollView>
 
       <View style={styles.footer}>
@@ -125,7 +133,7 @@ export default function Welcome() {
           ))}
         </View>
         {page < last ? (
-          <Button label="Suivant" onPress={() => goTo(page + 1)} />
+          <Button label={page === 0 ? "C'est parti" : 'Suivant'} onPress={() => goTo(page + 1)} />
         ) : (
           <Button
             label={replay ? 'Compris' : 'Je me lance'}
@@ -135,6 +143,80 @@ export default function Welcome() {
         )}
       </View>
     </SafeAreaView>
+  );
+}
+
+// "NO" then "XCUSE." fall like a rubber stamp, one after the other.
+const stamp = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 2.1 }, { translateY: -30 }] },
+  70: { opacity: 1, transform: [{ scale: 0.95 }, { translateY: 0 }] },
+  100: { opacity: 1, transform: [{ scale: 1 }, { translateY: 0 }] },
+}).duration(420);
+
+/** Splash page: the brand in giant letters, a loaded bar, the Canap' sulking in the corner. */
+function HeroPage({ width, eyebrow, body }: { width: number; eyebrow: string; body: string }) {
+  const reduced = useReducedMotion();
+  const { height } = useWindowDimensions();
+  const size = Math.min(104, (width - 2 * spacing.xl) / 4.35);
+  const letters = { fontSize: size, lineHeight: size * 0.92, letterSpacing: -size * 0.05 };
+  const enter = (delay: number) => (reduced ? FadeIn : stamp.delay(delay));
+  const plates = platesFor(WELCOME_DEMO_TEAM.players, colors.accent);
+  useEffect(() => {
+    const t = setTimeout(
+      () => feedback('plate_loaded', { sound: false, haptics: true }).catch(() => undefined),
+      reduced ? 0 : 700,
+    );
+    return () => clearTimeout(t);
+  }, [reduced]);
+  return (
+    <View style={[styles.hero, { width }]}>
+      <Svg style={StyleSheet.absoluteFill} width={width} height={height} pointerEvents="none">
+        <Defs>
+          <RadialGradient id="glow" cx="50%" cy="50%" rx="80%" ry="34%">
+            <Stop offset="0" stopColor={colors.accent} stopOpacity={0.32} />
+            <Stop offset="1" stopColor={colors.accent} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Rect x={0} y={0} width={width} height={height} fill="url(#glow)" />
+      </Svg>
+      <Animated.View entering={reduced ? FadeIn : FadeIn.duration(400)}>
+        <Text variant="label" color={colors.accent}>
+          {eyebrow}
+        </Text>
+      </Animated.View>
+      <View accessible accessibilityRole="header" accessibilityLabel="NOXCUSE">
+        <Animated.Text entering={enter(150)} style={[styles.heroWord, letters]}>
+          NO
+        </Animated.Text>
+        <Animated.Text entering={enter(420)} style={[styles.heroWord, letters]}>
+          XCUSE<RNText style={{ color: colors.accent }}>.</RNText>
+        </Animated.Text>
+      </View>
+      <Animated.View
+        entering={reduced ? FadeIn : FadeInDown.delay(750).duration(500)}
+        style={styles.heroBar}
+      >
+        <TeamBar
+          plates={plates}
+          width={Math.min(320, width - 2 * spacing.xl)}
+          accessibilityLabel="Une barre chargée"
+        />
+      </Animated.View>
+      <Animated.View entering={reduced ? FadeIn : FadeInDown.delay(950).duration(500)}>
+        <Text variant="headline" style={styles.heroTagline}>
+          {body}
+        </Text>
+      </Animated.View>
+      <Animated.View
+        entering={reduced ? FadeIn : FadeIn.delay(1300).duration(500)}
+        style={styles.heroCanap}
+      >
+        <Canap mood="sad" size={96} accessible={false} />
+        <Text variant="caption" color={colors.muted}>
+          Le Canap&apos; n&apos;est pas content.
+        </Text>
+      </Animated.View>
+    </View>
   );
 }
 
@@ -269,6 +351,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   page: { flex: 1, paddingHorizontal: spacing.xl, gap: spacing.lg, justifyContent: 'center' },
+  hero: { flex: 1, paddingHorizontal: spacing.xl, justifyContent: 'center', gap: spacing.md },
+  heroWord: { fontFamily: fonts.black, color: colors.offWhite, includeFontPadding: false },
+  heroBar: { alignItems: 'center', marginTop: spacing.lg },
+  heroTagline: { fontSize: 22, lineHeight: 28 },
+  heroCanap: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, alignSelf: 'flex-end' },
   visual: { alignItems: 'center', justifyContent: 'center', flexShrink: 1 },
   copy: { gap: spacing.sm },
   title: { fontSize: 34, lineHeight: 36, letterSpacing: -1 },

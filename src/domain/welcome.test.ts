@@ -3,7 +3,7 @@ import { WELCOME_DEMO_TEAM, WELCOME_SLIDES } from './welcome';
 
 describe('welcome pages', () => {
   it('tell the game in three pages: team, plate, SKIP', () => {
-    expect(WELCOME_SLIDES.map((s) => s.key)).toEqual(['team', 'plate', 'skip']);
+    expect(WELCOME_SLIDES.map((s) => s.key)).toEqual(['hero', 'team', 'plate', 'skip']);
     for (const s of WELCOME_SLIDES) {
       expect(s.title.length).toBeGreaterThan(0);
       expect(s.body.length).toBeLessThanOrEqual(200);
