@@ -7,7 +7,16 @@
  * `npm run sync:shared` so the Edge Function draws from the same ids.
  */
 /** Packs sold in the shop (noskip.shop.pack.<pack>): their lines join the team's draw. */
-export const JOKE_PACKS = ['foot', 'gaming'] as const;
+export const JOKE_PACKS = [
+  'foot',
+  'gaming',
+  'braquage',
+  'telerealite',
+  'rap',
+  'manga',
+  'daron',
+  'horoscope',
+] as const;
 export type JokePack = (typeof JOKE_PACKS)[number];
 
 export type SkipLine = { id: string; text: string; pack?: JokePack };
@@ -26,7 +35,7 @@ export const SKIP_LINES: readonly SkipLine[] = [
     text: "Le sac de sport attend dans l'entrée. Il a fini par défaire ses affaires.",
   },
   { id: 'meteo', text: 'Il pleuvait. Dans la salle aussi, apparemment.' },
-  { id: 'fatigue', text: "« J'étais crevé. » Le Canap' valide l'excuse, la team non." },
+  { id: 'fatigue', text: "« J'étais à plat. » Le Canap' valide l'excuse, la team non." },
   { id: 'plaid', text: 'Le plaid a gagné par K.O. au premier round.' },
   { id: 'echauffement', text: "Une semaine d'échauffement. Direction : le frigo." },
   { id: 'abonnement', text: "L'abonnement à la salle de {pseudo} se sent un peu seul." },
@@ -84,7 +93,7 @@ export const SKIP_LINES: readonly SkipLine[] = [
   },
   {
     id: 'foot-carton',
-    text: 'Carton rouge pour {pseudo} : expulsé de la salle par lui-même.',
+    text: 'Carton rouge pour {pseudo} : auto-expulsion de la salle.',
     pack: 'foot',
   },
   { id: 'foot-mercato', text: "Mercato surprise : {pseudo} signe au Canap' FC.", pack: 'foot' },
@@ -137,7 +146,7 @@ export const SKIP_LINES: readonly SkipLine[] = [
   { id: 'gaming-xp', text: '+0 XP en force. +500 XP en canapé.', pack: 'gaming' },
   {
     id: 'gaming-tuto',
-    text: '{pseudo} est resté bloqué au tuto « prendre son sac de sport ».',
+    text: '{pseudo} bloque encore au tuto « prendre son sac de sport ».',
     pack: 'gaming',
   },
   {
@@ -146,6 +155,306 @@ export const SKIP_LINES: readonly SkipLine[] = [
     pack: 'gaming',
   },
   { id: 'gaming-gg', text: "GG au Canap', qui a gagné sans toucher la manette.", pack: 'gaming' },
+  {
+    id: 'braquage-mission',
+    text: 'MISSION ÉCHOUÉE. Point de rendez-vous : la salle. Aucune trace de {pseudo}.',
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-etoiles',
+    text: '{pseudo} a 5 étoiles de recherche. Le coach a lancé un appel à toutes les unités.',
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-planque',
+    text: "{pseudo} se planque depuis lundi. Planque repérée : le Canap'.",
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-casse',
+    text: 'Le casse du siècle était prévu mardi. {pseudo} a oublié de se lever.',
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-drive',
+    text: '{pseudo} a pris une voiture pour aller à la salle. Arrêt au drive. Mission annulée.',
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-silence',
+    text: "Garde à vue sur le Canap' : {pseudo} garde le droit au silence. Et la télécommande.",
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-respawn',
+    text: "{pseudo} a réapparu au point de sauvegarde. Le point de sauvegarde, c'est le Canap'.",
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-butin',
+    text: 'Butin de la semaine : 0 séance, 3 paquets de chips.',
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-complice',
+    text: "Le Canap' était le complice parfait. Aucune trace de {pseudo} à la salle.",
+    pack: 'braquage',
+  },
+  {
+    id: 'braquage-cinematique',
+    text: "{pseudo} a passé toute la semaine à regarder la cinématique d'intro.",
+    pack: 'braquage',
+  },
+  {
+    id: 'telerealite-aventure',
+    text: "{pseudo} quitte l'aventure. Le Canap' remporte l'immunité.",
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-votes',
+    text: 'Les votes sont clos : la salle élimine {pseudo} cette semaine.',
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-confessionnal',
+    text: "Confessionnal de {pseudo} : « J'allais y aller, mais le Canap' a gagné. »",
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-officiel',
+    text: "{pseudo} et le Canap', c'est officiel. La production confirme.",
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-epreuve',
+    text: "Épreuve d'endurance : forfait. Épreuve de la sieste : victoire écrasante de {pseudo}.",
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-inedit',
+    text: 'Ce soir, épisode inédit : {pseudo} cherche ses baskets. Toujours pas trouvées.',
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-casting',
+    text: "Nouvelle saison : « Les Anges du Canap' ». {pseudo} décroche le casting.",
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-rose',
+    text: "Le Canap' a reçu la rose. {pseudo} n'a même pas ouvert son sac de sport.",
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-clash',
+    text: 'Clash en direct : {pseudo} contre son réveil. Le réveil a perdu.',
+    pack: 'telerealite',
+  },
+  {
+    id: 'telerealite-villa',
+    text: '{pseudo} rentre à la villa. La salle, ce sera pour la saison prochaine.',
+    pack: 'telerealite',
+  },
+  {
+    id: 'rap-album',
+    text: "{pseudo} sort son album : « Zéro séance ». Disque d'or au Canap'.",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-freestyle',
+    text: "Freestyle de {pseudo} : « J'ai pas bougé, mais j'avais le flow. »",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-feat',
+    text: "{pseudo} a sorti un feat avec le Canap'. Le clip est tourné en pyjama.",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-studio',
+    text: "{pseudo} était en studio toute la semaine. À poser… sur le Canap'.",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-punchline',
+    text: "Punchline du Canap' pour {pseudo} : « Ta barre est vide, la mienne est confort. »",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-lache',
+    text: '{pseudo} rappe « on lâche rien ». Résultat : salle lâchée.',
+    pack: 'rap',
+  },
+  {
+    id: 'rap-streams',
+    text: "Featuring de l'année : {pseudo} × le Canap'. Zéro répétitions, que des streams.",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-sac',
+    text: "Le flow de {pseudo} a voyagé partout. Son sac de sport, lui, n'a pas bougé.",
+    pack: 'rap',
+  },
+  {
+    id: 'rap-tournee',
+    text: '{pseudo} annule sa tournée des salles. Raison : canapé complet.',
+    pack: 'rap',
+  },
+  {
+    id: 'rap-diss',
+    text: 'La salle a sorti un diss sur {pseudo}. Toujours pas de réponse.',
+    pack: 'rap',
+  },
+  {
+    id: 'manga-forme',
+    text: "{pseudo} n'a pas atteint sa forme finale. Ni la salle.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-filler',
+    text: "Épisode de remplissage : {pseudo} a passé la semaine sur le Canap'.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-arc',
+    text: "« Je reviendrai plus fort », a dit {pseudo}. Fin de l'arc. Pas de séance.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-esquive',
+    text: "Technique secrète de {pseudo} : l'esquive de la salle. Niveau maître.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-salon',
+    text: "{pseudo} s'entraîne dans une salle hors du temps. Elle s'appelle le salon.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-ko',
+    text: "Le Canap' lance l'attaque « Sieste éternelle ». {pseudo} est KO.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-sensei',
+    text: 'Le sensei attend {pseudo} depuis lundi. Il a eu le temps de prendre sa retraite.',
+    pack: 'manga',
+  },
+  {
+    id: 'manga-flashback',
+    text: 'Flash-back de 45 minutes : {pseudo} se souvient de sa dernière séance.',
+    pack: 'manga',
+  },
+  {
+    id: 'manga-ninja',
+    text: "{pseudo} a juré sur son honneur de ninja d'aller à la salle. Ninja introuvable.",
+    pack: 'manga',
+  },
+  {
+    id: 'manga-suite',
+    text: 'Suite au prochain épisode. Comme la séance de {pseudo}.',
+    pack: 'manga',
+  },
+  {
+    id: 'daron-neige',
+    text: 'De mon temps, {pseudo}, on allait à la salle à pied. Dans la neige. En montée.',
+    pack: 'daron',
+  },
+  {
+    id: 'daron-retraite',
+    text: "Tu crois que le Canap' va te payer ta retraite, {pseudo} ?",
+    pack: 'daron',
+  },
+  {
+    id: 'daron-lumiere',
+    text: '{pseudo}, éteins la lumière en sortant. Ah non, tu ne sors jamais.',
+    pack: 'daron',
+  },
+  {
+    id: 'daron-decu',
+    text: '« Je suis pas fâché, je suis déçu. » Le coach, à propos de {pseudo}.',
+    pack: 'daron',
+  },
+  {
+    id: 'daron-hotel',
+    text: "{pseudo}, la salle c'est pas un hôtel. Le Canap' non plus.",
+    pack: 'daron',
+  },
+  {
+    id: 'daron-abonnement',
+    text: "On t'a pas payé un abonnement pour décorer ton portefeuille, {pseudo}.",
+    pack: 'daron',
+  },
+  {
+    id: 'daron-chambre',
+    text: "Range ta chambre et va à la salle. Tu n'as fait ni l'un ni l'autre, {pseudo}.",
+    pack: 'daron',
+  },
+  {
+    id: 'daron-demain',
+    text: "{pseudo} a dit « j'y vais demain ». Demain, c'était il y a sept jours.",
+    pack: 'daron',
+  },
+  {
+    id: 'daron-rentabilise',
+    text: 'Tu sais combien ça coûte, un canapé, {pseudo} ? Rentabilisé, visiblement.',
+    pack: 'daron',
+  },
+  {
+    id: 'daron-air',
+    text: "Va prendre l'air, {pseudo}. La salle, c'est dehors.",
+    pack: 'daron',
+  },
+  {
+    id: 'horoscope-venus',
+    text: "Vénus était alignée avec le Canap'. {pseudo} ne pouvait rien faire.",
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-mercure',
+    text: 'Mercure rétrograde. {pseudo} aussi.',
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-astres',
+    text: "Les astres l'avaient prédit : {pseudo} ne quittera pas le salon cette semaine.",
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-ascendant',
+    text: 'Ascendant canapé : {pseudo} ne pouvait pas lutter.',
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-chance',
+    text: 'Chance : 2/5. Énergie : 1/5. Motivation : en option. Signé : les astres de {pseudo}.',
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-lune',
+    text: 'Pleine lune, sac de sport vide. Semaine difficile pour {pseudo}.',
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-conseil',
+    text: 'Conseil des astres : bouger. Conseil suivi par {pseudo} : zapper.',
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-saturne',
+    text: 'Saturne déconseillait le leg day. {pseudo} a aussi évité tous les autres jours.',
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-couleur',
+    text: "Couleur porte-bonheur de {pseudo} cette semaine : celle du Canap'.",
+    pack: 'horoscope',
+  },
+  {
+    id: 'horoscope-prevision',
+    text: 'Prévision : séance cette semaine. Fiabilité : faible. Les astres connaissent {pseudo}.',
+    pack: 'horoscope',
+  },
 ];
 
 /** Text of a line for a player; unknown ids fall back to the first line. */

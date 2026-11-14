@@ -39,14 +39,14 @@ describe('shop catalog', () => {
     }
   });
 
-  it('sells every premium poster style once, plus the pack of five', () => {
+  it('sells every premium poster style once, plus the pack of all cards', () => {
     const styles = SHOP_ITEMS.flatMap((i) => (i.kind === 'poster' ? [i.style] : []));
     expect([...styles].sort()).toEqual(POSTER_STYLES.filter((s) => s !== 'classic').sort());
     for (const i of SHOP_ITEMS)
       if (i.kind === 'poster') expect(i.productId).toBe(`noskip.shop.poster.${i.style}`);
     expect(SHOP_PRODUCT_IDS).toContain(POSTER_BUNDLE_ID);
     expect(isPosterStyle('wanted')).toBe(true);
-    expect(isPosterStyle('neon')).toBe(false);
+    expect(isPosterStyle('disco')).toBe(false);
   });
 
   it('owns a poster style through its own product or the pack', () => {

@@ -507,6 +507,15 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - App : section « Cartes SKIP premium » en tête de la boutique (rail horizontal, pack des 5 mis en avant), écran Carte SKIP qui affiche le style stocké. Captures : `design/qa/posters-premium.png`, `canap-moods.png`, `shop-posters.png`.
 - **À faire de ton côté** : créer les 6 achats intégrés dans App Store Connect et RevenueCat (README §7), puis un nouveau build.
 
+### 6 nouveaux packs de vannes (14/11/2026)
+- **Braquage** (ambiance jeu de gangsters en monde ouvert, sans nom de marque : un achat intégré ne peut pas porter le nom d'un autre jeu), **Téléréalité**, **Rap**, **Manga**, **Daron**, **Horoscope** : 10 vannes chacun dans `content/skip-lines.ts` (règle respectée : on chambre l'excuse, jamais le physique), produits `noskip.shop.pack.<pack>` à 0,99 €. `close-week` redéployée (v4) avec la nouvelle liste. Total boutique : 17 achats intégrés.
+- **À faire de ton côté** : créer les 6 nouveaux achats dans App Store Connect et RevenueCat (capture `design/qa/review-shop-packs.jpg`).
+
+### 4 nouvelles cartes + textes neutres (14/11/2026)
+- Cartes **Warrior** (arène, lettres creuses, tampon FORFAIT), **Couverture** (magazine, le Canap' en une, « EXCLU : {pseudo} dit non à la salle »), **Néon** (enseigne rose qui grésille, « SALLE : FERMÉE »), **Zen** (« INSPIRE. EXPIRE. SKIP. », halo qui respire). `noskip.shop.poster.<style>` 1,99 € ; le pack devient « **Toutes les cartes** » (`noskip.shop.poster.all`, 4,99 €, couvre aussi les cartes futures). Migration `…001800_poster_styles_more.sql` (appliquée), 15 tests SQL.
+- **Textes valables au féminin comme au masculin** : « EXPULSÉ » → « QUITTE LE TERRAIN », « RECHERCHÉ » → « AVIS DE RECHERCHE », « Vu pour la dernière fois » → « Dernière apparition », et 9 vannes réécrites (« arrivé », « éliminé », « retenu », « venu », « sorti », « resté », « crevé »…). Règle pour toute nouvelle vanne : pas d'accord au masculin ou au féminin sur le joueur.
+- **À faire de ton côté** : 4 achats de plus dans App Store Connect et RevenueCat (21 au total) ; nom du pack : « Toutes les cartes ».
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app`, clé APNs créée par EAS (13/11/2026), premier build envoyé sur TestFlight.

@@ -237,6 +237,7 @@ const SAMPLE = {
 } as const;
 
 const MINI = 156;
+const FAN_STEP = 26;
 
 /** Premium SKIP cards: equip one, and your teammates' SKIP cards come out in your style. */
 function PosterSection({
@@ -323,7 +324,11 @@ function PosterSection({
                   key={item.productId}
                   style={[
                     styles.fanItem,
-                    { left: i * 44, transform: [{ rotate: `${(i - 2) * 6}deg` }], zIndex: i },
+                    {
+                      left: i * FAN_STEP,
+                      transform: [{ rotate: `${(i - (styles_.length - 1) / 2) * 4}deg` }],
+                      zIndex: i,
+                    },
                   ]}
                 >
                   <StyledPoster style={item.style} width={72} {...SAMPLE} />
@@ -455,6 +460,6 @@ const styles = StyleSheet.create({
   posterWorn: { borderColor: colors.accent },
   posterPitch: { minHeight: 48 },
   bundle: { borderWidth: 1, borderColor: colors.accent },
-  fan: { height: 140, width: 72 + 44 * 4, alignSelf: 'center' },
+  fan: { height: 140, width: 72 + FAN_STEP * 8, alignSelf: 'center' },
   fanItem: { position: 'absolute', top: 6, borderRadius: 4, overflow: 'hidden' },
 });

@@ -34,7 +34,7 @@ export function RedCardPoster({ ref, ...p }: PosterProps) {
       collapsable={false}
       style={[styles.poster, { width, height, padding: 24 * u }]}
       accessible
-      accessibilityLabel={`Carte SKIP, carton rouge. ${p.pseudo} expulsé par le Canap'. ${p.line}`}
+      accessibilityLabel={`Carte SKIP, carton rouge. ${p.pseudo} quitte le terrain, le Canap' gagne. ${p.line}`}
     >
       {/* Pitch stripes. */}
       {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
@@ -89,7 +89,7 @@ export function RedCardPoster({ ref, ...p }: PosterProps) {
         numberOfLines={2}
         adjustsFontSizeToFit
       >
-        {`${p.pseudo.toUpperCase()} EXPULSÉ PAR LE CANAP'.`}
+        {`${p.pseudo.toUpperCase()} QUITTE LE TERRAIN.`}
       </Text>
       <Text
         style={[styles.line, { fontSize: 14 * u, lineHeight: 19 * u, marginTop: 6 * u }]}

@@ -14,7 +14,7 @@ select tests.reset_role();
 -- Cannot wear an unbought style, nor write the column or the card.
 select tests.authenticate_as(:'roaster');
 select tests.throws($$select public.equip_poster_style('gold')$$, 'poster_not_owned', 'unbought style refused');
-select tests.throws($$select public.equip_poster_style('neon')$$, 'invalid_poster_style', 'unknown style refused');
+select tests.throws($$select public.equip_poster_style('disco')$$, 'invalid_poster_style', 'unknown style refused');
 select tests.throws($$update public.profiles set poster_style = 'gold' where id = auth.uid()$$,
                     '42501', 'poster_style is not directly writable');
 select tests.eq(public.equip_poster_style('classic'), 'classic', 'classic is always free');
@@ -65,6 +65,7 @@ select tests.reset_role();
 select tests.authenticate_as(:'bundler');
 select tests.eq(public.equip_poster_style('wanted'), 'wanted', 'pack unlocks wanted');
 select tests.eq(public.equip_poster_style('gold'), 'gold', 'pack unlocks gold');
+select tests.eq(public.equip_poster_style('zen'), 'zen', 'pack unlocks the styles added later');
 select tests.reset_role();
 
 rollback;

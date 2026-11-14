@@ -35,7 +35,7 @@
   webhook, clés SDK dans `.env` / EAS.
 - ☐ Achat test : bac à sable iOS (compte Sandbox) et testeurs de licence Google Play. Vérifier que la ligne
   apparaît dans `subscriptions` et que l'app débloque.
-- ☐ Boutique : 11 achats intégrés non consommables (`noskip.shop.*`, README §7 : 3 skins, 2 packs de vannes, 5 cartes SKIP + le pack des 5) créés et ajoutés dans RevenueCat ; achat test d'un skin (il apparaît sur la barre de la team), d'un pack et d'une carte SKIP (équipée, puis visible sur la prochaine carte d'un pote).
+- ☐ Boutique : 21 achats intégrés non consommables (`noskip.shop.*`, README §7 : 3 skins, 8 packs de vannes, 9 cartes SKIP + « Toutes les cartes ») créés et ajoutés dans RevenueCat ; achat test d'un skin (il apparaît sur la barre de la team), d'un pack et d'une carte SKIP (équipée, puis visible sur la prochaine carte d'un pote).
 - ☐ Tester « un pote paie, toute la team joue » (les potes passent l'écran de paiement, « Offert par … ») et
   Team (8 places).
 

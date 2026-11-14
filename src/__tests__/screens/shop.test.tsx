@@ -24,6 +24,10 @@ jest.mock('@/features/shop/api', () => ({
       'noskip.shop.poster.gameover': '1,99 €',
       'noskip.shop.poster.wanted': '1,99 €',
       'noskip.shop.poster.news': '1,99 €',
+      'noskip.shop.poster.warrior': '1,99 €',
+      'noskip.shop.poster.magazine': '1,99 €',
+      'noskip.shop.poster.neon': '1,99 €',
+      'noskip.shop.poster.zen': '1,99 €',
       'noskip.shop.poster.all': '4,99 €',
     },
   }),
@@ -49,8 +53,8 @@ describe('shop', () => {
     await render(<ShopScreen />);
     expect(screen.getByText('DU STYLE. ZÉRO TRICHE.')).toBeTruthy();
     expect(screen.getByText(/rien ne s’achète pour gagner/)).toBeTruthy();
-    // The 5 premium cards come first, then the skins.
-    const goldPrice = screen.getAllByRole('button', { name: '1,99 €' })[5];
+    // The 9 premium cards come first, then the skins.
+    const goldPrice = screen.getAllByRole('button', { name: '1,99 €' })[9];
     await fireEvent.press(goldPrice);
     await waitFor(() => expect(mockBuy).toHaveBeenCalledWith('noskip.shop.skin.gold'));
     expect(await screen.findByText(/Disques Or : achat validé/)).toBeTruthy();
@@ -73,7 +77,7 @@ describe('shop', () => {
     mockBuy.mockResolvedValue('bought');
     await render(<ShopScreen />);
     expect(screen.getByText('Cartes SKIP premium')).toBeTruthy();
-    expect(screen.getAllByRole('button', { name: '1,99 €' })).toHaveLength(8);
+    expect(screen.getAllByRole('button', { name: '1,99 €' })).toHaveLength(12);
     await fireEvent.press(screen.getByRole('button', { name: '4,99 €' }));
     await waitFor(() => expect(mockBuy).toHaveBeenCalledWith('noskip.shop.poster.all'));
   });

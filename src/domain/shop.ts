@@ -21,7 +21,18 @@ export const SKIN_PAINT: Record<PlateSkin, SkinPaint> = {
 };
 
 /** SKIP poster styles: a buyer who equips one imposes it on their teammates' SKIP cards. */
-export const POSTER_STYLES = ['classic', 'gold', 'redcard', 'gameover', 'wanted', 'news'] as const;
+export const POSTER_STYLES = [
+  'classic',
+  'gold',
+  'redcard',
+  'gameover',
+  'wanted',
+  'news',
+  'warrior',
+  'magazine',
+  'neon',
+  'zen',
+] as const;
 export type PosterStyle = (typeof POSTER_STYLES)[number];
 export const POSTER_BUNDLE_ID = 'noskip.shop.poster.all';
 
@@ -56,7 +67,7 @@ export const SHOP_ITEMS: readonly ShopItem[] = [
     productId: 'noskip.shop.poster.redcard',
     style: 'redcard',
     title: 'Carton Rouge',
-    pitch: 'Expulsé par le Canap’. Le carton se lève devant toute la team.',
+    pitch: 'Carton rouge du Canap’. Il se lève devant toute la team.',
   },
   {
     kind: 'poster',
@@ -70,7 +81,7 @@ export const SHOP_ITEMS: readonly ShopItem[] = [
     productId: 'noskip.shop.poster.wanted',
     style: 'wanted',
     title: 'Avis de recherche',
-    pitch: 'Recherché pour séance manquée. Récompense : une séance.',
+    pitch: 'Avis de recherche pour séance manquée. Récompense : une séance.',
   },
   {
     kind: 'poster',
@@ -80,10 +91,38 @@ export const SHOP_ITEMS: readonly ShopItem[] = [
     pitch: 'Flash spécial en direct : ton pote sèche la salle.',
   },
   {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.warrior',
+    style: 'warrior',
+    title: 'Warrior',
+    pitch: 'L’arène est prête. Ton pote déclare forfait.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.magazine',
+    style: 'magazine',
+    title: 'Couverture',
+    pitch: 'En une du magazine : l’exclu du skip de la semaine.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.neon',
+    style: 'neon',
+    title: 'Néon',
+    pitch: 'Néon rose dans la nuit : la salle est fermée, le Canap’ est ouvert.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.zen',
+    style: 'zen',
+    title: 'Zen',
+    pitch: 'Inspire. Expire. Skip. La paix intérieure, sur le Canap’.',
+  },
+  {
     kind: 'posterBundle',
     productId: POSTER_BUNDLE_ID,
-    title: 'Les 5 cartes',
-    pitch: 'Tous les styles d’un coup. Change de carte quand tu veux.',
+    title: 'Toutes les cartes',
+    pitch: 'Toutes les cartes, et celles qui sortiront. Change de style quand tu veux.',
   },
   {
     kind: 'skin',
@@ -119,6 +158,48 @@ export const SHOP_ITEMS: readonly ShopItem[] = [
     pack: 'gaming',
     title: 'Pack vannes Gaming',
     pitch: '10 vannes du Canap’ en plus sur les cartes SKIP de ta team.',
+  },
+  {
+    kind: 'pack',
+    productId: 'noskip.shop.pack.braquage',
+    pack: 'braquage',
+    title: 'Pack vannes Braquage',
+    pitch: 'Mission échouée, étoiles de recherche, planque au Canap’ : ambiance jeu de gangsters.',
+  },
+  {
+    kind: 'pack',
+    productId: 'noskip.shop.pack.telerealite',
+    pack: 'telerealite',
+    title: 'Pack vannes Téléréalité',
+    pitch: 'Éliminé de la salle, confessionnal, la rose pour le Canap’.',
+  },
+  {
+    kind: 'pack',
+    productId: 'noskip.shop.pack.rap',
+    pack: 'rap',
+    title: 'Pack vannes Rap',
+    pitch: 'Album « Zéro séance », feat avec le Canap’, clash de la salle.',
+  },
+  {
+    kind: 'pack',
+    productId: 'noskip.shop.pack.manga',
+    pack: 'manga',
+    title: 'Pack vannes Manga',
+    pitch: 'Forme finale ratée, épisode de remplissage, sensei qui attend.',
+  },
+  {
+    kind: 'pack',
+    productId: 'noskip.shop.pack.daron',
+    pack: 'daron',
+    title: 'Pack vannes Daron',
+    pitch: '« De mon temps, on allait à la salle à pied. » Les vannes de tes parents.',
+  },
+  {
+    kind: 'pack',
+    productId: 'noskip.shop.pack.horoscope',
+    pack: 'horoscope',
+    title: 'Pack vannes Horoscope',
+    pitch: 'Mercure rétrograde, ascendant canapé : les astres l’avaient prédit.',
   },
 ];
 

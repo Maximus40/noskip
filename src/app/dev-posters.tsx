@@ -2,14 +2,10 @@ import { Redirect, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { Canap, type CanapMood } from '@/components/Canap';
-import { SkipPoster } from '@/components/SkipPoster';
+import { StyledPoster } from '@/components/posters/StyledPoster';
 import { Text } from '@/components/ui/Text';
-import { BreakingNewsPoster } from '@/components/posters/BreakingNewsPoster';
-import { GameOverPoster } from '@/components/posters/GameOverPoster';
-import { GoldPoster } from '@/components/posters/GoldPoster';
-import { RedCardPoster } from '@/components/posters/RedCardPoster';
+import { isPosterStyle } from '@/domain/shop';
 import type { PosterProps } from '@/components/posters/types';
-import { WantedPoster } from '@/components/posters/WantedPoster';
 import { colors } from '@/theme/tokens';
 
 const SAMPLE: PosterProps = {
@@ -24,25 +20,15 @@ const SAMPLE: PosterProps = {
   animated: false,
 };
 
-const POSTERS = {
-  classic: SkipPoster,
-  gold: GoldPoster,
-  redcard: RedCardPoster,
-  gameover: GameOverPoster,
-  wanted: WantedPoster,
-  news: BreakingNewsPoster,
-} as const;
-
 /** Development only: one SKIP poster style with sample data (?style=…, or ?style=moods for every
  * Canap' face), for visual QA. */
 export default function DevPosters() {
   const style = useLocalSearchParams<{ style?: string }>().style ?? 'classic';
   if (!__DEV__) return <Redirect href="/" />;
   if (style === 'moods') return <Moods />;
-  const Poster = POSTERS[style as keyof typeof POSTERS] ?? SkipPoster;
   return (
     <View style={styles.screen}>
-      <Poster {...SAMPLE} />
+      <StyledPoster style={isPosterStyle(style) ? style : 'classic'} {...SAMPLE} />
     </View>
   );
 }

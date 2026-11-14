@@ -34,7 +34,7 @@ export function WantedPoster({ ref, ...p }: PosterProps) {
       collapsable={false}
       style={[styles.poster, { width, height, padding: 22 * u }]}
       accessible
-      accessibilityLabel={`Carte SKIP, avis de recherche. ${p.pseudo} recherché pour séance manquée. ${p.line}`}
+      accessibilityLabel={`Carte SKIP, avis de recherche. ${p.pseudo}, pour séance manquée. ${p.line}`}
     >
       <View
         pointerEvents="none"
@@ -66,14 +66,17 @@ export function WantedPoster({ ref, ...p }: PosterProps) {
         </Text>
       </View>
 
-      <Text style={[styles.title, { fontSize: 46 * u, letterSpacing: -1 * u, marginTop: 14 * u }]}>
-        RECHERCHÉ
+      <Text style={[styles.sub, { fontSize: 13 * u, letterSpacing: 4 * u, marginTop: 10 * u }]}>
+        AVIS DE
+      </Text>
+      <Text style={[styles.title, { fontSize: 46 * u, lineHeight: 54 * u, letterSpacing: -1 * u }]}>
+        RECHERCHE
       </Text>
       <Text style={[styles.sub, { fontSize: 13 * u, letterSpacing: 4 * u, marginTop: 8 * u }]}>
         POUR SÉANCE MANQUÉE
       </Text>
 
-      <View style={[styles.portrait, { height: 230 * u, marginTop: 16 * u, borderWidth: 3 * u }]}>
+      <View style={[styles.portrait, { height: 206 * u, marginTop: 12 * u, borderWidth: 3 * u }]}>
         <Text style={[styles.initial, { fontSize: 150 * u, lineHeight: 160 * u }]}>{initial}</Text>
         <View style={[styles.canap, { right: 6 * u, bottom: 4 * u }]}>
           <Canap mood="sleepy" size={92 * u} accessible={false} />
@@ -107,7 +110,7 @@ export function WantedPoster({ ref, ...p }: PosterProps) {
         style={[styles.line, { fontSize: 14 * u, lineHeight: 19 * u, marginTop: 4 * u }]}
         numberOfLines={3}
       >
-        {`Vu pour la dernière fois sur le Canap'. ${p.line}`}
+        {`Dernière apparition : le Canap'. ${p.line}`}
       </Text>
 
       <View style={{ flex: 1 }} />

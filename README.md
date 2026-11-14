@@ -261,15 +261,25 @@ Cosmétiques uniquement : rien ne s'achète pour gagner (ni séance, ni disque, 
 | `noskip.shop.skin.chrome`            | 1,99 €         | Disques Chrome                                            |
 | `noskip.shop.pack.foot`              | 0,99 €         | +10 vannes Foot dans le tirage des cartes SKIP de la team |
 | `noskip.shop.pack.gaming`            | 0,99 €         | +10 vannes Gaming                                         |
+| `noskip.shop.pack.braquage`          | 0,99 €         | +10 vannes Braquage                                       |
+| `noskip.shop.pack.telerealite`       | 0,99 €         | +10 vannes Téléréalité                                    |
+| `noskip.shop.pack.rap`               | 0,99 €         | +10 vannes Rap                                            |
+| `noskip.shop.pack.manga`             | 0,99 €         | +10 vannes Manga                                          |
+| `noskip.shop.pack.daron`             | 0,99 €         | +10 vannes Daron                                          |
+| `noskip.shop.pack.horoscope`         | 0,99 €         | +10 vannes Horoscope                                      |
 | `noskip.shop.poster.gold`            | 1,99 €         | Carte SKIP « Édition Or » imposée aux potes qui skip      |
 | `noskip.shop.poster.redcard`         | 1,99 €         | Carte SKIP « Carton Rouge »                               |
 | `noskip.shop.poster.gameover`        | 1,99 €         | Carte SKIP « Game Over »                                  |
 | `noskip.shop.poster.wanted`          | 1,99 €         | Carte SKIP « Avis de recherche »                          |
 | `noskip.shop.poster.news`            | 1,99 €         | Carte SKIP « Alerte Info »                                |
-| `noskip.shop.poster.all`             | 4,99 €         | Les 5 cartes SKIP premium                                 |
+| `noskip.shop.poster.warrior`         | 1,99 €         | Carte SKIP « Warrior »                                    |
+| `noskip.shop.poster.magazine`        | 1,99 €         | Carte SKIP « Couverture » (magazine)                      |
+| `noskip.shop.poster.neon`            | 1,99 €         | Carte SKIP « Néon »                                       |
+| `noskip.shop.poster.zen`             | 1,99 €         | Carte SKIP « Zen »                                        |
+| `noskip.shop.poster.all`             | 4,99 €         | Toutes les cartes SKIP premium (y compris les futures)    |
 
 App Store Connect → ton app → **Monétisation → Achats intégrés** → **+** → **Non consommable**, avec ces
-identifiants. Dans RevenueCat, ajoute les 11 produits (Product catalog → Products), **sans** les rattacher à
+identifiants. Dans RevenueCat, ajoute les 21 produits (Product catalog → Products), **sans** les rattacher à
 l'entitlement `pro` et sans offre : l'app les lit directement par leur identifiant. Le webhook enregistre
 l'achat dans `shop_purchases` (un remboursement le retire).
 
