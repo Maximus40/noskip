@@ -30,4 +30,9 @@ export const SITE_PAGES = {
   privacy: `${SITE_URL}/confidentialite/`,
   terms: `${SITE_URL}/cgu/`,
   notice: `${SITE_URL}/mentions-legales/`,
+  /** Landing page of an invite link: install the app, open the invite, copy the code. */
+  join: `${SITE_URL}/rejoindre/`,
 } as const;
+
+/** The app on the App Store (live once the first version is published). */
+export const APP_STORE_URL = 'https://apps.apple.com/app/id6833982038';

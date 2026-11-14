@@ -1,6 +1,7 @@
 import {
   extractInviteCode,
   formatInviteCode,
+  inviteAppUrl,
   inviteMessage,
   inviteUrl,
   posterInviteLabel,
@@ -29,7 +30,12 @@ describe('invite codes', () => {
 
   it('formats and builds links', () => {
     expect(formatInviteCode('ABCD2345')).toBe('ABCD-2345');
-    expect(inviteUrl('ABCD2345')).toBe('noxcuse://join/ABCD2345');
+    expect(inviteUrl('ABCD2345')).toBe(
+      'https://pulseaiagency.github.io/noxcuse/rejoindre/?code=ABCD2345',
+    );
+    expect(inviteAppUrl('ABCD2345')).toBe('noxcuse://join/ABCD2345');
+    expect(extractInviteCode('…/rejoindre/?code=ABCD2345')).toBe('ABCD2345');
+    expect(extractInviteCode('Rejoins « X » …\nCode : ABCD-2345\nPas encore')).toBe('ABCD2345');
     expect(inviteUrl('ABCD2345', 'noxcuse.app')).toBe('https://noxcuse.app/join/ABCD2345');
     expect(posterInviteLabel('ABCD2345')).toBe('Rejoins la team sur NOXCUSE · code ABCD-2345');
     expect(posterInviteLabel('ABCD2345', 'noxcuse.app')).toBe(

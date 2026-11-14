@@ -908,6 +908,10 @@ export type Database = {
         };
         Returns: undefined;
       };
+      cancel_joker: {
+        Args: never;
+        Returns: boolean;
+      };
       cancel_session: {
         Args: never;
         Returns: undefined;

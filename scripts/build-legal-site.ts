@@ -2,7 +2,7 @@
 // app and the web pages always say the same thing. Usage:
 //   deno run --sloppy-imports --allow-read --allow-write --allow-env scripts/build-legal-site.ts
 //   ... --check   (fails if docs/ is out of date; part of `npm run check`)
-import { APP_NAME, APP_WORDMARK } from '../content/brand.ts';
+import { APP_NAME, APP_SCHEME, APP_WORDMARK } from '../content/brand.ts';
 import {
   type LegalSection,
   legalInfo,
@@ -10,7 +10,7 @@ import {
   privacySections,
   termsSections,
 } from '../content/legal.ts';
-import { SITE_PAGES } from '../content/publisher.ts';
+import { APP_STORE_URL, SITE_PAGES } from '../content/publisher.ts';
 
 const OUT = new URL('../docs/', import.meta.url);
 const check = Deno.args.includes('--check');
@@ -125,6 +125,94 @@ const support: LegalSection[] = [
   },
 ];
 
+/**
+ * Invite landing page (…/rejoindre/?code=ABCD2345): what a guest sees when tapping the link a
+ * friend shared. Install the app, open the invite in it, or copy the code to paste in the app.
+ */
+function joinPage(): string {
+  return `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ta team t’attend · ${esc(APP_NAME)}</title>
+<meta name="description" content="Un pote t’invite dans sa team sur ${esc(APP_NAME)}, le jeu de muscu entre potes.">
+<meta property="og:title" content="Ta team t’attend sur ${esc(APP_NAME)}">
+<meta property="og:description" content="Chaque séance charge la barre de la team. Chaque skip finit en carte pour le Canap’.">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+  @font-face { font-family: ArchivoBlack; src: url('../fonts/Archivo-Black.ttf') format('truetype'); font-display: swap; }
+  :root { color-scheme: dark; --bg: #111214; --card: #1D1E22; --text: #F5F5F0; --muted: #A3A4A9; --accent: #FF6A3D; --ink: #0E0E0F; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; color: var(--text);
+    background: radial-gradient(ellipse 90% 45% at 50% 40%, rgba(255,106,61,.28), transparent 70%), var(--bg);
+    font: 17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 480px; margin: 0 auto; padding: 32px 16px 48px; }
+  .brand { font-family: ArchivoBlack, sans-serif; font-size: 24px; letter-spacing: -.05em; }
+  .brand span, .dot { color: var(--accent); }
+  .eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; margin: 40px 0 6px; }
+  h1 { font-family: ArchivoBlack, sans-serif; font-size: clamp(44px, 14vw, 64px); line-height: .95; letter-spacing: -.04em; margin: 0 0 16px; }
+  .lead { color: #C9CACE; margin: 0 0 24px; }
+  .code { background: var(--card); border-radius: 18px; padding: 18px; text-align: center; margin-bottom: 20px; }
+  .code small { color: var(--muted); display: block; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; }
+  .code strong { font-family: ArchivoBlack, sans-serif; font-size: 40px; letter-spacing: .04em; display: block; margin: 4px 0 10px; }
+  .btn { display: block; width: 100%; text-align: center; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 17px;
+    text-decoration: none; border: 0; cursor: pointer; margin: 0 0 12px; font-family: inherit; }
+  .primary { background: var(--accent); color: var(--ink); }
+  .secondary { background: transparent; color: var(--text); border: 1.5px solid rgba(255,255,255,.22); }
+  ol { padding-left: 20px; color: #C9CACE; margin: 24px 0 0; }
+  li { margin-bottom: 8px; }
+  .note { color: var(--muted); font-size: 14px; margin-top: 20px; }
+  .bad { display: none; }
+</style>
+</head>
+<body>
+<main>
+<div class="brand">${esc(APP_WORDMARK)}<span>.</span></div>
+<p class="eyebrow">Invitation</p>
+<h1>TA TEAM T’ATTEND<span class="dot">.</span></h1>
+<p class="lead">Un pote t’invite dans sa team. Chaque séance charge la barre de la team, chaque skip finit en carte pour le Canap’.</p>
+<div class="code" id="codebox">
+  <small>Ton code d’invitation</small>
+  <strong id="code">····-····</strong>
+  <button class="btn secondary" id="copy" type="button">Copier le code</button>
+</div>
+<p class="lead bad" id="bad">Lien incomplet : demande le code à ton pote, ou un nouveau lien.</p>
+<a class="btn primary" href="${APP_STORE_URL}">1 · Installer ${esc(APP_NAME)}</a>
+<a class="btn secondary" id="open" href="${APP_SCHEME}://">2 · J’ai l’app : ouvrir l’invitation</a>
+<ol>
+  <li>Installe l’app (iPhone ; Android arrive bientôt).</li>
+  <li>Reviens ici et touche « ouvrir l’invitation » : tu rejoins la team en créant ton compte.</li>
+  <li>Le bouton ne marche pas ? Dans l’app, à l’étape « Avec qui tu soulèves ? », choisis « Rejoindre » puis « Coller le code reçu ».</li>
+</ol>
+<p class="note">Ta position ne quitte jamais ton téléphone : ta team voit seulement « venu » ou « pas venu ».</p>
+</main>
+<script>
+  (function () {
+    var raw = (new URLSearchParams(location.search).get('code') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    var ok = /^[A-HJ-NP-Z2-9]{8}$/.test(raw);
+    if (!ok) {
+      document.getElementById('codebox').style.display = 'none';
+      document.getElementById('bad').style.display = 'block';
+      return;
+    }
+    var pretty = raw.slice(0, 4) + '-' + raw.slice(4);
+    document.getElementById('code').textContent = pretty;
+    document.getElementById('open').href = '${APP_SCHEME}://join/' + raw;
+    var copy = document.getElementById('copy');
+    copy.addEventListener('click', function () {
+      var done = function () { copy.textContent = 'Code copié ✓'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(pretty).then(done, done);
+      else done();
+    });
+  })();
+</script>
+</body>
+</html>
+`;
+}
+
 const files: Record<string, string> = {
   'index.html': page('Support', `${APP_NAME}.`, sections(support), 0),
   'confidentialite/index.html': page(
@@ -140,6 +228,7 @@ const files: Record<string, string> = {
     sections(noticeSections(info)),
     1,
   ),
+  'rejoindre/index.html': joinPage(),
   // Serve the files as they are (no Jekyll processing).
   '.nojekyll': '',
 };

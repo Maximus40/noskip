@@ -25,7 +25,7 @@ import { formatKg, platesFor } from '@/domain/bar';
 import { SAMPLE_PSEUDO, sampleSkipLine } from '@/domain/shop';
 import { WELCOME_DEMO_TEAM, WELCOME_SLIDES } from '@/domain/welcome';
 import { feedback } from '@/features/feedback/feedback';
-import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
+import { useLocalOnboarding, useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import { colors, minTouch, radii, spacing } from '@/theme/tokens';
 import { fonts } from '@/theme/typography';
 
@@ -43,6 +43,8 @@ export default function Welcome() {
   const scroller = useRef<ScrollViewInstance>(null);
   const [page, setPage] = useState(startPage);
   const save = useUpdateLocalOnboarding();
+  // Arrived through an invite link: the welcome speaks to the guest.
+  const guest = Boolean(useLocalOnboarding().data?.pendingInviteCode);
   const last = WELCOME_SLIDES.length - 1;
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -102,7 +104,14 @@ export default function Welcome() {
       >
         {WELCOME_SLIDES.map((slide, i) =>
           slide.key === 'hero' ? (
-            <HeroPage key={slide.key} width={width} eyebrow={slide.eyebrow} body={slide.body} />
+            <HeroPage
+              key={slide.key}
+              width={width}
+              eyebrow={guest ? 'Ta team t’attend sur' : slide.eyebrow}
+              body={
+                guest ? 'Un pote t’a invité. Il ne manque plus que toi sur la barre.' : slide.body
+              }
+            />
           ) : (
             <View key={slide.key} style={[styles.page, { width }]}>
               <View style={styles.visual}>
@@ -136,7 +145,7 @@ export default function Welcome() {
           <Button label={page === 0 ? "C'est parti" : 'Suivant'} onPress={() => goTo(page + 1)} />
         ) : (
           <Button
-            label={replay ? 'Compris' : 'Je me lance'}
+            label={replay ? 'Compris' : guest ? 'Rejoindre ma team' : 'Je me lance'}
             onPress={finish}
             disabled={save.isPending}
           />

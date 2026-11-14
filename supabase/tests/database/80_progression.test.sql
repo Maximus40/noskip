@@ -28,7 +28,13 @@ select tests.authenticate_as(:'a');
 select tests.eq((select week_start from public.declare_joker()), :'wk'::date, 'joker declared for the current week');
 select tests.eq((select month from public.declare_joker()), :'wk_month'::date, 'declaring again is idempotent');
 select tests.eq(tests.count_rows('select * from public.jokers where user_id = auth.uid()'), 1::bigint, 'one joker row');
+-- Feeling better: the joker is withdrawn, the month's joker is free again, then re-declared.
+select tests.eq(public.cancel_joker(), true, 'joker withdrawn');
+select tests.eq(tests.count_rows('select * from public.jokers where user_id = auth.uid()'), 0::bigint, 'no joker left');
+select tests.eq(public.cancel_joker(), false, 'nothing to withdraw twice');
+select tests.eq((select week_start from public.declare_joker()), :'wk'::date, 'the month joker can be used again');
 select tests.reset_role();
+select tests.throws('select public.cancel_joker()', 'not_authenticated', 'nobody signed in: refused');
 
 -- Maxime already used his joker of the month on another week.
 insert into public.jokers (user_id, month, week_start) values (:'b', :'wk_month', :'wk'::date - 7);

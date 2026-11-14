@@ -1,3 +1,4 @@
+import * as Clipboard from 'expo-clipboard';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -29,6 +30,7 @@ export default function TeamSetupStep() {
   const [mode, setMode] = useState<Mode | null>(null);
   const [name, setName] = useState('');
   const [rawCode, setRawCode] = useState('');
+  const [pasteNote, setPasteNote] = useState<string | null>(null);
   const [nameTouched, setNameTouched] = useState(false);
   const create = useCreateTeam();
   const join = useJoinTeam();
@@ -151,6 +153,23 @@ export default function TeamSetupStep() {
             autoCorrect={false}
             placeholder="ABCD-2345"
           />
+          {/* The invite page says « copie le code »: one tap pastes it (asked by iOS each time). */}
+          <Button
+            label="Coller le code reçu"
+            variant="secondary"
+            withArrow={false}
+            onPress={async () => {
+              const text = await Clipboard.getStringAsync().catch(() => '');
+              const found = text ? extractInviteCode(text) : null;
+              setPasteNote(found ? null : 'Aucun code dans ton presse-papiers. Tape-le à la main.');
+              if (found) setRawCode(found);
+            }}
+          />
+          {pasteNote ? (
+            <Text variant="caption" color={colors.muted}>
+              {pasteNote}
+            </Text>
+          ) : null}
           {preview.isFetching ? <Skeleton height={72} /> : null}
           {preview.data ? (
             <View style={styles.preview}>

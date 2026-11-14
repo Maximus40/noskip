@@ -1,5 +1,6 @@
 /** Team rules shared by screens. Mirrors the SQL limits (see migrations …000200 / …000600). */
 import { APP_NAME, APP_SCHEME } from '../../content/brand';
+import { SITE_PAGES } from '../../content/publisher';
 
 export const INVITE_CODE_LENGTH = 8;
 export const STANDARD_TEAM_CAPACITY = 4;
@@ -14,9 +15,12 @@ export function normalizeInviteCode(input: string): string | null {
   return code.length === INVITE_CODE_LENGTH && ALPHABET.test(code) ? code : null;
 }
 
-/** Pulls a code out of anything pasted: a bare code, noxcuse://join/X or https://host/join/X. */
+/**
+ * Pulls a code out of anything pasted: a bare code, noxcuse://join/X, https://host/join/X, the
+ * web invite page (…/rejoindre/?code=X) or a whole invite message.
+ */
 export function extractInviteCode(input: string): string | null {
-  const fromLink = /join\/([A-Za-z0-9-]{8,9})/.exec(input);
+  const fromLink = /(?:join\/|code=|Code : )([A-Za-z0-9-]{8,9})/.exec(input);
   return normalizeInviteCode(fromLink ? fromLink[1] : input.trim());
 }
 
@@ -25,9 +29,17 @@ export function formatInviteCode(code: string): string {
   return `${code.slice(0, 4)}-${code.slice(4)}`;
 }
 
-/** Universal link when a web host is configured, custom scheme otherwise. */
+/**
+ * Link shared in invites: a universal link when a domain is configured, otherwise the public web
+ * page (always tappable in messaging apps, explains how to install the app and join).
+ */
 export function inviteUrl(code: string, host?: string | null): string {
-  return host ? `https://${host}/join/${code}` : `${APP_SCHEME}://join/${code}`;
+  return host ? `https://${host}/join/${code}` : `${SITE_PAGES.join}?code=${code}`;
+}
+
+/** Opens the invite straight in the app (only works once it is installed). */
+export function inviteAppUrl(code: string): string {
+  return `${APP_SCHEME}://join/${code}`;
 }
 
 /** Bottom line of the SKIP poster: a readable link when a domain exists, the code otherwise. */
@@ -41,7 +53,7 @@ export function inviteMessage(teamName: string, code: string, host?: string | nu
   return (
     `Rejoins « ${teamName} » sur ${APP_NAME}. Chaque séance charge la barre de la team, ` +
     `chaque skip finit en carte pour le Canap'.\n${inviteUrl(code, host)}\n` +
-    `Code : ${formatInviteCode(code)}`
+    `Code : ${formatInviteCode(code)}\nPas encore l'app ? Le lien t'explique tout.`
   );
 }
 

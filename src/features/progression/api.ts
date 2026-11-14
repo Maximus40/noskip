@@ -67,6 +67,21 @@ export function useLifterCard(userId?: string) {
 }
 
 /** Joker blessure for the current week (server checks: 1 per month, goal not reached yet). */
+/** Feeling better: withdraws this week's joker (the month's joker is given back). */
+export function useCancelJoker() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await db().rpc('cancel_joker');
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: lifterCardKey(null) });
+      qc.invalidateQueries({ queryKey: ['team-board'] });
+    },
+  });
+}
+
 export function useDeclareJoker() {
   const qc = useQueryClient();
   return useMutation({

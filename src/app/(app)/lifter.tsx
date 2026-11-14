@@ -10,7 +10,12 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { jokerState } from '@/domain/progression';
 import { useProfile } from '@/features/profile/api';
-import { type LifterCardData, useDeclareJoker, useLifterCard } from '@/features/progression/api';
+import {
+  type LifterCardData,
+  useCancelJoker,
+  useDeclareJoker,
+  useLifterCard,
+} from '@/features/progression/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -82,6 +87,7 @@ export default function LifterScreen() {
 
 function JokerCard({ card }: { card: LifterCardData }) {
   const declare = useDeclareJoker();
+  const cancel = useCancelJoker();
   const [error, setError] = useState<string | null>(null);
   const state = jokerState(card);
 
@@ -106,15 +112,47 @@ function JokerCard({ card }: { card: LifterCardData }) {
     );
   }
 
+  function confirmCancel() {
+    Alert.alert(
+      'Retirer le joker ?',
+      'Ça va mieux ? La semaine compte à nouveau : sans ton objectif dimanche 20 h, c’est la carte SKIP. Ton joker du mois te sera rendu.',
+      [
+        { text: 'Garder le joker', style: 'cancel' },
+        {
+          text: 'Retirer',
+          style: 'destructive',
+          onPress: async () => {
+            setError(null);
+            try {
+              await cancel.mutateAsync();
+            } catch (err) {
+              setError(toUserMessage(err));
+            }
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <View style={styles.joker}>
       <Text variant="caption" color={colors.muted}>
         Joker blessure · 1 par mois
       </Text>
       {state === 'active' ? (
-        <Text variant="bodyStrong" accessibilityLiveRegion="polite">
-          Joker actif cette semaine. Pas de carte SKIP, ta série est protégée. Soigne-toi.
-        </Text>
+        <>
+          <Text variant="bodyStrong" accessibilityLiveRegion="polite">
+            Joker actif cette semaine. Pas de carte SKIP, ta série est protégée. Soigne-toi.
+          </Text>
+          <Button
+            label="Ça va mieux, retirer le joker"
+            variant="ghost"
+            withArrow={false}
+            disabled={cancel.isPending}
+            onPress={confirmCancel}
+            accessibilityHint="Demande une confirmation. La semaine compte à nouveau."
+          />
+        </>
       ) : state === 'used' ? (
         <Text variant="body" color="#C9CACE">
           Joker du mois déjà utilisé. Le prochain arrive le 1er.
