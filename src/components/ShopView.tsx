@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
 
+import { skipLineText } from '../../content/skip-lines';
 import { StyledPoster } from '@/components/posters/StyledPoster';
 import { TeamBar } from '@/components/TeamBar';
 import { Button } from '@/components/ui/Button';
@@ -225,9 +226,23 @@ export function ShopView({
   );
 }
 
+/** A different real line on each preview, so the shop shows the variety of the cards. */
+const SAMPLE_LINE: Record<PosterStyle, string> = {
+  classic: 'leg-day',
+  gold: 'canap-pr-sieste',
+  redcard: 'plaid',
+  gameover: 'telecommande',
+  wanted: 'place-chauffee',
+  news: 'reveil',
+  warrior: 'leg-day',
+  magazine: 'serie-netflix',
+  neon: 'chips-orange',
+  zen: 'demain-promis',
+};
+const sampleLine = (style: PosterStyle) => skipLineText(SAMPLE_LINE[style], 'Karim');
+
 const SAMPLE = {
   pseudo: 'Karim',
-  line: 'Karim a skip la salle. Même le leg day n’y croyait plus.',
   teamName: 'Ta team',
   teamKg: 200,
   skips: 1,
@@ -285,7 +300,12 @@ function PosterSection({
           return (
             <View key={item.productId} style={styles.posterCard}>
               <View style={[styles.posterFrame, worn && styles.posterWorn]}>
-                <StyledPoster style={item.style} width={MINI} {...SAMPLE} />
+                <StyledPoster
+                  style={item.style}
+                  width={MINI}
+                  {...SAMPLE}
+                  line={sampleLine(item.style)}
+                />
               </View>
               <Text variant="bodyStrong">{item.title}</Text>
               <Text variant="caption" color={colors.muted} style={styles.posterPitch}>
@@ -331,7 +351,12 @@ function PosterSection({
                     },
                   ]}
                 >
-                  <StyledPoster style={item.style} width={72} {...SAMPLE} />
+                  <StyledPoster
+                    style={item.style}
+                    width={72}
+                    {...SAMPLE}
+                    line={sampleLine(item.style)}
+                  />
                 </View>
               ) : null,
             )}
