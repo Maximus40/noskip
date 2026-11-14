@@ -24,6 +24,13 @@ const option = (
 
 const mockHasPro = { data: false };
 
+jest.mock('@/features/profile/api', () => ({
+  useProfile: () => ({ data: { weekly_goal: 3 } }),
+}));
+jest.mock('@/features/subscriptions/trialReminder', () => ({
+  canNotify: () => Promise.resolve(true),
+  scheduleTrialReminder: jest.fn(() => Promise.resolve()),
+}));
 jest.mock('expo-router', () => ({
   router: { replace: jest.fn(), push: jest.fn(), back: jest.fn(), canGoBack: () => true },
 }));

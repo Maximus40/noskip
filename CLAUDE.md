@@ -516,6 +516,16 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **Textes valables au féminin comme au masculin** : « EXPULSÉ » → « QUITTE LE TERRAIN », « RECHERCHÉ » → « AVIS DE RECHERCHE », « Vu pour la dernière fois » → « Dernière apparition », et 9 vannes réécrites (« arrivé », « éliminé », « retenu », « venu », « sorti », « resté », « crevé »…). Règle pour toute nouvelle vanne : pas d'accord au masculin ou au féminin sur le joueur.
 - **À faire de ton côté** : 4 achats de plus dans App Store Connect et RevenueCat (21 au total) ; nom du pack : « Toutes les cartes ».
 
+### Boutique en onglet, offres, invités, paiement (15/11/2026)
+- **Boutique** = 5e onglet (sac), point orange tant que les nouveautés n'ont pas été vues (`SHOP_CATALOG_VERSION`). Rail des cartes : « Fais glisser · 9 cartes → » + petit glissement automatique. Aperçus avec « ton pote » / Alex / Sam (jamais un prénom marqué).
+- **Offres** : carte sur Ma team (une par jour, masquée 3 jours après la croix, jamais pour un article possédé ni pendant le tutoriel) ; lien boutique sous chaque carte SKIP ; **notifs « Nouveautés et offres »** désactivées par défaut (règle Apple 4.5.4) — campagne lancée depuis l'éditeur SQL : `select app_private.send_offer('Titre', 'Texte');` (fonction `send-offer`, envoi unique par campagne, toucher = boutique). Migration `…001900_offer_push.sql`, 5 tests SQL, 2 tests Deno.
+- **Accueil** : page de marque en premier (« NO / XCUSE. » en tampon, barre chargée, Canap' qui boude, « Tes potes comptent sur toi. Le Canap' aussi. »). Version invité quand on arrive par un lien (« Ta team t'attend sur », bouton « Rejoindre ma team »). Onboarding sans texte « Encore N étapes » (les tirets suffisent).
+- **Tutoriel** : trou arrondi (SVG), bulle placée selon sa vraie hauteur. **Ma team** : carte « Invite ton binôme » en haut quand on est seul ; fondu sous les boutons ronds.
+- **Ma carte** : raccourcis « Photo, pseudo, titre » et « Objectif : N / sem. ». **Joker** : « Ça va mieux, retirer le joker » (`cancel_joker`, jusqu'à dimanche 20 h, joker du mois rendu).
+- **Invitations** : le lien partagé ouvre `…/rejoindre/?code=…` (page du site public : installer l'app, ouvrir l'invitation dans l'app, copier le code) ; dans l'app, « Coller le code reçu ». Liens universels impossibles sans domaine (github.io ne sert pas `/.well-known` pour un projet).
+- **Paiement** : « Ton plan : N séances par semaine, avec « team ». » ; frise de l'essai (aujourd'hui → rappel jour 5 → paiement jour 7) et **rappel local** programmé à l'achat 2 jours avant la fin de l'essai.
+- **App Store** : 21 images 1024 × 1024 pour les achats intégrés mis en avant (`design/qa/promo-images/`, page dev `/dev-promo?id=`), 21 captures de vérification (`design/qa/review-products/`).
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app`, clé APNs créée par EAS (13/11/2026), premier build envoyé sur TestFlight.

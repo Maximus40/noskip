@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,7 +12,9 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
-import { crewLine, ctaLabel, renewalNotice } from '@/domain/paywall';
+import { crewLine, ctaLabel, renewalNotice, trialTimeline } from '@/domain/paywall';
+import { useProfile } from '@/features/profile/api';
+import { canNotify, scheduleTrialReminder } from '@/features/subscriptions/trialReminder';
 import {
   paymentsAvailable,
   setDevProBypass,
@@ -51,6 +53,11 @@ export default function PaywallScreen() {
   const [selected, setSelected] = useState<'annual' | 'weekly' | 'team'>('annual');
   const [showFriends, setShowFriends] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const goal = useProfile().data?.weekly_goal ?? null;
+  const [notifyOk, setNotifyOk] = useState(false);
+  useEffect(() => {
+    canNotify().then(setNotifyOk);
+  }, []);
 
   const all = [...(plans.data?.solo ?? []), ...(plans.data?.friends ?? [])];
   const option = all.find((o) => o.key === selected) ?? plans.data?.solo[0] ?? null;
@@ -65,8 +72,10 @@ export default function PaywallScreen() {
         option,
         teamId: option.key === 'team' ? (team?.id ?? null) : null,
       });
-      if (result === 'unlocked') router.replace('/');
-      else if (result === 'pending') {
+      if (result === 'unlocked') {
+        if (option.trialDays) await scheduleTrialReminder(option.trialDays);
+        router.replace('/');
+      } else if (result === 'pending') {
         setMessage('Paiement en cours de validation par le store. Ça arrive dans un instant.');
       }
     } catch (err) {
@@ -104,6 +113,11 @@ export default function PaywallScreen() {
           <Text variant="display" style={styles.title} accessibilityRole="header">
             ZÉRO EXCUSE.
           </Text>
+          {goal ? (
+            <Text variant="body" color="#C9CACE">
+              {`Ton plan : ${goal} séances par semaine${team ? `, avec « ${team.name} »` : ''}. Ta team compte sur toi.`}
+            </Text>
+          ) : null}
         </Animated.View>
 
         <Animated.View entering={enter(1)} style={styles.barCard}>
@@ -231,6 +245,33 @@ export default function PaywallScreen() {
           </Animated.View>
         )}
 
+        {option?.trialDays ? (
+          <View
+            style={styles.timeline}
+            accessible
+            accessibilityLabel="Comment se passe l’essai gratuit"
+          >
+            {trialTimeline(option.trialDays, option.priceString, option.period, notifyOk).map(
+              (step, i, all) => (
+                <View key={step.when} style={styles.step}>
+                  <View style={styles.rail}>
+                    <View style={[styles.stepDot, i === 0 && styles.stepDotOn]} />
+                    {i < all.length - 1 ? <View style={styles.stepLine} /> : null}
+                  </View>
+                  <View style={styles.stepText}>
+                    <Text variant="label" color={i === 0 ? colors.accent : colors.muted}>
+                      {step.when}
+                    </Text>
+                    <Text variant="caption" color="#C9CACE">
+                      {step.what}
+                    </Text>
+                  </View>
+                </View>
+              ),
+            )}
+          </View>
+        ) : null}
+
         <ErrorNote message={message} />
       </ScrollView>
 
@@ -286,6 +327,13 @@ function LinkButton({ label, onPress }: { label: string; onPress: () => void }) 
 }
 
 const styles = StyleSheet.create({
+  timeline: { backgroundColor: colors.card, borderRadius: radii.card, padding: spacing.lg },
+  step: { flexDirection: 'row', gap: spacing.md },
+  rail: { alignItems: 'center', width: 12 },
+  stepDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#3A3B42', marginTop: 4 },
+  stepDotOn: { backgroundColor: colors.accent },
+  stepLine: { flex: 1, width: 2, backgroundColor: '#3A3B42', marginVertical: 2 },
+  stepText: { flex: 1, gap: 2, paddingBottom: spacing.md },
   crew: {
     borderRadius: radii.card,
     backgroundColor: colors.card,

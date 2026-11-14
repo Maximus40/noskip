@@ -97,3 +97,36 @@ export function crewLine(names: string[]): string {
       : `${shown.slice(0, -1).join(', ')} et ${shown[shown.length - 1]}`;
   return `Ton abonnement couvre aussi ${list} : ça ne ${shown.length === 1 ? 'lui' : 'leur'} coûte rien.`;
 }
+
+/** Day of the trial when the reminder arrives: 2 days before the end (day 5 of 7, day 2 of 3). */
+export function trialReminderDay(days: number): number {
+  return days >= 5 ? days - 2 : Math.max(1, days - 1);
+}
+
+export type TrialStep = { when: string; what: string };
+
+/**
+ * The trial, told plainly (today → reminder → first payment): people start a trial more
+ * readily when they know exactly when they will be charged and that they will be warned.
+ */
+export function trialTimeline(
+  days: number,
+  priceString: string,
+  period: string | null | undefined,
+  canNotify: boolean,
+): TrialStep[] {
+  const reminder = trialReminderDay(days);
+  return [
+    { when: 'Aujourd’hui', what: 'Accès complet. Ta team joue avec toi, gratuitement.' },
+    {
+      when: `Jour ${reminder}`,
+      what: canNotify
+        ? 'On te prévient par une notif que l’essai se termine.'
+        : 'Ton essai se termine bientôt : résilie en 2 touches si ça ne te plaît pas.',
+    },
+    {
+      when: `Jour ${days}`,
+      what: `Début de l’abonnement : ${priceString}${periodSuffix(period)}. Résiliable à tout moment.`,
+    },
+  ];
+}

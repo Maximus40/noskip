@@ -1,4 +1,6 @@
 import {
+  trialReminderDay,
+  trialTimeline,
   crewLine,
   ctaLabel,
   formatPrice,
@@ -74,5 +76,21 @@ describe('crewLine', () => {
     expect(crewLine(['Karim', 'Sofiane', 'Léa', 'Max'])).toBe(
       'Ton abonnement couvre aussi Karim, Sofiane et Léa : ça ne leur coûte rien.',
     );
+  });
+});
+
+describe('trial timeline', () => {
+  it('warns 2 days before the end', () => {
+    expect(trialReminderDay(7)).toBe(5);
+    expect(trialReminderDay(3)).toBe(2);
+    expect(trialReminderDay(1)).toBe(1);
+  });
+
+  it('tells today, the reminder and the first payment', () => {
+    const steps = trialTimeline(7, '59,99 €', 'P1Y', true);
+    expect(steps.map((s) => s.when)).toEqual(['Aujourd’hui', 'Jour 5', 'Jour 7']);
+    expect(steps[1].what).toMatch(/notif/);
+    expect(steps[2].what).toContain('59,99 €/an');
+    expect(trialTimeline(3, '4,99 €', 'P1W', false)[1].what).not.toMatch(/notif/);
   });
 });
