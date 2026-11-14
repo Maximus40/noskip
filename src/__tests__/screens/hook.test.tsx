@@ -35,8 +35,9 @@ describe('onboarding hook step', () => {
     expect(stored.hook).toEqual({ planned: 12, done: 6 });
   });
 
-  it('shows how many steps are left', async () => {
+  it('shows no step count before the sign-in (it would jump once the account is known)', async () => {
     await renderWithClient();
-    expect(screen.getByRole('progressbar', { name: 'Encore 10 étapes' })).toBeTruthy();
+    expect(screen.getByRole('progressbar', { name: 'Moins d’une minute' })).toBeTruthy();
+    expect(screen.queryByText(/Encore \d+ étapes/)).toBeNull();
   });
 });

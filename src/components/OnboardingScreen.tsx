@@ -35,13 +35,14 @@ type Props = {
 /**
  * Shared frame of the onboarding steps: segmented progress, giant title, sticky action. The
  * counter is honest: once signed in, steps already done (a returning player, a teammate who
- * pays) are not counted, so it never seems to jump.
+ * pays) are not counted; before the sign-in it shows no number, so it never jumps.
  */
 export function OnboardingScreen(props: Props) {
   const signedIn = useAuth().session !== null;
   const route = ONBOARDING_STEPS[props.step - 1]?.route;
   if (signedIn && route && !props.editLabel) return <SignedInFrame {...props} />;
-  return <Frame {...props} left={route ? remainingSteps(route, null) : 1} />;
+  // Before the sign-in the account is unknown: no step count yet (see remainingLabel).
+  return <Frame {...props} left={null} />;
 }
 
 function SignedInFrame(props: Props) {
@@ -62,9 +63,9 @@ function Frame({
   brand = false,
   why,
   left,
-}: Props & { left: number }) {
+}: Props & { left: number | null }) {
   // Filled segments: everything behind the player, including steps skipped as already done.
-  const filled = ONBOARDING_TOTAL - left + 1;
+  const filled = left === null ? step : ONBOARDING_TOTAL - left + 1;
   return (
     <SafeAreaView style={styles.fill} edges={['top', 'bottom']}>
       <KeyboardAvoidingView

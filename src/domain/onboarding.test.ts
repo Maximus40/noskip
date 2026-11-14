@@ -131,5 +131,6 @@ describe('remainingSteps', () => {
   it('labels the count', () => {
     expect(remainingLabel(1)).toBe('Dernière étape');
     expect(remainingLabel(4)).toBe('Encore 4 étapes');
+    expect(remainingLabel(null)).toBe('Moins d’une minute');
   });
 });

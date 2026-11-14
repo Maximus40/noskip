@@ -80,7 +80,11 @@ export function remainingSteps(route: OnboardingRoute, state: OnboardingState | 
   return ahead.filter((s, i) => i === 0 || !s.done(state)).length;
 }
 
-/** "Encore 4 étapes" / "Dernière étape". */
-export function remainingLabel(count: number): string {
+/**
+ * "Encore 4 étapes" / "Dernière étape". `null` = not signed in yet: we cannot know which steps
+ * the account already did, so no number (it would jump down right after the sign-in).
+ */
+export function remainingLabel(count: number | null): string {
+  if (count === null) return 'Moins d’une minute';
   return count <= 1 ? 'Dernière étape' : `Encore ${count} étapes`;
 }
