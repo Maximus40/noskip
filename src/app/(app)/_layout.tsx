@@ -28,6 +28,7 @@ function SignedInTabs() {
     >
       <Tabs.Screen name="team" />
       <Tabs.Screen name="teams" />
+      <Tabs.Screen name="boutique" />
       <Tabs.Screen name="lifter" />
       <Tabs.Screen name="settings" />
     </Tabs>

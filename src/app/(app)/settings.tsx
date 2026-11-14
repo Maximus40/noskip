@@ -173,7 +173,7 @@ export default function SettingsScreen() {
         <ListRow
           title="La boutique"
           subtitle="Skins de disques et packs de vannes du Canap’."
-          onPress={() => router.push('/shop')}
+          onPress={() => router.push('/boutique')}
         />
         <ListRow
           title="Revoir l’intro"

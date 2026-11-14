@@ -50,3 +50,13 @@ export function SettingsIcon({ color, size = 24 }: Props) {
     </Svg>
   );
 }
+
+/** Shopping bag: the shop. */
+export function BagIcon({ color, size = 24 }: Props) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M5 8h14l-1.2 12H6.2L5 8Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+      <Path d="M9 10V7a3 3 0 0 1 6 0v3" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}

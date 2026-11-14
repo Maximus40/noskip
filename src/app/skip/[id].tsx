@@ -11,6 +11,7 @@ import { ErrorNote } from '@/components/ui/ErrorNote';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
+import { skipCardShopHint } from '@/domain/promo';
 import { posterInviteLabel } from '@/domain/teams';
 import { weekShortLabel } from '@/domain/weekClose';
 import { feedback } from '@/features/feedback/feedback';
@@ -117,6 +118,15 @@ export default function SkipCardScreen() {
               ? "Assume. La semaine prochaine, c'est toi qui charges la barre."
               : `Fais tourner. ${data.player.pseudo} s'en souviendra lundi.`}
           </Text>
+          <PressableScale
+            onPress={() => router.navigate('/boutique')}
+            accessibilityRole="link"
+            style={styles.shopLink}
+          >
+            <Text variant="caption" color={colors.accent} style={styles.hint}>
+              {`${skipCardShopHint(isMine, data.style)} Cartes premium →`}
+            </Text>
+          </PressableScale>
         </View>
       ) : null}
     </SafeAreaView>
@@ -145,4 +155,5 @@ const styles = StyleSheet.create({
   content: { alignItems: 'center', padding: spacing.lg, gap: spacing.md },
   footer: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.sm },
   hint: { textAlign: 'center' },
+  shopLink: { minHeight: minTouch, justifyContent: 'center' },
 });

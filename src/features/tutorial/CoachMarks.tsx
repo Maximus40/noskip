@@ -1,6 +1,7 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Modal, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
 
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Text } from '@/components/ui/Text';
@@ -32,8 +33,22 @@ export function useCoachTarget(id: CoachTargetId) {
   );
 }
 
-const BUBBLE_HEIGHT = 196;
+// First guess of the bubble height; replaced by its measured height after the first layout.
+const BUBBLE_GUESS = 280;
 const PAD = 8;
+const DIM = 'rgba(8,8,10,0.8)';
+
+/** Full-screen rectangle with a rounded hole (even-odd fill): the lit element. */
+function holePath(w: number, h: number, r: Rect, radius: number): string {
+  const k = Math.min(radius, r.width / 2, r.height / 2);
+  const { x, y, width: rw, height: rh } = r;
+  return (
+    `M0 0H${w}V${h}H0Z ` +
+    `M${x + k} ${y}H${x + rw - k}A${k} ${k} 0 0 1 ${x + rw} ${y + k}` +
+    `V${y + rh - k}A${k} ${k} 0 0 1 ${x + rw - k} ${y + rh}` +
+    `H${x + k}A${k} ${k} 0 0 1 ${x} ${y + rh - k}V${y + k}A${k} ${k} 0 0 1 ${x + k} ${y}Z`
+  );
+}
 
 /**
  * Interactive tutorial: the screen dims, the current element stays lit inside an orange frame,
@@ -57,6 +72,7 @@ export function CoachMarks({
     null,
   );
   const step = steps[index];
+  const [bubbleHeight, setBubbleHeight] = useState(BUBBLE_GUESS);
 
   useEffect(() => {
     if (!visible || !step) return;
@@ -82,7 +98,8 @@ export function CoachMarks({
   if (!visible || !step) return null;
   const rect = measured?.target === step.target ? measured.rect : null;
   const last = index === steps.length - 1;
-  const place = bubblePlacement(rect, height, BUBBLE_HEIGHT);
+  const place = bubblePlacement(rect, height, bubbleHeight);
+  const radius = rect ? Math.min(radii.glass, rect.height / 2) : 0;
   const arrowLeft = rect
     ? Math.min(Math.max(rect.x + rect.width / 2 - 10, spacing.xl), width - spacing.xl - 20)
     : 0;
@@ -93,25 +110,10 @@ export function CoachMarks({
       <View style={StyleSheet.absoluteFill} accessibilityViewIsModal>
         {rect ? (
           <>
-            {/* Four dark panes around the lit element. */}
-            <View
-              style={[styles.dim, { top: 0, left: 0, right: 0, height: Math.max(0, rect.y) }]}
-            />
-            <View
-              style={[styles.dim, { top: rect.y + rect.height, left: 0, right: 0, bottom: 0 }]}
-            />
-            <View
-              style={[
-                styles.dim,
-                { top: rect.y, left: 0, width: Math.max(0, rect.x), height: rect.height },
-              ]}
-            />
-            <View
-              style={[
-                styles.dim,
-                { top: rect.y, left: rect.x + rect.width, right: 0, height: rect.height },
-              ]}
-            />
+            {/* The screen dims around a rounded hole: the lit element keeps its own shape. */}
+            <Svg width={width} height={height} style={StyleSheet.absoluteFill} pointerEvents="none">
+              <Path d={holePath(width, height, rect, radius)} fill={DIM} fillRule="evenodd" />
+            </Svg>
             <View
               pointerEvents="none"
               style={[
@@ -121,14 +123,13 @@ export function CoachMarks({
                   left: rect.x,
                   width: rect.width,
                   height: rect.height,
-                  // Round buttons get a round frame.
-                  borderRadius: Math.min(radii.glass, rect.height / 2),
+                  borderRadius: radius,
                 },
               ]}
             />
           </>
         ) : (
-          <View style={[styles.dim, StyleSheet.absoluteFill]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: DIM }]} />
         )}
 
         <Animated.View
@@ -136,6 +137,11 @@ export function CoachMarks({
           entering={reduced ? FadeIn : FadeInDown.duration(260)}
           style={[styles.bubbleWrap, { top: place.top }]}
           accessibilityLiveRegion="polite"
+          // Placed with its real height, so it never covers the element it points at.
+          onLayout={(e) => {
+            const h = Math.round(e.nativeEvent.layout.height);
+            if (Math.abs(h - bubbleHeight) > 2) setBubbleHeight(h);
+          }}
         >
           {place.arrow === 'up' ? <View style={[styles.arrowUp, { left: arrowLeft }]} /> : null}
           <View style={styles.bubble}>
@@ -182,7 +188,6 @@ export function CoachMarks({
 const ARROW = 10;
 
 const styles = StyleSheet.create({
-  dim: { position: 'absolute', backgroundColor: 'rgba(8,8,10,0.78)' },
   frame: {
     position: 'absolute',
     borderRadius: radii.glass,

@@ -1,8 +1,14 @@
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 
 import { ShopView } from '@/components/ShopView';
-import type { PlateSkin, PosterStyle, ShopItem } from '@/domain/shop';
+import {
+  type PlateSkin,
+  type PosterStyle,
+  SHOP_CATALOG_VERSION,
+  type ShopItem,
+} from '@/domain/shop';
+import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
 import {
   useBuyShopItem,
   useEquipPoster,
@@ -18,6 +24,14 @@ import { toUserMessage } from '@/lib/errors';
  * seen by the whole team, packs of SKIP lines for the team's Sunday cards). Never anything that changes the game.
  */
 export default function ShopScreen() {
+  const saveLocal = useUpdateLocalOnboarding();
+  // Opening the tab clears its "new items" dot.
+  useFocusEffect(
+    useCallback(() => {
+      saveLocal.mutate({ shopSeenVersion: SHOP_CATALOG_VERSION });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
   const shop = useMyShop();
   const prices = useShopPrices();
   const buy = useBuyShopItem();
@@ -91,7 +105,6 @@ export default function ShopScreen() {
       onEquip={onEquip}
       onEquipPoster={onEquipPoster}
       onRestore={onRestore}
-      onClose={() => (router.canGoBack() ? router.back() : router.replace('/lifter'))}
     />
   );
 }

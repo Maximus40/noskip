@@ -1,7 +1,17 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
+import { useEffect, useRef } from 'react';
+import { ScrollView, type ScrollViewInstance, StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeInDown,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
-import { skipLineText } from '../../content/skip-lines';
 import { StyledPoster } from '@/components/posters/StyledPoster';
 import { TeamBar } from '@/components/TeamBar';
 import { Button } from '@/components/ui/Button';
@@ -13,6 +23,8 @@ import type { Plate } from '@/domain/bar';
 import {
   ownsPosterStyle,
   packSamples,
+  SAMPLE_PSEUDO,
+  sampleSkipLine,
   type PlateSkin,
   type PosterStyle,
   SHOP_ITEMS,
@@ -36,7 +48,8 @@ export type ShopViewProps = {
   onEquip: (skin: PlateSkin) => void;
   onEquipPoster: (style: PosterStyle) => void;
   onRestore: () => void;
-  onClose: () => void;
+  /** Shown as « Fermer » when the shop is opened over another screen (not as a tab). */
+  onClose?: () => void;
 };
 
 /**
@@ -70,11 +83,13 @@ export function ShopView({
         <Text variant="label" color={colors.accent} style={styles.flex}>
           La boutique
         </Text>
-        <PressableScale onPress={() => onClose()} accessibilityRole="link" style={styles.close}>
-          <Text variant="caption" style={styles.underline}>
-            Fermer
-          </Text>
-        </PressableScale>
+        {onClose ? (
+          <PressableScale onPress={onClose} accessibilityRole="link" style={styles.close}>
+            <Text variant="caption" style={styles.underline}>
+              Fermer
+            </Text>
+          </PressableScale>
+        ) : null}
       </View>
       <Text variant="display" style={styles.title} accessibilityRole="header">
         DU STYLE. ZÉRO TRICHE.
@@ -239,10 +254,10 @@ const SAMPLE_LINE: Record<PosterStyle, string> = {
   neon: 'chips-orange',
   zen: 'demain-promis',
 };
-const sampleLine = (style: PosterStyle) => skipLineText(SAMPLE_LINE[style], 'Karim');
+const sampleLine = (style: PosterStyle) => sampleSkipLine(SAMPLE_LINE[style]);
 
 const SAMPLE = {
-  pseudo: 'Karim',
+  pseudo: SAMPLE_PSEUDO,
   teamName: 'Ta team',
   teamKg: 200,
   skips: 1,
@@ -278,6 +293,30 @@ function PosterSection({
   const styles_ = SHOP_ITEMS.filter((i) => i.kind === 'poster');
   const bundle = SHOP_ITEMS.find((i) => i.kind === 'posterBundle');
   const allOwned = styles_.every((i) => i.kind === 'poster' && ownsPosterStyle(owned, i.style));
+  const reduced = useReducedMotion();
+  const rail = useRef<ScrollViewInstance>(null);
+  // Show that the rail scrolls: a small nudge right then back, once, and a sliding arrow.
+  useEffect(() => {
+    if (reduced) return;
+    const go = setTimeout(() => rail.current?.scrollTo({ x: 90, animated: true }), 700);
+    const back = setTimeout(() => rail.current?.scrollTo({ x: 0, animated: true }), 1300);
+    return () => {
+      clearTimeout(go);
+      clearTimeout(back);
+    };
+  }, [reduced]);
+  const slide = useSharedValue(0);
+  useEffect(() => {
+    if (reduced) return;
+    slide.value = withRepeat(
+      withSequence(
+        withTiming(6, { duration: 500, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0, { duration: 500, easing: Easing.inOut(Easing.quad) }),
+      ),
+      -1,
+    );
+  }, [reduced, slide]);
+  const arrow = useAnimatedStyle(() => ({ transform: [{ translateX: slide.value }] }));
   return (
     <>
       <Text variant="headline" style={styles.section}>
@@ -287,7 +326,22 @@ function PosterSection({
         Équipe une carte : quand un pote de ta team skip, sa carte SKIP sort dans ton style. Toute
         la team la voit, et elle part en story.
       </Text>
+      <View
+        style={styles.swipeHint}
+        accessible
+        accessibilityLabel={`Fais glisser pour voir les ${styles_.length} cartes`}
+      >
+        <Text variant="label" color={colors.accent}>
+          {`Fais glisser · ${styles_.length} cartes`}
+        </Text>
+        <Animated.View style={arrow}>
+          <Text variant="bodyStrong" color={colors.accent}>
+            →
+          </Text>
+        </Animated.View>
+      </View>
       <ScrollView
+        ref={rail}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.posterRail}
@@ -474,6 +528,7 @@ const styles = StyleSheet.create({
   bottom: { height: spacing.xl },
   rail: { marginHorizontal: -spacing.lg },
   posterRail: { paddingHorizontal: spacing.lg, gap: spacing.md },
+  swipeHint: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   posterCard: {
     width: MINI + spacing.md * 2,
     backgroundColor: colors.card,

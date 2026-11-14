@@ -203,6 +203,9 @@ export const SHOP_ITEMS: readonly ShopItem[] = [
   },
 ];
 
+/** Bump when items are added: the shop tab shows an orange dot until opened. */
+export const SHOP_CATALOG_VERSION = 3;
+
 export const SHOP_PRODUCT_IDS = SHOP_ITEMS.map((i) => i.productId);
 
 export function isPosterStyle(value: unknown): value is PosterStyle {
@@ -220,11 +223,25 @@ export function isPlateSkin(value: unknown): value is PlateSkin {
   return typeof value === 'string' && (PLATE_SKINS as readonly string[]).includes(value);
 }
 
-/** Two sample lines of a pack, for the shop card (with a placeholder name). */
-export function packSamples(pack: JokePack, pseudo = 'Karim', count = 2): string[] {
+/** Placeholder player on previews: no first name, so nobody is put off by one. */
+export const SAMPLE_PSEUDO = 'Ton pote';
+
+/** A real SKIP line with « ton pote » as the player (capitalised at the start). */
+export function sampleLineText(text: string): string {
+  const s = text.replaceAll('{pseudo}', 'ton pote');
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** A line by id, for previews. */
+export function sampleSkipLine(id: string): string {
+  return sampleLineText(SKIP_LINES.find((l) => l.id === id)?.text ?? SKIP_LINES[0].text);
+}
+
+/** Two sample lines of a pack, for the shop card. */
+export function packSamples(pack: JokePack, count = 2): string[] {
   return SKIP_LINES.filter((l) => l.pack === pack)
     .slice(0, count)
-    .map((l) => l.text.replaceAll('{pseudo}', pseudo));
+    .map((l) => sampleLineText(l.text));
 }
 
 export const ALL_PACKS = JOKE_PACKS;

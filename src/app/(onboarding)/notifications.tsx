@@ -13,9 +13,9 @@ import { useGoNext } from '@/features/onboarding/useGoNext';
 
 /** What the team actually sends: real copy from the Edge Functions. */
 const EXAMPLES = [
-  ['Disque chargé', 'Karim vient de charger 20 kg 💪'],
-  ['Spot', 'Sofiane te spot : bouge à la salle !'],
-  ['Dimanche, 20 h', "SKIP. Maxime a choisi le canap'."],
+  ['Disque chargé', 'Alex vient de charger 20 kg 💪'],
+  ['Spot', 'Sam te spot : bouge à la salle !'],
+  ['Dimanche, 20 h', "SKIP. Alex a choisi le canap'."],
 ] as const;
 
 /** Étape 9 : permission notifications. */

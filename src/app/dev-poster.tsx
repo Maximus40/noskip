@@ -13,8 +13,8 @@ export default function DevPoster() {
     <View style={styles.screen}>
       <SkipPoster
         width={360}
-        pseudo="Maxime"
-        line={skipLineText('leg-day', 'Maxime')}
+        pseudo="Lou"
+        line={skipLineText('leg-day', 'Lou')}
         teamName="Les Déchaînés"
         teamKg={200}
         skips={1}

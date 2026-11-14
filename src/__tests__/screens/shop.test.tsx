@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
-import ShopScreen from '@/app/shop';
+import ShopScreen from '@/app/(app)/boutique';
 
 const mockBuy = jest.fn();
 const mockEquip = jest.fn();
@@ -9,6 +9,10 @@ let mockShop = { owned: new Set<string>(), equipped: 'classic', poster: 'classic
 
 jest.mock('expo-router', () => ({
   router: { back: jest.fn(), replace: jest.fn(), canGoBack: () => true },
+  useFocusEffect: jest.fn(),
+}));
+jest.mock('@/features/onboarding/localStore', () => ({
+  useUpdateLocalOnboarding: () => ({ mutate: jest.fn() }),
 }));
 jest.mock('@/features/shop/api', () => ({
   useMyShop: () => ({ data: mockShop, refetch: jest.fn() }),

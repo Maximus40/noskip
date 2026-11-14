@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Text } from '@/components/ui/Text';
 import { formatKg, platesFor } from '@/domain/bar';
+import { SAMPLE_PSEUDO, sampleSkipLine } from '@/domain/shop';
 import { WELCOME_DEMO_TEAM, WELCOME_SLIDES } from '@/domain/welcome';
 import { feedback } from '@/features/feedback/feedback';
 import { useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
@@ -234,8 +235,8 @@ function SkipVisual({ active, width }: { active: boolean; width: number }) {
         <Animated.View entering={reduced ? FadeIn : posterStamp.delay(150)}>
           <SkipPoster
             width={posterWidth}
-            pseudo="Karim"
-            line="Karim a skip la salle. Même le leg day n'y croyait plus."
+            pseudo={SAMPLE_PSEUDO}
+            line={sampleSkipLine('leg-day')}
             teamName={WELCOME_DEMO_TEAM.name}
             teamKg={200}
             skips={1}

@@ -16,7 +16,7 @@ export default function DevGallery() {
   const players = [
     {
       id: 'me',
-      pseudo: 'Sofiane',
+      pseudo: 'Sam',
       color: '#F5F5F0',
       isMe: true,
       goal: 3,
@@ -26,7 +26,7 @@ export default function DevGallery() {
     },
     {
       id: 'k',
-      pseudo: 'Karim',
+      pseudo: 'Alex',
       color: '#7C7E84',
       isMe: false,
       goal: 4,
@@ -36,7 +36,7 @@ export default function DevGallery() {
     },
     {
       id: 'm',
-      pseudo: 'Maxime',
+      pseudo: 'Lou',
       color: '#B9BBC0',
       isMe: false,
       goal: 3,
@@ -65,7 +65,7 @@ export default function DevGallery() {
             accessibilityLabel="Barre"
           />
           <Text variant="bodyStrong" color={colors.accent}>
-            Karim risque le skip. La barre tremble.
+            Alex risque le skip. La barre tremble.
           </Text>
         </GlassPanel>
         <GlassPanel style={styles.panel}>

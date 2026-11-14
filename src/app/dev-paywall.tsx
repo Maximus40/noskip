@@ -57,7 +57,7 @@ export default function DevPaywall() {
     [
       {
         id: 'k',
-        pseudo: 'Karim',
+        pseudo: 'Alex',
         color: '#B9BBC0',
         isMe: false,
         goal: 3,
@@ -117,7 +117,7 @@ export default function DevPaywall() {
         <Text variant="label" color={colors.accent}>
           Un pote paie, toute la team joue
         </Text>
-        <Text variant="body">{crewLine(['Karim'])}</Text>
+        <Text variant="body">{crewLine(['Alex'])}</Text>
       </View>
       {plans.map((p) => (
         <PlanCard

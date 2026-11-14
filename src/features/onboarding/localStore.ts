@@ -9,6 +9,10 @@ export type LocalOnboarding = {
   welcomeSeen: boolean;
   /** The coach marks of Ma team were shown on this phone. */
   tutorialSeen: boolean;
+  /** Last shop catalog version the player opened (orange dot on the tab until then). */
+  shopSeenVersion: number;
+  /** When the player last closed an offer card on Ma team (ISO), to space them out. */
+  promoDismissedAt: string | null;
   hook: HookAnswers | null;
   locationAsked: boolean;
   notificationsAsked: boolean;
@@ -21,6 +25,8 @@ const QUERY_KEY = ['local-onboarding'] as const;
 const EMPTY: LocalOnboarding = {
   welcomeSeen: false,
   tutorialSeen: false,
+  shopSeenVersion: 0,
+  promoDismissedAt: null,
   hook: null,
   locationAsked: false,
   notificationsAsked: false,

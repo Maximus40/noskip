@@ -103,9 +103,12 @@ function Frame({
         </View>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           {brand ? <Wordmark size={28} style={styles.brand} /> : null}
-          <Text variant="label" color={colors.accent}>
-            {editLabel ?? label ?? remainingLabel(left)}
-          </Text>
+          {/* The progress dashes already show how far along the player is: no step count here. */}
+          {(editLabel ?? label) ? (
+            <Text variant="label" color={colors.accent}>
+              {editLabel ?? label}
+            </Text>
+          ) : null}
           <Text variant="display" accessibilityRole="header">
             {title}
           </Text>

@@ -9,6 +9,7 @@ import { Screen } from '@/components/ui/Screen';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { jokerState } from '@/domain/progression';
+import { useProfile } from '@/features/profile/api';
 import { type LifterCardData, useDeclareJoker, useLifterCard } from '@/features/progression/api';
 import { toUserMessage } from '@/lib/errors';
 import { colors, radii, spacing } from '@/theme/tokens';
@@ -16,6 +17,9 @@ import { colors, radii, spacing } from '@/theme/tokens';
 /** Ma carte de lifter + joker blessure. */
 export default function LifterScreen() {
   const card = useLifterCard();
+  const profile = useProfile();
+  const goal = profile.data?.weekly_goal;
+  const nextGoal = profile.data?.pending_weekly_goal;
   useFocusEffect(
     useCallback(() => {
       card.refetch();
@@ -40,10 +44,35 @@ export default function LifterScreen() {
         </View>
       )}
       <ErrorNote message={card.error ? toUserMessage(card.error) : null} />
+      <View style={styles.editRow}>
+        <View style={styles.flex}>
+          <Button
+            label="Photo, pseudo, titre"
+            variant="secondary"
+            withArrow={false}
+            onPress={() => router.push({ pathname: '/lifter-card', params: { edit: '1' } })}
+            accessibilityHint="Modifier ta carte de lifter"
+          />
+        </View>
+        <View style={styles.flex}>
+          <Button
+            label={goal ? `Objectif : ${goal} / sem.` : 'Mon objectif'}
+            variant="secondary"
+            withArrow={false}
+            onPress={() => router.push({ pathname: '/goal', params: { edit: '1' } })}
+            accessibilityHint="Changer ton nombre de séances par semaine"
+          />
+        </View>
+      </View>
+      {nextGoal && nextGoal !== goal ? (
+        <Text variant="caption" color={colors.muted}>
+          {`Lundi prochain : ${nextGoal} séances par semaine.`}
+        </Text>
+      ) : null}
       <Button
         label="La boutique"
         variant="secondary"
-        onPress={() => router.push('/shop')}
+        onPress={() => router.push('/boutique')}
         accessibilityHint="Skins de disques et packs de vannes"
       />
       <View style={styles.bottomSpace} />
@@ -112,6 +141,8 @@ function JokerCard({ card }: { card: LifterCardData }) {
 }
 
 const styles = StyleSheet.create({
+  editRow: { flexDirection: 'row', gap: spacing.sm },
+  flex: { flex: 1 },
   head: { gap: spacing.sm },
   loading: { gap: spacing.md },
   joker: {

@@ -34,8 +34,8 @@ export const WELCOME_DEMO_TEAM: { name: string; players: BarPlayer[] } = {
   name: 'Les Déchaînés',
   players: [
     {
-      id: 'karim',
-      pseudo: 'Karim',
+      id: 'alex',
+      pseudo: 'Alex',
       color: '#B9BBC0',
       isMe: false,
       goal: 3,
@@ -44,8 +44,8 @@ export const WELCOME_DEMO_TEAM: { name: string; players: BarPlayer[] } = {
       joker: false,
     },
     {
-      id: 'sofiane',
-      pseudo: 'Sofiane',
+      id: 'sam',
+      pseudo: 'Sam',
       color: '#7C7E84',
       isMe: false,
       goal: 3,

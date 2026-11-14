@@ -34,7 +34,7 @@ describe('notifications step', () => {
   it('asks the OS, then moves on whatever the answer', async () => {
     mockRegister.mockResolvedValue({ status: 'denied' });
     await renderStep();
-    expect(screen.getByLabelText('Spot : Sofiane te spot : bouge à la salle !')).toBeTruthy();
+    expect(screen.getByLabelText('Spot : Sam te spot : bouge à la salle !')).toBeTruthy();
     await fireEvent.press(screen.getByRole('button', { name: 'Activer les notifs' }));
     await waitFor(() => expect(mockRegister).toHaveBeenCalledWith(true));
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'), { timeout: 5000 });

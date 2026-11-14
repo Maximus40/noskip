@@ -11,7 +11,7 @@ export default function DevLifter() {
       <LifterCard
         card={{
           userId: 'dev',
-          pseudo: 'Sofiane',
+          pseudo: 'Sam',
           avatarUrl: null,
           title: 'toujours_au_shaker',
           plateColor: '#B9BBC0',

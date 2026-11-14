@@ -17,6 +17,8 @@ import { ErrorNote } from '@/components/ui/ErrorNote';
 import { GlassPanel } from '@/components/ui/GlassPanel';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { RoundGlassButton } from '@/components/ui/RoundGlassButton';
+import { PromoCard } from '@/components/PromoCard';
+import { promoToShow } from '@/domain/promo';
 import { Text } from '@/components/ui/Text';
 import { canSpot, formatKg } from '@/domain/bar';
 import { useGymPoints, useVisit } from '@/features/checkin/useCheckin';
@@ -30,7 +32,7 @@ import {
   useTeamBoard,
 } from '@/features/teams/api';
 import { useBarState } from '@/features/teams/useBarState';
-import { useTeamSkins } from '@/features/shop/api';
+import { useMyShop, useTeamSkins } from '@/features/shop/api';
 import { CoachMarks, CoachMarksProvider, useCoachTarget } from '@/features/tutorial/CoachMarks';
 import { TEAM_TUTORIAL } from '@/domain/tutorial';
 import { useLocalOnboarding, useUpdateLocalOnboarding } from '@/features/onboarding/localStore';
@@ -82,6 +84,12 @@ function TeamScreen() {
     }, [team?.id]),
   );
 
+  const myShop = useMyShop();
+  const promo = promoToShow(now, {
+    tutorialSeen: local.data?.tutorialSeen ?? false,
+    dismissedAt: local.data?.promoDismissedAt ?? null,
+    owned: myShop.data?.owned ?? new Set<string>(),
+  });
   const skins = useTeamSkins(team?.id);
   const state = useBarState(board.data, now, skins.data);
   const prefs = {
@@ -178,6 +186,14 @@ function TeamScreen() {
           </View>
 
           <GiftBanner />
+
+          {promo && myShop.data ? (
+            <PromoCard
+              promo={promo}
+              onOpen={() => router.navigate('/boutique')}
+              onClose={() => saveLocal.mutate({ promoDismissedAt: new Date().toISOString() })}
+            />
+          ) : null}
 
           {recentRecap ? (
             <PressableScale

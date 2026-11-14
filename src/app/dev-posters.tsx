@@ -4,14 +4,14 @@ import { StyleSheet, View } from 'react-native';
 import { Canap, type CanapMood } from '@/components/Canap';
 import { StyledPoster } from '@/components/posters/StyledPoster';
 import { Text } from '@/components/ui/Text';
-import { isPosterStyle } from '@/domain/shop';
+import { isPosterStyle, SAMPLE_PSEUDO, sampleSkipLine } from '@/domain/shop';
 import type { PosterProps } from '@/components/posters/types';
 import { colors } from '@/theme/tokens';
 
 const SAMPLE: PosterProps = {
   width: 360,
-  pseudo: 'Karim',
-  line: "Karim a skip la salle. Même le leg day n'y croyait plus.",
+  pseudo: SAMPLE_PSEUDO,
+  line: sampleSkipLine('leg-day'),
   teamName: 'Les Déchaînés',
   teamKg: 200,
   skips: 1,
