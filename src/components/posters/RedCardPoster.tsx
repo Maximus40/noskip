@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { fonts } from '@/theme/typography';
 
+import { FitLine } from './FitLine';
 import { type PosterProps, posterHeight, unit } from './types';
 
 const RED = '#C8102E';
@@ -54,14 +55,16 @@ export function RedCardPoster({ ref, ...p }: PosterProps) {
         </Text>
       </View>
 
-      <Text
-        style={[
-          styles.huge,
-          { fontSize: 68 * u, lineHeight: 64 * u, letterSpacing: -3 * u, marginTop: 18 * u },
-        ]}
-      >
-        {'CARTON\nROUGE.'}
-      </Text>
+      <View style={{ marginTop: 18 * u }}>
+        {['CARTON', 'ROUGE.'].map((word) => (
+          <FitLine
+            key={word}
+            style={[styles.huge, { fontSize: 64 * u, lineHeight: 64 * u, letterSpacing: -3 * u }]}
+          >
+            {word}
+          </FitLine>
+        ))}
+      </View>
 
       <View style={[styles.cardZone, { height: 220 * u }]}>
         <Animated.View

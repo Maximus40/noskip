@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { fonts } from '@/theme/typography';
 
+import { FitLine } from './FitLine';
 import { type PosterProps, posterHeight, unit } from './types';
 
 const PAPER = '#E9DAB4';
@@ -69,9 +70,11 @@ export function WantedPoster({ ref, ...p }: PosterProps) {
       <Text style={[styles.sub, { fontSize: 13 * u, letterSpacing: 4 * u, marginTop: 10 * u }]}>
         AVIS DE
       </Text>
-      <Text style={[styles.title, { fontSize: 46 * u, lineHeight: 54 * u, letterSpacing: -1 * u }]}>
+      <FitLine
+        style={[styles.title, { fontSize: 46 * u, lineHeight: 54 * u, letterSpacing: -1 * u }]}
+      >
         RECHERCHE
-      </Text>
+      </FitLine>
       <Text style={[styles.sub, { fontSize: 13 * u, letterSpacing: 4 * u, marginTop: 8 * u }]}>
         POUR SÉANCE MANQUÉE
       </Text>

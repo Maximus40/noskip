@@ -14,6 +14,7 @@ import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { fonts } from '@/theme/typography';
 
+import { FitLine } from './FitLine';
 import { type PosterProps, posterHeight, unit } from './types';
 
 const SAGE_PAPER = '#E5E9DD';
@@ -62,7 +63,7 @@ export function ZenPoster({ ref, ...p }: PosterProps) {
           ['EXPIRE.', SAGE],
           ['SKIP.', INK],
         ].map(([word, color]) => (
-          <Text
+          <FitLine
             key={word}
             style={[
               styles.word,
@@ -70,7 +71,7 @@ export function ZenPoster({ ref, ...p }: PosterProps) {
             ]}
           >
             {word}
-          </Text>
+          </FitLine>
         ))}
       </View>
 

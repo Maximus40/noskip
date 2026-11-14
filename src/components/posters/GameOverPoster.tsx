@@ -16,6 +16,7 @@ import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { fonts } from '@/theme/typography';
 
+import { FitLine } from './FitLine';
 import { type PosterProps, posterHeight, unit } from './types';
 
 const SCREEN = '#0A0A0F';
@@ -46,7 +47,7 @@ export function GameOverPoster({ ref, ...p }: PosterProps) {
   }, [blink, p.animated, reduced]);
   const blinkStyle = useAnimatedStyle(() => ({ opacity: blink.value }));
 
-  const big = { fontSize: 84 * u, lineHeight: 80 * u, letterSpacing: -3 * u };
+  const big = { fontSize: 80 * u, lineHeight: 80 * u, letterSpacing: -3 * u };
   const enter =
     p.animated === false ? undefined : reduced ? FadeIn : ZoomIn.duration(420).delay(120);
 
@@ -84,10 +85,14 @@ export function GameOverPoster({ ref, ...p }: PosterProps) {
 
       <Animated.View entering={enter} style={{ marginTop: 22 * u }}>
         {/* Orange offset copy behind: the arcade 3D shadow. */}
-        <Text style={[styles.big, big, styles.shadow, { left: 5 * u, right: -5 * u, top: 5 * u }]}>
-          {'GAME\nOVER.'}
-        </Text>
-        <Text style={[styles.big, big]}>{'GAME\nOVER.'}</Text>
+        {['GAME', 'OVER.'].map((word) => (
+          <View key={word}>
+            <View style={[styles.shadowLine, { left: 5 * u, right: -5 * u, top: 5 * u }]}>
+              <FitLine style={[styles.big, big, styles.shadow]}>{word}</FitLine>
+            </View>
+            <FitLine style={[styles.big, big]}>{word}</FitLine>
+          </View>
+        ))}
       </Animated.View>
 
       <View style={[styles.canapRow, { marginTop: 8 * u }]}>
@@ -169,7 +174,8 @@ const styles = StyleSheet.create({
   hud: { fontFamily: fonts.expanded, color: WHITE, letterSpacing: 1 },
   brand: { fontFamily: fonts.black, color: WHITE },
   big: { fontFamily: fonts.black, color: WHITE, includeFontPadding: false },
-  shadow: { position: 'absolute', color: ORANGE },
+  shadow: { color: ORANGE },
+  shadowLine: { position: 'absolute' },
   canapRow: { flexDirection: 'row', alignItems: 'flex-end' },
   headline: { fontFamily: fonts.expandedHeavy, color: WHITE },
   line: { fontFamily: fonts.medium, color: '#B9BAC2' },

@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/Text';
 import { formatKg } from '@/domain/bar';
 import { fonts } from '@/theme/typography';
 
+import { FitLine } from './FitLine';
 import { type PosterProps, posterHeight, unit } from './types';
 
 const BLUSH = '#F4DCD6';
@@ -38,14 +39,14 @@ export function MagazinePoster({ ref, ...p }: PosterProps) {
           NOXCUSE<Text style={{ color: PINK }}>.</Text>
         </Text>
       </View>
-      <Text
+      <FitLine
         style={[
           styles.masthead,
           { fontSize: 78 * u, lineHeight: 80 * u, letterSpacing: -4 * u, marginTop: 4 * u },
         ]}
       >
         {"CANAP'"}
-      </Text>
+      </FitLine>
 
       <View style={[styles.cover, { height: 310 * u }]}>
         <View style={[styles.star, { right: -30 * u, bottom: 0 }]}>
