@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { Canap } from '@/components/Canap';
 import { GiftBanner } from '@/components/GiftBanner';
@@ -187,7 +188,28 @@ function TeamScreen() {
 
           <GiftBanner />
 
-          {promo && myShop.data ? (
+          {state && state.players.length === 1 && team ? (
+            <PressableScale
+              onPress={() =>
+                router.push({ pathname: '/team-manage/[id]', params: { id: team.id } })
+              }
+              accessibilityRole="button"
+              accessibilityLabel="Invite ton binôme. La barre se charge à plusieurs."
+            >
+              <GlassPanel radius={radii.glass} style={styles.recap}>
+                <View style={styles.flex}>
+                  <Text variant="label" color={colors.accent}>
+                    Seul, on lâche
+                  </Text>
+                  <Text variant="bodyStrong">Invite ton binôme</Text>
+                  <Text variant="caption" color={colors.muted}>
+                    La barre se charge à plusieurs. Partage ton code.
+                  </Text>
+                </View>
+                <ArrowUpRight color={colors.accent} size={20} />
+              </GlassPanel>
+            </PressableScale>
+          ) : promo && myShop.data ? (
             <PromoCard
               promo={promo}
               onOpen={() => router.navigate('/boutique')}
@@ -328,16 +350,6 @@ function TeamScreen() {
                       />
                     );
                   })}
-                  {state.players.length === 1 ? (
-                    <Button
-                      label="Invite ton binôme"
-                      variant="secondary"
-                      onPress={() =>
-                        team &&
-                        router.push({ pathname: '/team-manage/[id]', params: { id: team.id } })
-                      }
-                    />
-                  ) : null}
                 </GlassPanel>
               </Animated.View>
               {notice ? (
@@ -371,6 +383,17 @@ function TeamScreen() {
           ) : null}
         </ScrollView>
 
+        {/* Content scrolling under the round buttons fades out instead of clashing with them. */}
+        <Svg pointerEvents="none" style={styles.fade} width="100%" height={230}>
+          <Defs>
+            <LinearGradient id="dockFade" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={colors.map} stopOpacity={0} />
+              <Stop offset="0.45" stopColor={colors.map} stopOpacity={0.85} />
+              <Stop offset="1" stopColor={colors.map} stopOpacity={1} />
+            </LinearGradient>
+          </Defs>
+          <Rect x={0} y={0} width="100%" height={230} fill="url(#dockFade)" />
+        </Svg>
         <View style={styles.actions} pointerEvents="box-none">
           <View ref={historyTarget} collapsable={false}>
             <RoundGlassButton
@@ -444,4 +467,5 @@ const styles = StyleSheet.create({
     gap: spacing.xl,
   },
   actionSpacer: { width: 50 },
+  fade: { position: 'absolute', left: 0, right: 0, bottom: 0 },
 });

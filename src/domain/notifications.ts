@@ -4,7 +4,10 @@
  */
 
 export type NotificationPrefKey =
-  'plate_loaded' | 'spot' | 'shaky_bar' | 'skip' | 'recap' | 'team_pr' | 'gym_change';
+  'plate_loaded' | 'spot' | 'shaky_bar' | 'skip' | 'recap' | 'team_pr' | 'gym_change' | 'offers';
+
+/** Marketing pushes need an explicit opt-in (Apple 4.5.4): off until the player turns them on. */
+const OFF_BY_DEFAULT: readonly NotificationPrefKey[] = ['offers'];
 
 /** Every type a player can switch off (order = settings screen). */
 export const NOTIFICATION_PREFS: readonly {
@@ -31,12 +34,22 @@ export const NOTIFICATION_PREFS: readonly {
     label: 'Changement de salle',
     detail: 'Quand un pote change de salle principale (jamais laquelle).',
   },
+  {
+    key: 'offers',
+    label: 'Nouveautés et offres',
+    detail:
+      'Nouvelles cartes, packs et promos de la boutique. Désactivé tant que tu ne l’actives pas.',
+  },
 ];
 
-/** A preference is on unless explicitly switched off (same rule as the SQL). */
+/**
+ * Game notifications are on unless switched off; offers are off unless switched on (same rules
+ * as the SQL: coalesce(..., true) for the game, coalesce(..., false) for offers).
+ */
 export function isPrefOn(prefs: unknown, key: NotificationPrefKey): boolean {
-  if (!prefs || typeof prefs !== 'object') return true;
-  return (prefs as Record<string, unknown>)[key] !== false;
+  const value =
+    prefs && typeof prefs === 'object' ? (prefs as Record<string, unknown>)[key] : undefined;
+  return OFF_BY_DEFAULT.includes(key) ? value === true : value !== false;
 }
 
 export function withPref(
@@ -53,7 +66,8 @@ export type NotificationRoute =
   | { pathname: '/recap/[weekId]'; params: { weekId: string } }
   | { pathname: '/lifter/[id]'; params: { id: string } }
   | { pathname: '/lifter' }
-  | { pathname: '/team' };
+  | { pathname: '/team' }
+  | { pathname: '/boutique' };
 
 const str = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 ? v : null);
 
@@ -91,6 +105,8 @@ export function routeForNotification(
     case 'shaky_self':
     case 'gym_change':
       return { pathname: '/team' };
+    case 'offer':
+      return { pathname: '/boutique' };
     default:
       return null;
   }

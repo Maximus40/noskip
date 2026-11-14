@@ -13,7 +13,7 @@ export const WELCOME_SLIDES: readonly WelcomeSlide[] = [
     key: 'hero',
     eyebrow: 'Bienvenue dans',
     title: 'NOXCUSE.',
-    body: 'Le jeu qui t’envoie à la salle. Avec tes potes, sans excuse.',
+    body: 'Tes potes comptent sur toi. Le Canap’ aussi.',
   },
   {
     key: 'team',

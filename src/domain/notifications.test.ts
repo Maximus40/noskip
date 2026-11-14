@@ -56,6 +56,11 @@ describe('preferences', () => {
     expect(isPrefOn({}, 'skip')).toBe(true);
     expect(isPrefOn({ skip: false }, 'skip')).toBe(false);
     expect(isPrefOn({ skip: 'no' }, 'skip')).toBe(true);
+    // Offers are opt-in only.
+    expect(isPrefOn(null, 'offers')).toBe(false);
+    expect(isPrefOn({}, 'offers')).toBe(false);
+    expect(isPrefOn({ offers: true }, 'offers')).toBe(true);
+    expect(routeForNotification({ type: 'offer' }, null)).toEqual({ pathname: '/boutique' });
   });
 
   it('toggles one key and keeps the others', () => {
@@ -69,7 +74,16 @@ describe('preferences', () => {
 
   it('lists every type the server sends', () => {
     expect(NOTIFICATION_PREFS.map((p) => p.key).sort()).toEqual(
-      ['gym_change', 'plate_loaded', 'recap', 'shaky_bar', 'skip', 'spot', 'team_pr'].sort(),
+      [
+        'gym_change',
+        'offers',
+        'plate_loaded',
+        'recap',
+        'shaky_bar',
+        'skip',
+        'spot',
+        'team_pr',
+      ].sort(),
     );
   });
 });
