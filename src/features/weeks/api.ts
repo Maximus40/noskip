@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { isPosterStyle } from '@/domain/shop';
 import { db } from '@/lib/supabase';
 
 export type RecapPlayer = {
@@ -100,10 +101,19 @@ export function useSkipCard(cardId: string | undefined) {
         p_card: cardId as string,
       });
       if (error) throw error;
-      const recap = await fetchRecap(weekId);
+      const [recap, card] = await Promise.all([
+        fetchRecap(weekId),
+        db()
+          .from('skip_cards')
+          .select('poster_style')
+          .eq('id', cardId as string)
+          .maybeSingle(),
+      ]);
+      if (card.error) throw card.error;
       const player = recap.players.find((p) => p.cardId === cardId);
       if (!player) throw new Error('not_found');
-      return { recap, player };
+      const style = card.data?.poster_style;
+      return { recap, player, style: isPosterStyle(style) ? style : ('classic' as const) };
     },
   });
 }

@@ -261,11 +261,22 @@ Cosmétiques uniquement : rien ne s'achète pour gagner (ni séance, ni disque, 
 | `noskip.shop.skin.chrome`            | 1,99 €         | Disques Chrome                                            |
 | `noskip.shop.pack.foot`              | 0,99 €         | +10 vannes Foot dans le tirage des cartes SKIP de la team |
 | `noskip.shop.pack.gaming`            | 0,99 €         | +10 vannes Gaming                                         |
+| `noskip.shop.poster.gold`            | 2,99 €         | Carte SKIP « Édition Or » imposée aux potes qui skip      |
+| `noskip.shop.poster.redcard`         | 2,99 €         | Carte SKIP « Carton Rouge »                               |
+| `noskip.shop.poster.gameover`        | 2,99 €         | Carte SKIP « Game Over »                                  |
+| `noskip.shop.poster.wanted`          | 2,99 €         | Carte SKIP « Avis de recherche »                          |
+| `noskip.shop.poster.news`            | 2,99 €         | Carte SKIP « Alerte Info »                                |
+| `noskip.shop.poster.all`             | 6,99 €         | Les 5 cartes SKIP premium                                 |
 
 App Store Connect → ton app → **Monétisation → Achats intégrés** → **+** → **Non consommable**, avec ces
-identifiants. Dans RevenueCat, ajoute les 5 produits (Product catalog → Products), **sans** les rattacher à
+identifiants. Dans RevenueCat, ajoute les 11 produits (Product catalog → Products), **sans** les rattacher à
 l'entitlement `pro` et sans offre : l'app les lit directement par leur identifiant. Le webhook enregistre
 l'achat dans `shop_purchases` (un remboursement le retire).
+
+Cartes SKIP premium : le joueur équipe une carte achetée (`equip_poster_style`). Quand un coéquipier prend une
+carte SKIP, le serveur tire au hasard un style parmi ceux équipés par **les autres** joueurs de la team et le
+garde sur la carte (`skip_cards.poster_style`, déclencheur `skip_cards_pick_poster_style`) : toute la team voit
+la même affiche, pour toujours. Sa propre carte n'est jamais stylée par son propre achat.
 
 ## 8. Vie privée : ce qui part vers le serveur
 

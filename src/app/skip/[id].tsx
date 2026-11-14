@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { skipLineText } from '../../../content/skip-lines';
-import { SkipPoster } from '@/components/SkipPoster';
+import { StyledPoster } from '@/components/posters/StyledPoster';
 import { Button } from '@/components/ui/Button';
 import { ErrorNote } from '@/components/ui/ErrorNote';
 import { PressableScale } from '@/components/ui/PressableScale';
@@ -86,8 +86,9 @@ export default function SkipCardScreen() {
 
       <ScrollView contentContainerStyle={styles.content}>
         {data ? (
-          <SkipPoster
+          <StyledPoster
             ref={poster}
+            style={data.style}
             width={width}
             pseudo={data.player.pseudo}
             line={skipLineText(data.player.lineId ?? '', data.player.pseudo)}

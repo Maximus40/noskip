@@ -500,6 +500,13 @@ Commence maintenant par la phase 1. Avant d'écrire du code, résume-moi en 10 l
 - **À faire de ton côté** : créer les 5 achats intégrés non consommables dans App Store Connect (README §7 « Boutique ») et les ajouter dans RevenueCat ; nouveau build pour tester.
 - Pas fait : cartes de défi (demande des règles de jeu dédiées), prévues pour une V2 de la boutique.
 
+### Cartes SKIP premium (14/11/2026)
+- 5 affiches en plus de la classique (`src/components/posters/`) : **Édition Or**, **Carton Rouge**, **Game Over**, **Avis de recherche**, **Alerte Info**, chacune avec son animation et sa propre expression du Canap' (5 nouvelles humeurs : `laughing`, `cool`, `evil`, `sleepy`, `wink`). Point après « IP » retiré (classique et Or), à la demande de l'éditeur. Aperçus dev : `/dev-posters?style=…` (`moods` = toutes les expressions).
+- Vente : `noskip.shop.poster.<style>` 2,99 € et `noskip.shop.poster.all` 6,99 € (les 5). Celui qui achète **équipe** une carte et l'**impose aux potes** de sa team qui skip : le style est tiré au hasard parmi ceux équipés par les autres membres à la création de la carte, puis figé (`skip_cards.poster_style`). Partage en story dans le style.
+- Serveur : migration `…001700_poster_styles.sql` (appliquée en 3 morceaux `poster_styles_1_columns`, `_2_apply_event`, `_3_product_check`), 14 tests SQL (`96_poster_styles.test.sql`). Le webhook accepte déjà tout `noskip.shop.*` (pas de redéploiement).
+- App : section « Cartes SKIP premium » en tête de la boutique (rail horizontal, pack des 5 mis en avant), écran Carte SKIP qui affiche le style stocké. Captures : `design/qa/posters-premium.png`, `canap-moods.png`, `shop-posters.png`.
+- **À faire de ton côté** : créer les 6 achats intégrés dans App Store Connect et RevenueCat (README §7), puis un nouveau build.
+
 ### Reste à faire de ton côté
 1. **Expo / EAS** : ✅ projet `@noskip-app/noskip` créé (id dans `app.config.ts`) ; recopier les variables de `.env` dans les environnements EAS ; premier `eas build --profile development`.
 2. **Apple** : ✅ compte Developer actif, Team ID `6PFWK3G845`, identifiant d'app `com.noskipapp.app`, clé APNs créée par EAS (13/11/2026), premier build envoyé sur TestFlight.

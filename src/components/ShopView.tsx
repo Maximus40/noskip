@@ -1,6 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
 
+import { StyledPoster } from '@/components/posters/StyledPoster';
 import { TeamBar } from '@/components/TeamBar';
 import { Button } from '@/components/ui/Button';
 import { ErrorNote } from '@/components/ui/ErrorNote';
@@ -8,12 +9,21 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import type { Plate } from '@/domain/bar';
-import { packSamples, type PlateSkin, SHOP_ITEMS, type ShopItem } from '@/domain/shop';
+import {
+  ownsPosterStyle,
+  packSamples,
+  type PlateSkin,
+  type PosterStyle,
+  SHOP_ITEMS,
+  type ShopItem,
+} from '@/domain/shop';
 import { colors, minTouch, radii, spacing } from '@/theme/tokens';
 
 export type ShopViewProps = {
   owned: ReadonlySet<string>;
   equipped: PlateSkin;
+  /** The SKIP poster style I impose on my teammates' cards. */
+  poster: PosterStyle;
   /** Store prices by product id (empty while loading or without payments). */
   prices: Readonly<Record<string, string>>;
   paymentsReady: boolean;
@@ -23,6 +33,7 @@ export type ShopViewProps = {
   error: string | null;
   onBuy: (item: ShopItem) => void;
   onEquip: (skin: PlateSkin) => void;
+  onEquipPoster: (style: PosterStyle) => void;
   onRestore: () => void;
   onClose: () => void;
 };
@@ -34,6 +45,7 @@ export type ShopViewProps = {
 export function ShopView({
   owned,
   equipped,
+  poster,
   prices,
   paymentsReady,
   buyBusy,
@@ -42,6 +54,7 @@ export function ShopView({
   error,
   onBuy,
   onEquip,
+  onEquipPoster,
   onRestore,
   onClose,
 }: ShopViewProps) {
@@ -81,6 +94,17 @@ export function ShopView({
           Les achats ne sont pas branchés dans cette version.
         </Text>
       ) : null}
+
+      <PosterSection
+        owned={owned}
+        poster={poster}
+        prices={prices}
+        paymentsReady={paymentsReady}
+        buyBusy={buyBusy}
+        equipBusy={equipBusy}
+        onBuy={onBuy}
+        onEquipPoster={onEquipPoster}
+      />
 
       <Text variant="headline" style={styles.section}>
         Skins de disques
@@ -201,6 +225,149 @@ export function ShopView({
   );
 }
 
+const SAMPLE = {
+  pseudo: 'Karim',
+  line: 'Karim a skip la salle. Même le leg day n’y croyait plus.',
+  teamName: 'Ta team',
+  teamKg: 200,
+  skips: 1,
+  inviteLabel: 'Rejoins la team',
+  weekLabel: 'Cette semaine',
+  animated: false,
+} as const;
+
+const MINI = 156;
+
+/** Premium SKIP cards: equip one, and your teammates' SKIP cards come out in your style. */
+function PosterSection({
+  owned,
+  poster,
+  prices,
+  paymentsReady,
+  buyBusy,
+  equipBusy,
+  onBuy,
+  onEquipPoster,
+}: Pick<
+  ShopViewProps,
+  | 'owned'
+  | 'poster'
+  | 'prices'
+  | 'paymentsReady'
+  | 'buyBusy'
+  | 'equipBusy'
+  | 'onBuy'
+  | 'onEquipPoster'
+>) {
+  const styles_ = SHOP_ITEMS.filter((i) => i.kind === 'poster');
+  const bundle = SHOP_ITEMS.find((i) => i.kind === 'posterBundle');
+  const allOwned = styles_.every((i) => i.kind === 'poster' && ownsPosterStyle(owned, i.style));
+  return (
+    <>
+      <Text variant="headline" style={styles.section}>
+        Cartes SKIP premium
+      </Text>
+      <Text variant="caption" color={colors.muted}>
+        Équipe une carte : quand un pote de ta team skip, sa carte SKIP sort dans ton style. Toute
+        la team la voit, et elle part en story.
+      </Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.posterRail}
+        style={styles.rail}
+      >
+        {styles_.map((item) => {
+          if (item.kind !== 'poster') return null;
+          const has = ownsPosterStyle(owned, item.style);
+          const worn = poster === item.style;
+          return (
+            <View key={item.productId} style={styles.posterCard}>
+              <View style={[styles.posterFrame, worn && styles.posterWorn]}>
+                <StyledPoster style={item.style} width={MINI} {...SAMPLE} />
+              </View>
+              <Text variant="bodyStrong">{item.title}</Text>
+              <Text variant="caption" color={colors.muted} style={styles.posterPitch}>
+                {item.pitch}
+              </Text>
+              {worn ? (
+                <Badge label="Équipée" />
+              ) : has ? (
+                <Button
+                  label="Équiper"
+                  variant="secondary"
+                  withArrow={false}
+                  disabled={equipBusy}
+                  onPress={() => onEquipPoster(item.style)}
+                />
+              ) : (
+                <BuyButton
+                  item={item}
+                  price={prices[item.productId]}
+                  busy={buyBusy}
+                  ready={paymentsReady}
+                  onBuy={onBuy}
+                />
+              )}
+            </View>
+          );
+        })}
+      </ScrollView>
+
+      {bundle && !allOwned ? (
+        <View style={[styles.card, styles.bundle]}>
+          <View style={styles.fan} accessible={false}>
+            {styles_.map((item, i) =>
+              item.kind === 'poster' ? (
+                <View
+                  key={item.productId}
+                  style={[
+                    styles.fanItem,
+                    { left: i * 44, transform: [{ rotate: `${(i - 2) * 6}deg` }], zIndex: i },
+                  ]}
+                >
+                  <StyledPoster style={item.style} width={72} {...SAMPLE} />
+                </View>
+              ) : null,
+            )}
+          </View>
+          <View style={styles.row}>
+            <View style={styles.flex}>
+              <Text variant="label" color={colors.accent}>
+                Meilleure affaire
+              </Text>
+              <Text variant="bodyStrong">{bundle.title}</Text>
+              <Text variant="caption" color={colors.muted}>
+                {bundle.pitch}
+              </Text>
+            </View>
+            <BuyButton
+              item={bundle}
+              price={prices[bundle.productId]}
+              busy={buyBusy}
+              ready={paymentsReady}
+              onBuy={onBuy}
+            />
+          </View>
+        </View>
+      ) : null}
+
+      {poster !== 'classic' ? (
+        <PressableScale
+          onPress={() => onEquipPoster('classic')}
+          accessibilityRole="button"
+          disabled={equipBusy}
+          style={styles.restore}
+        >
+          <Text variant="caption" style={styles.underline}>
+            Remettre la carte classique
+          </Text>
+        </PressableScale>
+      ) : null}
+    </>
+  );
+}
+
 function BuyButton({
   item,
   price,
@@ -275,4 +442,19 @@ const styles = StyleSheet.create({
   },
   restore: { minHeight: minTouch, justifyContent: 'center', alignItems: 'center' },
   bottom: { height: spacing.xl },
+  rail: { marginHorizontal: -spacing.lg },
+  posterRail: { paddingHorizontal: spacing.lg, gap: spacing.md },
+  posterCard: {
+    width: MINI + spacing.md * 2,
+    backgroundColor: colors.card,
+    borderRadius: radii.card,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  posterFrame: { borderRadius: 8, overflow: 'hidden', borderWidth: 2, borderColor: 'transparent' },
+  posterWorn: { borderColor: colors.accent },
+  posterPitch: { minHeight: 48 },
+  bundle: { borderWidth: 1, borderColor: colors.accent },
+  fan: { height: 140, width: 72 + 44 * 4, alignSelf: 'center' },
+  fanItem: { position: 'absolute', top: 6, borderRadius: 4, overflow: 'hidden' },
 });

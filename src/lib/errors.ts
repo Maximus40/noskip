@@ -57,6 +57,9 @@ const MESSAGES: Record<string, string> = {
   skin_not_owned:
     'Ce skin n’est pas encore à toi. Si tu viens de l’acheter, patiente quelques secondes.',
   invalid_skin: 'Ce skin n’existe pas.',
+  poster_not_owned:
+    'Cette carte n’est pas encore à toi. Si tu viens de l’acheter, patiente quelques secondes.',
+  invalid_poster_style: 'Cette carte n’existe pas.',
   product_unavailable: 'Cet article n’est pas disponible pour le moment. Réessaie plus tard.',
   payments_unavailable: 'Les achats ne sont pas disponibles dans cette version.',
 };

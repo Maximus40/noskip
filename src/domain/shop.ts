@@ -1,7 +1,7 @@
 /**
  * Shop catalog: one-time, cosmetic purchases only. Nothing here changes the game (no session,
  * no plate, no joker, no SKIP dodge). Prices come from the store (RevenueCat); product ids
- * must match App Store Connect and the server check (noskip.shop.skin.* / noskip.shop.pack.*).
+ * must match App Store Connect and the server check (noskip.shop.skin.* / pack.* / poster.*).
  */
 import { JOKE_PACKS, type JokePack, SKIP_LINES } from '../../content/skip-lines';
 
@@ -20,6 +20,11 @@ export const SKIN_PAINT: Record<PlateSkin, SkinPaint> = {
   chrome: { body: '#DDE1E6', rim: '#FF6A3D', stripe: '#8E949C' },
 };
 
+/** SKIP poster styles: a buyer who equips one imposes it on their teammates' SKIP cards. */
+export const POSTER_STYLES = ['classic', 'gold', 'redcard', 'gameover', 'wanted', 'news'] as const;
+export type PosterStyle = (typeof POSTER_STYLES)[number];
+export const POSTER_BUNDLE_ID = 'noskip.shop.poster.all';
+
 export type ShopItem =
   | {
       kind: 'skin';
@@ -28,9 +33,58 @@ export type ShopItem =
       title: string;
       pitch: string;
     }
-  | { kind: 'pack'; productId: string; pack: JokePack; title: string; pitch: string };
+  | { kind: 'pack'; productId: string; pack: JokePack; title: string; pitch: string }
+  | {
+      kind: 'poster';
+      productId: string;
+      style: Exclude<PosterStyle, 'classic'>;
+      title: string;
+      pitch: string;
+    }
+  | { kind: 'posterBundle'; productId: string; title: string; pitch: string };
 
 export const SHOP_ITEMS: readonly ShopItem[] = [
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.gold',
+    style: 'gold',
+    title: 'Édition Or',
+    pitch: 'Le skip de ton pote, en lettres d’or. Le luxe de l’humiliation.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.redcard',
+    style: 'redcard',
+    title: 'Carton Rouge',
+    pitch: 'Expulsé par le Canap’. Le carton se lève devant toute la team.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.gameover',
+    style: 'gameover',
+    title: 'Game Over',
+    pitch: 'Le Canap’ en boss final. Ton pote a perdu toutes ses vies.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.wanted',
+    style: 'wanted',
+    title: 'Avis de recherche',
+    pitch: 'Recherché pour séance manquée. Récompense : une séance.',
+  },
+  {
+    kind: 'poster',
+    productId: 'noskip.shop.poster.news',
+    style: 'news',
+    title: 'Alerte Info',
+    pitch: 'Flash spécial en direct : ton pote sèche la salle.',
+  },
+  {
+    kind: 'posterBundle',
+    productId: POSTER_BUNDLE_ID,
+    title: 'Les 5 cartes',
+    pitch: 'Tous les styles d’un coup. Change de carte quand tu veux.',
+  },
   {
     kind: 'skin',
     productId: 'noskip.shop.skin.gold',
@@ -69,6 +123,17 @@ export const SHOP_ITEMS: readonly ShopItem[] = [
 ];
 
 export const SHOP_PRODUCT_IDS = SHOP_ITEMS.map((i) => i.productId);
+
+export function isPosterStyle(value: unknown): value is PosterStyle {
+  return typeof value === 'string' && (POSTER_STYLES as readonly string[]).includes(value);
+}
+
+/** A style is mine if I bought it, or the pack of five (classic is free). */
+export function ownsPosterStyle(owned: ReadonlySet<string>, style: PosterStyle): boolean {
+  return (
+    style === 'classic' || owned.has(`noskip.shop.poster.${style}`) || owned.has(POSTER_BUNDLE_ID)
+  );
+}
 
 export function isPlateSkin(value: unknown): value is PlateSkin {
   return typeof value === 'string' && (PLATE_SKINS as readonly string[]).includes(value);

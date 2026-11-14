@@ -230,6 +230,7 @@ export type Database = {
           created_at: string;
           updated_at: string;
           plate_skin: string;
+          poster_style: string;
         };
         Insert: {
           id: string;
@@ -251,6 +252,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           plate_skin?: string;
+          poster_style?: string;
         };
         Update: {
           id?: string;
@@ -272,6 +274,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           plate_skin?: string;
+          poster_style?: string;
         };
         Relationships: [];
       };
@@ -461,6 +464,7 @@ export type Database = {
           line_id: string;
           created_at: string;
           shared_count: number;
+          poster_style: string;
         };
         Insert: {
           id?: string;
@@ -470,6 +474,7 @@ export type Database = {
           line_id: string;
           created_at?: string;
           shared_count?: number;
+          poster_style?: string;
         };
         Update: {
           id?: string;
@@ -479,6 +484,7 @@ export type Database = {
           line_id?: string;
           created_at?: string;
           shared_count?: number;
+          poster_style?: string;
         };
         Relationships: [
           {
@@ -937,6 +943,12 @@ export type Database = {
       equip_plate_skin: {
         Args: {
           p_skin: string;
+        };
+        Returns: string;
+      };
+      equip_poster_style: {
+        Args: {
+          p_style: string;
         };
         Returns: string;
       };

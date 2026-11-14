@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { isPlateSkin, type PlateSkin, SHOP_PRODUCT_IDS } from '@/domain/shop';
+import {
+  isPlateSkin,
+  isPosterStyle,
+  type PlateSkin,
+  type PosterStyle,
+  SHOP_PRODUCT_IDS,
+} from '@/domain/shop';
 import { useUserId } from '@/features/auth/AuthProvider';
 import { WEBHOOK_FOLLOW_UPS_MS, paymentsAvailable } from '@/features/subscriptions/api';
 import { loadShopPrices, purchaseShopItem } from '@/features/subscriptions/revenuecat';
@@ -9,21 +15,27 @@ import { db } from '@/lib/supabase';
 export const myShopKey = (uid: string) => ['my-shop', uid] as const;
 export const teamSkinsKey = (teamId: string) => ['team-skins', teamId] as const;
 
-export type MyShop = { owned: ReadonlySet<string>; equipped: PlateSkin };
+export type MyShop = { owned: ReadonlySet<string>; equipped: PlateSkin; poster: PosterStyle };
 
-/** What I bought (server truth, written by the RevenueCat webhook) and the skin I wear. */
+/** What I bought (server truth, written by the RevenueCat webhook), my skin and poster style. */
 export function useMyShop() {
   const uid = useUserId();
   return useQuery({
     queryKey: myShopKey(uid),
     queryFn: async (): Promise<MyShop> => {
-      const { data, error } = await db().rpc('my_shop');
-      if (error) throw error;
-      const rows = data ?? [];
+      const [shop, profile] = await Promise.all([
+        db().rpc('my_shop'),
+        db().from('profiles').select('poster_style').eq('id', uid).maybeSingle(),
+      ]);
+      if (shop.error) throw shop.error;
+      if (profile.error) throw profile.error;
+      const rows = shop.data ?? [];
       const equipped = rows[0]?.equipped_skin;
+      const poster = profile.data?.poster_style;
       return {
         owned: new Set(rows.map((r) => r.product_id).filter((id): id is string => Boolean(id))),
         equipped: isPlateSkin(equipped) ? equipped : 'classic',
+        poster: isPosterStyle(poster) ? poster : 'classic',
       };
     },
   });
@@ -56,6 +68,19 @@ export function useEquipSkin() {
       qc.invalidateQueries({ queryKey: myShopKey(uid) });
       qc.invalidateQueries({ queryKey: ['team-skins'] });
     },
+  });
+}
+
+/** The SKIP poster style I impose on my teammates' cards. */
+export function useEquipPoster() {
+  const uid = useUserId();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (style: PosterStyle) => {
+      const { error } = await db().rpc('equip_poster_style', { p_style: style });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: myShopKey(uid) }),
   });
 }
 
