@@ -261,12 +261,12 @@ Cosmétiques uniquement : rien ne s'achète pour gagner (ni séance, ni disque, 
 | `noskip.shop.skin.chrome`            | 1,99 €         | Disques Chrome                                            |
 | `noskip.shop.pack.foot`              | 0,99 €         | +10 vannes Foot dans le tirage des cartes SKIP de la team |
 | `noskip.shop.pack.gaming`            | 0,99 €         | +10 vannes Gaming                                         |
-| `noskip.shop.poster.gold`            | 2,99 €         | Carte SKIP « Édition Or » imposée aux potes qui skip      |
-| `noskip.shop.poster.redcard`         | 2,99 €         | Carte SKIP « Carton Rouge »                               |
-| `noskip.shop.poster.gameover`        | 2,99 €         | Carte SKIP « Game Over »                                  |
-| `noskip.shop.poster.wanted`          | 2,99 €         | Carte SKIP « Avis de recherche »                          |
-| `noskip.shop.poster.news`            | 2,99 €         | Carte SKIP « Alerte Info »                                |
-| `noskip.shop.poster.all`             | 6,99 €         | Les 5 cartes SKIP premium                                 |
+| `noskip.shop.poster.gold`            | 1,99 €         | Carte SKIP « Édition Or » imposée aux potes qui skip      |
+| `noskip.shop.poster.redcard`         | 1,99 €         | Carte SKIP « Carton Rouge »                               |
+| `noskip.shop.poster.gameover`        | 1,99 €         | Carte SKIP « Game Over »                                  |
+| `noskip.shop.poster.wanted`          | 1,99 €         | Carte SKIP « Avis de recherche »                          |
+| `noskip.shop.poster.news`            | 1,99 €         | Carte SKIP « Alerte Info »                                |
+| `noskip.shop.poster.all`             | 4,99 €         | Les 5 cartes SKIP premium                                 |
 
 App Store Connect → ton app → **Monétisation → Achats intégrés** → **+** → **Non consommable**, avec ces
 identifiants. Dans RevenueCat, ajoute les 11 produits (Product catalog → Products), **sans** les rattacher à

@@ -8,12 +8,12 @@ const PRICES = {
   'noskip.shop.skin.chrome': '1,99 €',
   'noskip.shop.pack.foot': '0,99 €',
   'noskip.shop.pack.gaming': '0,99 €',
-  'noskip.shop.poster.gold': '2,99 €',
-  'noskip.shop.poster.redcard': '2,99 €',
-  'noskip.shop.poster.gameover': '2,99 €',
-  'noskip.shop.poster.wanted': '2,99 €',
-  'noskip.shop.poster.news': '2,99 €',
-  'noskip.shop.poster.all': '6,99 €',
+  'noskip.shop.poster.gold': '1,99 €',
+  'noskip.shop.poster.redcard': '1,99 €',
+  'noskip.shop.poster.gameover': '1,99 €',
+  'noskip.shop.poster.wanted': '1,99 €',
+  'noskip.shop.poster.news': '1,99 €',
+  'noskip.shop.poster.all': '4,99 €',
 };
 
 /**

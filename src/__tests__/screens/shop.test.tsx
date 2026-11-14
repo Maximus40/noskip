@@ -19,12 +19,12 @@ jest.mock('@/features/shop/api', () => ({
       'noskip.shop.skin.chrome': '1,99 €',
       'noskip.shop.pack.foot': '0,99 €',
       'noskip.shop.pack.gaming': '0,99 €',
-      'noskip.shop.poster.gold': '2,99 €',
-      'noskip.shop.poster.redcard': '2,99 €',
-      'noskip.shop.poster.gameover': '2,99 €',
-      'noskip.shop.poster.wanted': '2,99 €',
-      'noskip.shop.poster.news': '2,99 €',
-      'noskip.shop.poster.all': '6,99 €',
+      'noskip.shop.poster.gold': '1,99 €',
+      'noskip.shop.poster.redcard': '1,99 €',
+      'noskip.shop.poster.gameover': '1,99 €',
+      'noskip.shop.poster.wanted': '1,99 €',
+      'noskip.shop.poster.news': '1,99 €',
+      'noskip.shop.poster.all': '4,99 €',
     },
   }),
   useBuyShopItem: () => ({ mutateAsync: mockBuy, isPending: false }),
@@ -49,7 +49,8 @@ describe('shop', () => {
     await render(<ShopScreen />);
     expect(screen.getByText('DU STYLE. ZÉRO TRICHE.')).toBeTruthy();
     expect(screen.getByText(/rien ne s’achète pour gagner/)).toBeTruthy();
-    const goldPrice = screen.getAllByRole('button', { name: '1,99 €' })[0];
+    // The 5 premium cards come first, then the skins.
+    const goldPrice = screen.getAllByRole('button', { name: '1,99 €' })[5];
     await fireEvent.press(goldPrice);
     await waitFor(() => expect(mockBuy).toHaveBeenCalledWith('noskip.shop.skin.gold'));
     expect(await screen.findByText(/Disques Or : achat validé/)).toBeTruthy();
@@ -72,8 +73,8 @@ describe('shop', () => {
     mockBuy.mockResolvedValue('bought');
     await render(<ShopScreen />);
     expect(screen.getByText('Cartes SKIP premium')).toBeTruthy();
-    expect(screen.getAllByRole('button', { name: '2,99 €' })).toHaveLength(5);
-    await fireEvent.press(screen.getByRole('button', { name: '6,99 €' }));
+    expect(screen.getAllByRole('button', { name: '1,99 €' })).toHaveLength(8);
+    await fireEvent.press(screen.getByRole('button', { name: '4,99 €' }));
     await waitFor(() => expect(mockBuy).toHaveBeenCalledWith('noskip.shop.poster.all'));
   });
 
@@ -85,7 +86,7 @@ describe('shop', () => {
     };
     await render(<ShopScreen />);
     expect(screen.getByText('Équipée')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: '6,99 €' })).toBeNull();
+    expect(screen.queryByRole('button', { name: '4,99 €' })).toBeNull();
     await fireEvent.press(screen.getAllByRole('button', { name: 'Équiper' })[0]);
     expect(mockEquipPoster).toHaveBeenCalledWith('gold');
     await fireEvent.press(screen.getByRole('button', { name: 'Remettre la carte classique' }));
